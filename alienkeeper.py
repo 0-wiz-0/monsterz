@@ -110,6 +110,8 @@ class Game:
         self.will_play = None
         self.clock = pygame.time.Clock()
         self.oldticks = pygame.time.get_ticks()
+        self.pause = False
+        self.pause_bitmap = None
         self.exit = False
         self.play_again = False
         self.level = level
@@ -312,6 +314,13 @@ class Game:
         if self.select:
             background.blit(theme.selector, select_coord)
 
+    def toggle_pause(self):
+        self.pause = not self.pause
+        if self.pause:
+            self.pause_bitmap = pygame.transform.scale(theme.normal[self.get_random(no_special = True)], (8 * theme.tile_size, 8 * theme.tile_size))
+        else:
+            del self.pause_bitmap
+
     def draw_game(self):
         # Draw background
         background.blit(theme.board, (0, 0))
@@ -326,7 +335,15 @@ class Game:
         if w2 > 0:
             pygame.draw.rect(background, color, (x, y, w * self.time / 2000000, h))
         # Draw pieces
-        if self.lost_timer >= 0:
+        if self.pause:
+            background.blit(self.pause_bitmap, (24, 24))
+            font = pygame.font.Font(None, SCREEN_HEIGHT / 4)
+            delta = 1 + SCREEN_HEIGHT / 100
+            for x in range(2):
+                text = font.render('PAUSED', 2, (x * 255, x * 255, x * 255))
+                (w, h) = text.get_rect().size
+                background.blit(text, (theme.tile_size * self.board_width / 2 - w / 2 + 24 - delta * x, theme.tile_size * self.board_height * 7 / 8 - h / 2 + 24 - delta * x))
+        elif self.lost_timer >= 0:
             self.draw_board()
         # Print score
         font = pygame.font.Font(None, SCREEN_HEIGHT / 8)
@@ -383,6 +400,7 @@ class Game:
         pygame.display.flip()
 
     def iterate(self):
+        ask_pause = False
         ticks = pygame.time.get_ticks()
         delta = (ticks - self.oldticks) * 400 / (11.0000001 - self.level) # FIXME
         self.oldticks = ticks
@@ -407,6 +425,8 @@ class Game:
             elif event.type == KEYDOWN and event.key == K_f:
                 pygame.display.toggle_fullscreen()
                 return
+            elif event.type == KEYDOWN and event.key == K_p:
+                ask_pause = True
             elif event.type == MOUSEBUTTONDOWN:
                 if self.lost_timer < 0:
                     self.exit = EXIT_REPLAY
@@ -415,6 +435,9 @@ class Game:
                 if x2 < 0 or x2 >= self.board_width or y2 < 0 or y2 >= self.board_height:
                     continue
                 self.clicks.append((x2, y2))
+        # If paused, do nothing
+        if self.pause and not ask_pause:
+            return
         # Resolve winning moves and chain reactions
         if self.board_timer:
             self.board_timer -= 1
@@ -524,6 +547,10 @@ class Game:
         self.time -= delta
         if self.time <= 0:
             self.lost_timer = LOST_DELAY
+            return
+        # Honour pause request
+        if ask_pause:
+            self.toggle_pause()
             return
         # Handle moves from the AI:
         if AI:
