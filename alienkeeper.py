@@ -19,8 +19,13 @@ from os.path import join, dirname
 
 # constants
 AI = False
-screen_width = 640
-screen_height = 480
+SCREEN_WIDTH = 640
+SCREEN_HEIGHT = 480
+
+LOST_DELAY = 50
+SCROLL_DELAY = 50
+WIN_DELAY = 12
+SWITCH_DELAY = 5
 
 class Theme:
     def __init__(self, file):
@@ -77,8 +82,8 @@ class Game:
         self.select = None
         self.switch = None
         # Compute stuff
-        tile_size = (screen_width - 20) / self.board_width
-        tmp = (screen_height - 20) * 17 / 20 / self.board_height
+        tile_size = (SCREEN_WIDTH - 20) / self.board_width
+        tmp = (SCREEN_HEIGHT - 20) * 17 / 20 / self.board_height
         if tmp < tile_size:
             tile_size = tmp
         theme.make_sprites(tile_size)
@@ -92,7 +97,7 @@ class Game:
                 self.lost_offset[(x, y)] = (0, 0)
         self.win_timer = 0
         self.switch_timer = 0
-        self.level_timer = 25
+        self.level_timer = SCROLL_DELAY / 2
         self.board_timer = 0
         self.missed = False
         self.check_moves = False
@@ -234,9 +239,9 @@ class Game:
         background.fill((210, 200, 150))
         # Print timebar:
         x = theme.tile_size / 2
-        y = screen_height * 18 / 20
+        y = SCREEN_HEIGHT * 18 / 20
         w = (self.board_width - 1) * theme.tile_size
-        h = screen_height / 20
+        h = SCREEN_HEIGHT / 20
         w2 = w * self.time / 2000000
         if self.time <= 350000:
             color = (255, 0, 0)
@@ -252,9 +257,9 @@ class Game:
             timer = self.board_timer
         else:
             timer = 0
-        if timer > 25:
+        if timer > SCROLL_DELAY / 2:
             xoff = 0
-            yoff = (50 - timer) * (50 - timer)
+            yoff = (SCROLL_DELAY - timer) * (SCROLL_DELAY - timer)
         elif timer > 0:
             xoff = 0
             yoff = - timer * timer
@@ -264,12 +269,14 @@ class Game:
         if self.switch_timer:
             (x1, y1) = self.board2screen(self.select)
             (x2, y2) = self.board2screen(self.switch)
-            t = self.switch_timer * 1.0 / 5
+            t = self.switch_timer * 1.0 / SWITCH_DELAY
         for (c, n) in self.board.items():
             # Decide the shape
             if n == 0:
                 shape = theme.special[self.special_timer]
-            elif c in self.surprised_list or self.board_timer > 25 or self.level_timer > 25:
+            elif c in self.surprised_list \
+              or self.board_timer > SCROLL_DELAY / 2 \
+              or self.level_timer > SCROLL_DELAY / 2:
                 shape = theme.surprised[n - 1]
             elif c in self.disappear_list:
                 shape = theme.exploded[n - 1]
@@ -286,8 +293,9 @@ class Game:
                 (x, y) = self.board2screen(c)
             if self.lost_timer:
                 (xoff, yoff) = self.lost_offset[c]
-                xoff += randint(0, 100 - self.lost_timer) - randint(0, 100 - self.lost_timer)
-                yoff += randint(0, 100 - self.lost_timer) - randint(0, 100 - self.lost_timer)
+                d = LOST_DELAY - self.lost_timer
+                xoff += (randint(0, d) - randint(0, d)) * randint(0, d) / 2
+                yoff += (randint(0, d) - randint(0, d)) * randint(0, d) / 2
                 self.lost_offset[c] = (xoff, yoff)
             # Print the shit
             background.blit(shape, (x + xoff, y + yoff))
@@ -299,23 +307,23 @@ class Game:
         if self.select:
             background.blit(theme.selector, select_coord)
         # Print score
-        font = pygame.font.Font(None, screen_height / 8)
-        delta = 1 + screen_height / 200
+        font = pygame.font.Font(None, SCREEN_HEIGHT / 8)
+        delta = 1 + SCREEN_HEIGHT / 200
         for x in range(2):
             text = font.render(str(self.score), 2, (x * 255, x * 255, x * 255))
             background.blit(text, (theme.tile_size * self.board_width + theme.tile_size / 2 - delta * x, 10 - delta * x))
         # Print new level stuff
-        if self.level_timer and self.level_timer < 25:
-            font = pygame.font.Font(None, screen_height / 4)
-            delta = 1 + screen_height / 100
+        if self.level_timer and self.level_timer < SCROLL_DELAY / 2:
+            font = pygame.font.Font(None, SCREEN_HEIGHT / 4)
+            delta = 1 + SCREEN_HEIGHT / 100
             for x in range(2):
                 text = font.render('level ' + str(self.level), 2, (x * 255, x * 255, x * 255))
                 (w, h) = text.get_rect().size
                 background.blit(text, (theme.tile_size * self.board_width / 2 - w / 2 - delta * x, theme.tile_size * self.board_height / 2 - h / 2 - delta * x))
         # Print no more moves stuff
-        if self.board_timer > 25:
-            font = pygame.font.Font(None, screen_height / 6)
-            delta = 1 + screen_height / 150
+        if self.board_timer > SCROLL_DELAY / 2:
+            font = pygame.font.Font(None, SCREEN_HEIGHT / 6)
+            delta = 1 + SCREEN_HEIGHT / 150
             for x in range(2):
                 text = font.render('no more moves!', 2, (x * 255, x * 255, x * 255))
                 (w, h) = text.get_rect().size
@@ -328,15 +336,15 @@ class Game:
                 (x, y) = self.board2screen(b[0])
                 background.blit(text, (x + theme.tile_size / 4 - delta * d, y + theme.tile_size / 4 - delta * d))
         # Print done/needed:
-        delta = 1 + screen_height / 300
+        delta = 1 + SCREEN_HEIGHT / 300
         x = theme.tile_size * self.board_width + theme.tile_size / 2
-        y = theme.tile_size / 2 + screen_height / 8
+        y = theme.tile_size / 2 + SCREEN_HEIGHT / 8
         for i in range(self.population):
             background.blit(theme.tiny[i], (x, y))
             for d in range(2):
                 text = font.render(str(self.done[i + 1]) + '/' + str(self.needed[i + 1]), 2, (d * 255, d * 255, d * 255))
-                background.blit(text, (x + theme.tile_size * 5 / 4 - delta * d, y + screen_height / 64 - delta * d))
-            y += screen_height / 12
+                background.blit(text, (x + theme.tile_size * 5 / 4 - delta * d, y + SCREEN_HEIGHT / 64 - delta * d))
+            y += SCREEN_HEIGHT / 12
 
     def iterate(self):
         ticks = pygame.time.get_ticks()
@@ -351,7 +359,7 @@ class Game:
                 break
             self.check_moves = False
             if not can_play:
-                self.board_timer = 50
+                self.board_timer = SCROLL_DELAY
         self.draw_scene()
         window.blit(background, (0, 0))
         # Draw stuff here
@@ -359,7 +367,7 @@ class Game:
         # Resolve winning moves and chain reactions
         if self.board_timer:
             self.board_timer -= 1
-            if self.board_timer is 25:
+            if self.board_timer is SCROLL_DELAY / 2:
                 self.new_board()
             elif self.board_timer is 0:
                 self.check_moves = True # Need to check again
@@ -379,16 +387,16 @@ class Game:
                     self.wins = self.get_wins()
                     if not self.wins:
                         self.missed = True
-                        self.switch_timer = 5
+                        self.switch_timer = SWITCH_DELAY
                         return
                     self.win_iter = 0
-                    self.win_timer = 12
+                    self.win_timer = WIN_DELAY
                 self.select = None
                 self.switch = None
             return
         if self.level_timer:
             self.level_timer -= 1
-            if self.level_timer is 25:
+            if self.level_timer is SCROLL_DELAY / 2:
                 self.level += 1
                 self.new_level()
             elif self.level_timer is 0:
@@ -396,11 +404,11 @@ class Game:
             return
         if self.win_timer:
             self.win_timer -= 1
-            if self.win_timer is 10:
+            if self.win_timer is WIN_DELAY * 5 / 6:
                 for w in self.wins:
                     for (x, y) in w:
                         self.surprised_list.append((x, y))
-            elif self.win_timer is 6:
+            elif self.win_timer is WIN_DELAY * 3 / 6:
                 self.scorebonus = 0
                 self.timebonus = 0
                 for w in self.wins:
@@ -417,7 +425,7 @@ class Game:
                     self.bonus_list.append([(x2 / len(w), y2 / len(w)), points])
                 self.disappear_list = self.surprised_list
                 self.surprised_list = []
-            elif self.win_timer is 4:
+            elif self.win_timer is WIN_DELAY * 2 / 6:
                 self.bonus_list = []
                 for (x, y) in self.disappear_list:
                     if self.board.has_key((x, y)):
@@ -432,7 +440,7 @@ class Game:
                     if unfinished == 1:
                         self.angry_tiles = angry
                 self.disappear_list = []
-            elif self.win_timer is 2:
+            elif self.win_timer is WIN_DELAY / 6:
                 self.time += self.timebonus
                 if self.time > 2000000:
                     self.time = 2000000
@@ -441,7 +449,7 @@ class Game:
             elif self.win_timer is 0:
                 self.wins = self.get_wins()
                 if self.wins:
-                    self.win_timer = 12
+                    self.win_timer = WIN_DELAY
                     self.win_iter += 1
                 else:
                     # Check for new level
@@ -453,7 +461,7 @@ class Game:
                             break
                     if finished:
                         self.select = None
-                        self.level_timer = 50
+                        self.level_timer = SCROLL_DELAY
                     else:
                         self.check_moves = True
             return
@@ -476,7 +484,7 @@ class Game:
                 played = (x2, y2)
                 break
         if self.time <= 0:
-            self.lost_timer = 100
+            self.lost_timer = LOST_DELAY
             return
         # Update time
         self.time -= delta
@@ -528,7 +536,7 @@ class Game:
             if abs(x1 - x2) + abs(y1 - y2) != 1:
                 return
             self.switch = played
-            self.switch_timer = 5
+            self.switch_timer = SWITCH_DELAY
             return
         if played and not self.select:
             if self.board[played] != 0:
@@ -545,7 +553,7 @@ class Game:
             self.board[played] = target
             self.wins.append([played])
             self.win_iter = 0
-            self.win_timer = 12
+            self.win_timer = WIN_DELAY
             return
 
 # Init Pygame
@@ -555,7 +563,7 @@ pygame.init()
 #sound = pygame.mixer.Sound('foo.wav')
 #sound.play()
 # Init display
-window = pygame.display.set_mode((screen_width, screen_height))
+window = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption('Alienkeeper')
 background = pygame.Surface(window.get_size())
 # Read commandline (haha)
