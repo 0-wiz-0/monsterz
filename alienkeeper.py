@@ -32,14 +32,15 @@ class Theme:
         # Load stuff
         tiles = pygame.image.load(file)
         (w, h) = tiles.get_rect().size
-        if w * 9 != h * 4:
+        if w * 9 != h * 5:
             raise 'error: ' + file + ' has wrong image size'
         self.tiles = tiles.convert_alpha()
-        self.orig_size = w / 4
+        self.orig_size = w / 5
         self.tile_size = None
         self.normal = {}
+        self.blink = {}
         self.tiny = {}
-        self.surprised = {}
+        self.surprise = {}
         self.angry = {}
         self.exploded = {}
         self.special = {}
@@ -54,9 +55,10 @@ class Theme:
         for x in range(8):
             self.normal[x] = scale(crop((0, (x+1) * s, s, s)), (t, t))
             self.tiny[x] = scale(crop((0, (x+1) * s, s, s)), (t * 3 / 4, t * 3 / 4))
-            self.surprised[x] = scale(crop((s, (x+1) * s, s, s)), (t, t))
-            self.angry[x] = scale(crop((s * 2, (x+1) * s, s, s)), (t, t))
-            self.exploded[x] = scale(crop((s * 3, (x+1) * s, s, s)), (t, t))
+            self.blink[x] = scale(crop((s, (x+1) * s, s, s)), (t, t))
+            self.surprise[x] = scale(crop((s * 2, (x+1) * s, s, s)), (t, t))
+            self.angry[x] = scale(crop((s * 3, (x+1) * s, s, s)), (t, t))
+            self.exploded[x] = scale(crop((s * 4, (x+1) * s, s, s)), (t, t))
             #tmp = crop((s, 0, s, s)).copy() # marche pas !
             spcial = scale(crop((s, 0, s, s)), (s, s))
             mini = crop((0, (x+1) * s, s, s))
@@ -75,6 +77,7 @@ class Game:
         self.needed = {}
         self.done = {}
         self.bonus_list = []
+        self.blink_list = {}
         self.disappear_list = []
         self.surprised_list = []
         self.clicks = []
@@ -251,6 +254,10 @@ class Game:
         pygame.draw.rect(background, (0, 0, 0), (x, y, w, h))
         if w2 > 0:
             pygame.draw.rect(background, color, (x, y, w * self.time / 2000000, h))
+        # Have a random piece blink
+        if randint(0, 7) is 0:
+            x, y = randint(0, self.board_width - 1), randint(0, self.board_height - 1)
+            self.blink_list[(x, y)] = 5
         # Draw pieces
         if self.level_timer:
             timer = self.level_timer
@@ -275,14 +282,23 @@ class Game:
             # Decide the shape
             if n == 0:
                 shape = theme.special[self.special_index]
+            elif self.level_timer and self.level_timer < SCROLL_DELAY / 2:
+                shape = theme.blink[n - 1]
             elif c in self.surprised_list \
               or self.board_timer > SCROLL_DELAY / 2 \
               or self.level_timer > SCROLL_DELAY / 2:
-                shape = theme.surprised[n - 1]
+                shape = theme.surprise[n - 1]
             elif c in self.disappear_list:
                 shape = theme.exploded[n - 1]
             elif n == self.angry_tiles:
                 shape = theme.angry[n - 1]
+            elif c == self.select:
+                shape = theme.blink[n - 1]
+            elif self.blink_list.has_key(c):
+                shape = theme.blink[n - 1]
+                self.blink_list[c] -= 1
+                if self.blink_list[c] is 0:
+                    del self.blink_list[c]
             else:
                 shape = theme.normal[n - 1]
             # Decide the coordinates
@@ -420,6 +436,7 @@ class Game:
                 self.level += 1
                 self.new_level()
             elif self.level_timer is 0:
+                self.blink_list = {}
                 self.check_moves = True
             return
         if self.win_timer:
