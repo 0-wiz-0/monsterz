@@ -31,6 +31,7 @@ LOST_DELAY = 40
 SCROLL_DELAY = 40
 WIN_DELAY = 10
 SWITCH_DELAY = 4
+WARNING_DELAY = 12
 
 class Theme:
     def __init__(self, dir = dirname(argv[0])):
@@ -57,6 +58,13 @@ class Theme:
             pygame.mixer.music.play(-1, 0.0)
             self.click = pygame.mixer.Sound(join(dir, 'click.wav'))
             self.grunt = pygame.mixer.Sound(join(dir, 'grunt.wav'))
+            self.whip = pygame.mixer.Sound(join(dir, 'whip.wav'))
+            self.pop = pygame.mixer.Sound(join(dir, 'pop.wav'))
+            self.duh = pygame.mixer.Sound(join(dir, 'duh.wav'))
+            self.boing = pygame.mixer.Sound(join(dir, 'boing.wav'))
+            self.applause = pygame.mixer.Sound(join(dir, 'applause.wav'))
+            self.laugh = pygame.mixer.Sound(join(dir, 'laugh.wav'))
+            self.warning = pygame.mixer.Sound(join(dir, 'warning.wav'))
         self.font = {}
         for x in [36, 48, 60, 120]:
             self.font[x] = pygame.font.Font(None, x)
@@ -111,6 +119,7 @@ class Game:
             for x in range(self.board_width):
                 self.lost_offset[(x, y)] = (0, 0)
         self.win_timer = 0
+        self.warning_timer = 0
         self.switch_timer = 0
         self.level_timer = SCROLL_DELAY / 2
         self.board_timer = 0
@@ -363,7 +372,9 @@ class Game:
         # Draw timebar
         x = 16; y = 440; w = 400; h = 24
         w2 = w * self.time / 2000000
-        if self.time <= 350000:
+        if self.warning_timer:
+            color = (55 + 200 * abs(2 * self.warning_timer - WARNING_DELAY) / WARNING_DELAY, 0, 0)
+        elif self.time <= 350000:
             color = (255, 0, 0)
         else:
             color = (255, 240, 0)
@@ -493,6 +504,7 @@ class Game:
                 else:
                     self.wins = self.get_wins()
                     if not self.wins:
+                        if HAVE_SOUND: theme.whip.play()
                         self.missed = True
                         self.switch_timer = SWITCH_DELAY
                         return
@@ -507,16 +519,19 @@ class Game:
                 self.level += 1
                 self.new_level()
             elif self.level_timer is 0:
+                if HAVE_SOUND: theme.boing.play()
                 self.blink_list = {}
                 self.check_moves = True
             return
         if self.win_timer:
             self.win_timer -= 1
             if self.win_timer is WIN_DELAY - 1:
+                if HAVE_SOUND: theme.duh.play()
                 for w in self.wins:
                     for (x, y) in w:
                         self.surprised_list.append((x, y))
             elif self.win_timer is WIN_DELAY * 3 / 6:
+                if HAVE_SOUND: theme.pop.play()
                 self.scorebonus = 0
                 self.timebonus = 0
                 for w in self.wins:
@@ -546,8 +561,7 @@ class Game:
                             unfinished += 1
                             angry = i + 1
                     if unfinished == 1:
-                        if HAVE_SOUND:
-                            theme.grunt.play()
+                        if HAVE_SOUND: theme.grunt.play()
                         self.angry_tiles = angry
                 self.disappear_list = []
             elif self.win_timer is WIN_DELAY / 6:
@@ -556,6 +570,7 @@ class Game:
                     self.time = 2000000
                 self.score += self.scorebonus
                 self.fill_board()
+                if HAVE_SOUND: theme.boing.play()
             elif self.win_timer is 0:
                 self.wins = self.get_wins()
                 if self.wins:
@@ -570,14 +585,21 @@ class Game:
                             finished = False
                             break
                     if finished:
+                        if HAVE_SOUND: theme.applause.play()
                         self.select = None
                         self.level_timer = SCROLL_DELAY
                     else:
                         self.check_moves = True
             return
+        if self.warning_timer:
+            self.warning_timer -= 1
+        elif self.time <= 200000:
+            if HAVE_SOUND: theme.warning.play()
+            self.warning_timer = WARNING_DELAY
         # Update time
         self.time -= delta
         if self.time <= 0:
+            if HAVE_SOUND: theme.laugh.play()
             self.select = None
             self.lost_timer = LOST_DELAY
             return
@@ -631,20 +653,17 @@ class Game:
                 (x1, y1) = self.select
                 (x2, y2) = played
                 if x1 == x2 and y1 == y2:
-                    if HAVE_SOUND:
-                        theme.click.play()
+                    if HAVE_SOUND: theme.click.play()
                     self.select = None
                     return
                 if abs(x1 - x2) + abs(y1 - y2) != 1:
                     return
-                if HAVE_SOUND:
-                    theme.click.play()
+                if HAVE_SOUND: theme.whip.play()
                 self.switch = played
                 self.switch_timer = SWITCH_DELAY
             else:
                 if self.board[played] != 0:
-                    if HAVE_SOUND:
-                        theme.click.play()
+                    if HAVE_SOUND: theme.click.play()
                     self.select = played
                     return
                 # Deal with the special block
