@@ -123,6 +123,9 @@ class Hiscores:
             from pwd import getpwuid
             from os import geteuid
             self.name = getpwuid(geteuid())[0].upper()
+        self._load()
+
+    def _load(self):
         # Load current score file
         try:
             file = open(self.scorefile, 'r')
@@ -147,6 +150,9 @@ class Hiscores:
         self.scores[game] = self.scores[game][0:19]
 
     def add(self, game, score, level):
+        # Reload scores
+        self._load()
+        # Add our score
         self._addscore(game, self.name, score, level)
         # Immediately save
         msg = ''
