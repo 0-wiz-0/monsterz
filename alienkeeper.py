@@ -41,6 +41,7 @@ class Theme:
         self.selector = None
 
     def make_sprites(self, size):
+        print 'sprite size is', size
         self.tile_size = size
         # Create sprites
         for x in range(8):
@@ -53,9 +54,11 @@ class Theme:
             tmp.blit(self.tiles.subsurface((self.orig_size, 0, self.orig_size, self.orig_size)), (0, 0))
             tmp2 = self.tiles.subsurface((0, (x + 1) * self.orig_size, self.orig_size, self.orig_size))
             # Crappy FX
+            tmp2 = pygame.transform.scale(tmp2, (self.orig_size * 7 / 8, self.orig_size * 7 / 8))
+            tmp.blit(tmp2, (self.orig_size / 16, self.orig_size / 16))
             #tmp2 = pygame.transform.scale(tmp2, (self.orig_size / 4, self.orig_size / 4))
             #tmp2 = pygame.transform.scale(tmp2, (self.orig_size, self.orig_size))
-            tmp.blit(tmp2, (0, 0))
+            #tmp.blit(tmp2, (0, 0))
             self.special[x] = pygame.transform.scale(tmp, (size, size))
         # Create selector sprite
         self.selector = pygame.transform.scale(self.tiles.subsurface((0, 0, self.orig_size, self.orig_size)), (size, size))
@@ -71,6 +74,7 @@ class Game:
         self.disappear_list = []
         self.surprised_list = []
         self.select = None
+        self.switch = None
         # Compute stuff
         tile_size = (screen_width - 20) / self.board_width
         tmp = (screen_height - 20) * 17 / 20 / self.board_height
@@ -79,10 +83,12 @@ class Game:
         theme.make_sprites(tile_size)
         # Other initialisation stuff
         self.score = 0
-        self.timer = 0
+        self.special_timer = 0
         self.win_timer = 0
+        self.switch_timer = 0
         self.level_timer = 25
         self.board_timer = 0
+        self.missed = False
         self.need_update = True
         self.will_play = None
         self.clock = pygame.time.Clock()
@@ -252,22 +258,38 @@ class Game:
             offset = - offset * offset
         else:
             offset = 0
-        for (coord, n) in self.board.items():
+        if self.switch_timer:
+            (x1, y1) = self.board2screen(self.select)
+            (x2, y2) = self.board2screen(self.switch)
+            t = self.switch_timer * 1.0 / 5
+        for (c, n) in self.board.items():
+            # Decide the shape
             if n == 0:
-                tmp = theme.special[self.timer % self.population]
-            elif coord in self.surprised_list or offset > 0:
-                tmp = theme.surprised[n - 1]
-            elif coord in self.disappear_list:
-                tmp = theme.exploded[n - 1]
+                shape = theme.special[self.special_timer]
+            elif c in self.surprised_list or offset > 0:
+                shape = theme.surprised[n - 1]
+            elif c in self.disappear_list:
+                shape = theme.exploded[n - 1]
             elif n == self.angry_tiles:
-                tmp = theme.angry[n - 1]
+                shape = theme.angry[n - 1]
             else:
-                tmp = theme.normal[n - 1]
-            (x, y) = self.board2screen(coord)
-            background.blit(tmp, (x, y + offset))
-        # Draw selector
+                shape = theme.normal[n - 1]
+            # Decide the coordinates
+            if c == self.switch and self.switch_timer:
+                (x, y) = (x2 * t + x1 * (1 - t), y2 * t + y1 * (1 - t))
+            elif c == self.select and self.switch_timer:
+                (x, y) = (x1 * t + x2 * (1 - t), y1 * t + y2 * (1 - t))
+            else:
+                (x, y) = self.board2screen(c)
+            # Print the shit
+            background.blit(shape, (x, y + offset))
+            # Remember the selector coordinates
+            if c == self.select and not self.missed \
+            or c == self.switch and self.missed:
+                select_coord = (x, y)
+        # Draw selector if necessary
         if self.select:
-            background.blit(theme.selector, self.board2screen(self.select))
+            background.blit(theme.selector, select_coord)
         # Print score
         font = pygame.font.Font(None, screen_height / 8)
         delta = 1 + screen_height / 200
@@ -312,7 +334,7 @@ class Game:
         ticks = pygame.time.get_ticks()
         delta = (ticks - self.oldticks) * 400 / (11.0000001 - self.level) # FIXME
         self.oldticks = ticks
-        self.timer += 1
+        self.special_timer = (self.special_timer + 1) % self.population
         # Draw screen
         if self.need_update:
             can_play = False
@@ -334,6 +356,23 @@ class Game:
                 self.new_board()
             elif self.board_timer is 0:
                 self.need_update = True # Need to check again
+            return
+        if self.switch_timer:
+            self.switch_timer -= 1
+            if self.switch_timer is 0:
+                self.do_move(self.select, self.switch)
+                if self.missed:
+                    self.missed = False
+                else:
+                    self.wins = self.get_wins()
+                    if not self.wins:
+                        self.missed = True
+                        self.switch_timer = 5
+                        return
+                    self.win_iter = 0
+                    self.win_timer = 12
+                self.select = None
+                self.switch = None
             return
         if self.level_timer:
             self.level_timer -= 1
@@ -466,24 +505,7 @@ class Game:
                 self.will_play = None
             self.ai_timer -= 1
         # Handle plays
-        if played:
-            if not self.select:
-                if self.board[played] != 0:
-                    self.select = played
-                    return
-                # Deal with the special block
-                self.wins = []
-                target = 1 + (self.timer % self.population)
-                found = 0
-                for y in range(self.board_height):
-                    for x in range(self.board_width):
-                        if self.board[(x, y)] == target:
-                            self.wins.append([(x, y)])
-                self.board[played] = target
-                self.wins.append([played])
-                self.win_iter = 0
-                self.win_timer = 12
-                return
+        if played and self.select:
             (x1, y1) = self.select
             (x2, y2) = played
             if x1 == x2 and y1 == y2:
@@ -491,17 +513,26 @@ class Game:
                 return
             if abs(x1 - x2) + abs(y1 - y2) != 1:
                 return
-            tmp = self.board[self.select]
-            self.board[self.select] = self.board[played]
-            self.board[played] = tmp
-            self.wins = self.get_wins()
-            if not self.wins:
-                tmp = self.board[self.select]
-                self.board[self.select] = self.board[played]
-                self.board[played] = tmp
-            self.select = None
+            self.switch = played
+            self.switch_timer = 5
+            return
+        if played and not self.select:
+            if self.board[played] != 0:
+                self.select = played
+                return
+            # Deal with the special block
+            self.wins = []
+            target = 1 + self.special_timer
+            found = 0
+            for y in range(self.board_height):
+                for x in range(self.board_width):
+                    if self.board[(x, y)] == target:
+                        self.wins.append([(x, y)])
+            self.board[played] = target
+            self.wins.append([played])
             self.win_iter = 0
             self.win_timer = 12
+            return
 
 # Init Pygame
 pygame.init()
