@@ -5,10 +5,11 @@ from pygame.locals import *
 from random import randint
 
 # constants
+AI = False
 TIME_MAX = 2000000
 
-screen_width = 640
-screen_height = 480
+screen_width = 500
+screen_height = 400
 
 board_width = 8
 board_height = 8
@@ -16,7 +17,7 @@ board_height = 8
 animals = [
     { 'name': 'special', 'color': (127, 127, 127), 'img': None },
     { 'name': 'elephants', 'color': (127, 200, 255), 'img': None },
-    { 'name': 'pandas', 'color': (220, 220, 220), 'img': None },
+    { 'name': 'pandas', 'color': (230, 230, 230), 'img': None },
     { 'name': 'girafes', 'color': (255, 255, 63), 'img': None },
     { 'name': 'crocodiles', 'color': (63, 200, 63), 'img': None },
     { 'name': 'lions', 'color': (250, 160, 63), 'img': None },
@@ -64,16 +65,19 @@ def do_move(a, b):
 
 def list_moves(board):
     moves = []
-    for y in range(board_height - 1):
+    for y in range(board_height):
         for x in range(board_width - 1):
-            do_move((x, y), (x, y + 1))
-            if get_wins(board):
-                moves.append([(x, y), (x, y + 1)])
-            do_move((x, y), (x, y + 1))
             do_move((x, y), (x + 1, y))
             if get_wins(board):
                 moves.append([(x, y), (x + 1, y)])
             do_move((x, y), (x + 1, y))
+        if y == board_height - 1:
+            continue
+        for x in range(board_width):
+            do_move((x, y), (x, y + 1))
+            if get_wins(board):
+                moves.append([(x, y), (x, y + 1)])
+            do_move((x, y), (x, y + 1))
     return moves
 
 def fill_board():
@@ -93,33 +97,13 @@ def fill_board():
             else:
                 board[(x, y)] = random_animal()
 
-def reduce_wins(wins):
-    new = []
-    for i in range(len(wins)):
-        unknown = True
-        for j in range(len(new)):
-            hasit = False
-            for x in wins[i]:
-                if x in new[j]:
-                    hasit = True
-                    break
-            if hasit:
-                for x in wins[i]:
-                    if x not in new[j]:
-                        new[j].append(x)
-                unknown = False
-                break
-        if unknown:
-            new.append(wins[i])
-    return new
-
 def get_wins(board):
     wins = []
     # Horizontal
     for y in range(board_height):
         for x in range(board_width - 2):
             a = board.get((x, y))
-            if not a:
+            if not a or a['name'] == 'special':
                 continue
             b = board.get((x - 1, y))
             if b and a == b:
@@ -140,7 +124,7 @@ def get_wins(board):
     for x in range(board_width):
         for y in range(board_height - 2):
             a = board.get((x, y))
-            if not a:
+            if not a or a['name'] == 'special':
                 continue
             b = board.get((x, y - 1))
             if b and a == b:
@@ -173,7 +157,7 @@ def draw_sprites():
         y *= sprite_size
         tmp.moveTo = (x + sprite_size / 2, y + sprite_size / 2)
     # Draw selector
-    if select != (-1, -1):
+    if select:
         tmp = SelectSprite(backSprites)
         (x, y) = select
         x *= sprite_size
@@ -228,7 +212,7 @@ def new_board():
                 break
 
 def random_animal(no_special = False):
-    if not no_special and randint(0, 100) == 0:
+    if not no_special and randint(0, 1000) == 0:
         return animals[0]
     return animals[randint(1, population)]
 
@@ -237,7 +221,7 @@ board = {}
 needed = {}
 done = {}
 bonus = []
-select = (-1, -1)
+select = None
 
 # Compute stuff
 sprite_size = screen_width / board_width
@@ -281,11 +265,13 @@ def main():
     need_update = True
     need_refresh = True
     new_level = True
+    get_imput = True
+    will_play = None
     clock = pygame.time.Clock()
     oldticks = pygame.time.get_ticks()
     while True:
         ticks = pygame.time.get_ticks()
-        delta = (ticks - oldticks) * 400 / (11 - level)
+        delta = (ticks - oldticks) * 400 / (11.0000001 - level) # FIXME
         oldticks = ticks
         # Compute level data
         if new_level:
@@ -330,12 +316,14 @@ def main():
         clock.tick(30)
         # Resolve winning moves and chain reactions
         if resolve_wins:
-            wins = get_wins(board)
             if win_counter is 15:
                 scorebonus = 0
                 timebonus = 0
                 for w in wins:
-                    points = (10 * level) * (2 ** (win_iter + len(w) - 3))
+                    if len(w) is 1:
+                        points = 10 * level
+                    else:
+                        points = (10 * level) * (2 ** (win_iter + len(w) - 3))
                     scorebonus += points
                     timebonus += 45000 * len(w)
                     (x, y) = (0.0, 0.0)
@@ -377,11 +365,10 @@ def main():
                 continue
         if new_level:
             continue
-        # Update time
-        if time <= delta:
-            need_refresh = True
-        time -= delta
+        if not get_imput:
+            continue
         # Handle events
+        played = None
         for event in pygame.event.get():
             if event.type == QUIT:
                 return
@@ -389,53 +376,77 @@ def main():
                 return
             if time <= 0:
                 continue
-            if event.type == KEYDOWN and event.key == K_n:
-                level -= 1
-                new_level = True
-            elif event.type == MOUSEBUTTONDOWN:
+            #if event.type == KEYDOWN and event.key == K_n:
+            #    level -= 1
+            #    new_level = True
+            if event.type == MOUSEBUTTONDOWN:
                 (x2, y2) = event.pos
                 x2 /= sprite_size
                 y2 /= sprite_size
                 if x2 < 0 or x2 >= board_width or y2 < 0 or y2 >= board_height:
                     continue
-                if select == (-1, -1):
-                    if board[(x2, y2)]['name'] != 'special':
-                        select = (x2, y2)
-                        need_refresh = True
-                        continue
-                    # Deal with the special block
-                    target = random_animal(no_special = True)['name']
-                    for y in range(board_height):
-                        for x in range(board_width):
-                            if board[(x, y)]['name'] == target:
-                                del board[(x, y)]
-                                bonus.append([x, y, 10 * level])
-                    del board[(x2, y2)]
-                    win_iter = 0
-                    win_counter = 20
-                    resolve_wins = True
+                played = (x2, y2)
+                break
+        # If animating something, continue
+        # Update time
+        if time <= delta:
+            need_refresh = True
+        time -= delta
+        if AI:
+            if not will_play:
+                moves = list_moves(board)
+                if moves:
+                    will_play = moves[len(moves) - 1]
+                    timer = 15 - level
+            if timer is (15 - level) / 2:
+                played = will_play[0] # FIXME: problem with special pieces
+            elif timer is 0:
+                played = will_play[1]
+                will_play = None
+            timer -= 1
+        # Handle plays
+        if played:
+            if not select:
+                if board[played]['name'] != 'special':
+                    select = played
                     need_refresh = True
                     continue
-                (x1, y1) = select
-                if x1 == x2 and y1 == y2:
-                    select = (-1, -1)
-                    need_refresh = True
-                    continue
-                if abs(x1 - x2) + abs(y1 - y2) != 1:
-                    continue
-                tmp = board[(x1, y1)]
-                board[(x1, y1)] = board[(x2, y2)]
-                board[(x2, y2)] = tmp
-                wins = get_wins(board)
-                if not wins:
-                    tmp = board[(x1, y1)]
-                    board[(x1, y1)] = board[(x2, y2)]
-                    board[(x2, y2)] = tmp
-                select = (-1, -1)
+                # Deal with the special block
+                wins = []
+                target = random_animal(no_special = True)
+                found = 0
+                for y in range(board_height):
+                    for x in range(board_width):
+                        if board[(x, y)]['name'] == target['name']:
+                            wins.append([(x, y)])
+                board[played] = target
+                wins.append([played])
                 win_iter = 0
                 win_counter = 20
                 resolve_wins = True
                 need_refresh = True
+                continue
+            (x1, y1) = select
+            (x2, y2) = played
+            if x1 == x2 and y1 == y2:
+                select = None
+                need_refresh = True
+                continue
+            if abs(x1 - x2) + abs(y1 - y2) != 1:
+                continue
+            tmp = board[select]
+            board[select] = board[played]
+            board[played] = tmp
+            wins = get_wins(board)
+            if not wins:
+                tmp = board[select]
+                board[select] = board[played]
+                board[played] = tmp
+            select = None
+            win_iter = 0
+            win_counter = 20
+            resolve_wins = True
+            need_refresh = True
 
 main()
 
