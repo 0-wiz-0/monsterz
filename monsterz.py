@@ -34,6 +34,8 @@ SCREEN_HEIGHT = 480
 BOARD_WIDTH = 8
 BOARD_HEIGHT = 8
 
+ITEMS = 9
+
 STATUS_MENU = 0
 STATUS_NEW = 1
 STATUS_GAME = 2
@@ -184,14 +186,14 @@ class Data:
         self.orig_size = w / 5
         self.tile_size = min((SCREEN_WIDTH - 20) / BOARD_WIDTH,
                              (SCREEN_HEIGHT - 20) * 17 / 20 / BOARD_HEIGHT)
-        self.normal = [None] * 8
-        self.blink = [None] * 8
-        self.tiny = [None] * 8
-        self.shaded = [None] * 8
-        self.surprise = [None] * 8
-        self.angry = [None] * 8
-        self.exploded = [None] * 8
-        self.special = [None] * 8
+        self.normal = [None] * ITEMS
+        self.blink = [None] * ITEMS
+        self.tiny = [None] * ITEMS
+        self.shaded = [None] * ITEMS
+        self.surprise = [None] * ITEMS
+        self.angry = [None] * ITEMS
+        self.exploded = [None] * ITEMS
+        self.special = [None] * ITEMS
         self.selector = None
         # Load sound stuff
         if system.have_sound:
@@ -211,18 +213,18 @@ class Data:
         scale = self._scale
         tile_at = lambda x, y: self.tiles.subsurface((x * s, y * s, s, s))
         # Create sprites
-        for i in range(8):
-            self.normal[i] = scale(tile_at(0, i + 2), (t, t))
-            self.tiny[i] = scale(tile_at(0, i + 2), (t * 3 / 4, t * 3 / 4))
-            self.shaded[i] = scale(tile_at(3, i + 2), (t * 3 / 4, t * 3 / 4))
+        for i in range(ITEMS):
+            self.normal[i] = scale(tile_at(0, i + 1), (t, t))
+            self.tiny[i] = scale(tile_at(0, i + 1), (t * 3 / 4, t * 3 / 4))
+            self.shaded[i] = scale(tile_at(3, i + 1), (t * 3 / 4, t * 3 / 4))
             semi_grayscale(self.shaded[i])
-            self.blink[i] = scale(tile_at(1, i + 2), (t, t))
-            self.surprise[i] = scale(tile_at(2, i + 2), (t, t))
-            self.angry[i] = scale(tile_at(3, i + 2), (t, t))
-            self.exploded[i] = scale(tile_at(4, i + 2), (t, t))
+            self.blink[i] = scale(tile_at(1, i + 1), (t, t))
+            self.surprise[i] = scale(tile_at(2, i + 1), (t, t))
+            self.angry[i] = scale(tile_at(3, i + 1), (t, t))
+            self.exploded[i] = scale(tile_at(4, i + 1), (t, t))
             #tmp = tile_at(1, 0).copy() # marche pas !
             tmp = scale(tile_at(1, 0), (t, t)) # marche...
-            mini = tile_at(0, i + 2)
+            mini = tile_at(0, i + 1)
             mini = scale(mini, (t * 7 / 8 - 1, t * 7 / 8 - 1))
             tmp.blit(mini, (s / 16, s / 16))
             self.special[i] = scale(tmp, (t, t))
@@ -333,8 +335,8 @@ class Game:
     # Nothing here yet
     def __init__(self, type = GAME_CLASSIC, level = 1, items = 7):
         self.type = type
-        self.needed = [0] * 9
-        self.done = [0] * 9
+        self.needed = [0] * (ITEMS + 1)
+        self.done = [0] * (ITEMS + 1)
         self.bonus_list = []
         self.blink_list = {}
         self.disappear_list = []
