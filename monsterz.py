@@ -332,7 +332,7 @@ class Game:
                 self.lost_offset[c] = (xoff, yoff)
             # Decide the shape
             if n == 0:
-                shape = data.special[self.timer % self.population]
+                shape = data.special[monsterz.timer % self.population]
             elif self.level_timer and self.level_timer < SCROLL_DELAY / 2:
                 shape = data.blink[n - 1]
             elif c in self.surprised_list \
@@ -785,7 +785,7 @@ class Monsterz:
                     return
                 # Deal with the special block
                 game.wins = []
-                target = 1 + (game.timer % game.population)
+                target = 1 + (monsterz.timer % game.population)
                 found = 0
                 for y in range(BOARD_HEIGHT):
                     for x in range(BOARD_WIDTH):
