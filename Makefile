@@ -6,20 +6,29 @@ pkgdatadir = $(datadir)/games/monsterz
 scoredir = /var/games
 scorefile = $(scoredir)/monsterz
 
-VERSION = 0.3
+VERSION = 0.4
 DIRECTORY = monsterz-$(VERSION)
 
 DATA = $(BITMAP) $(SOUND) $(MUSIC)
-BITMAP = tiles.png board.png logo.png
+BITMAP = tiles.png board.png logo.png icon.png
 SOUND = grunt.wav click.wav pop.wav boing.wav whip.wav \
         applause.wav laugh.wav warning.wav duh.wav ding.wav
 MUSIC = music.s3m
 TEXT = README TODO COPYING AUTHORS INSTALL
 
-all: monsterz
+all: monsterz $(BITMAP)
 
 monsterz: monsterz.c
 	$(CC) -Wall monsterz.c -DDATADIR=\"$(pkgdatadir)\" -DSCOREFILE=\"$(scorefile)\" -o monsterz
+
+icon.png:
+	inkscape tiles.svg -z -a 0:600:60:660 -w64 -h64 -e icon.png
+tiles.png:
+	inkscape tiles.svg -z -a 0:360:300:900 -d 72 -e tiles.png
+board.png:
+	inkscape tiles.svg -z -a 300:360:1100:960 -d 72 -e board.png
+logo.png:
+	inkscape tiles.svg -z -a 77:100:481:323 -d 72 -e logo.png
 
 install: all
 	mkdir -p $(DESTDIR)$(gamesdir)
@@ -48,6 +57,7 @@ dist:
 	tar cvzf $(DIRECTORY).tar.gz $(DIRECTORY)/
 	rm -Rf $(DIRECTORY)
 
+distclean: clean
 clean:
-	rm -f monsterz
+	rm -f monsterz $(BITMAP)
 
