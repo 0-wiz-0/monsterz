@@ -38,7 +38,7 @@ WIN_DELAY = 10
 SWITCH_DELAY = 4
 WARNING_DELAY = 12
 
-class Theme:
+class Data:
     def __init__(self, dir = dirname(argv[0])):
         # Load stuff
         tiles = pygame.image.load(join(dir, 'tiles.png')).convert_alpha()
@@ -116,16 +116,44 @@ class Theme:
         # Create selector sprite
         self.selector = scale(crop((0, 0, s, s)), (t, t))
 
+class Fonter:
+    def __init__(self, size = 48):
+        # Keep 48 items in our cache, we need 31 for the high scores
+        self.cache = []
+        self.size = size
+
+    def render(self, msg, size, color = (255, 255, 255)):
+        for i, (m, s, c, t) in enumerate(self.cache):
+            if s == size and m == msg and c == color:
+                del self.cache[i]
+                self.cache.append((m, s, c, t))
+                return t
+        font = pygame.font.Font(None, size * 2)
+        delta = 2 + size / 8
+        black = font.render(msg, 2, (0, 0, 0))
+        w, h = black.get_size()
+        text = pygame.Surface((w + delta, h + delta)).convert_alpha()
+        text.fill(black.get_at((0, 0)))
+        for x, y in [(5, 5), (6, 3), (5, 1), (3, 0),
+                     (1, 1), (0, 3), (1, 5), (3, 6)]:
+            text.blit(black, (x * delta / 6, y * delta / 6))
+        white = font.render(msg, 2, color)
+        text.blit(white, (delta / 2, delta / 2))
+        text = pygame.transform.rotozoom(text, 0.0, 0.5)
+        self.cache.append((msg, size, color, text))
+        if len(self.cache) > self.size:
+            self.cache.pop(0)
+        return text
+
 # Start all the stuff
-class Game:
+class Monsterz:
     def __init__(self):
         self.board_width, self.board_height = 8, 8
         # Compute stuff
         tile_size = min((SCREEN_WIDTH - 20) / self.board_width,
                         (SCREEN_HEIGHT - 20) * 17 / 20 / self.board_height)
-        theme.make_sprites(tile_size)
+        data.make_sprites(tile_size)
         # Init values
-        self.text_cache = []
         self.clear_game()
         # Misc
         self.clock = pygame.time.Clock()
@@ -263,11 +291,11 @@ class Game:
 
     def board2screen(self, coord):
         x, y = coord
-        return (x * theme.tile_size + 24, y * theme.tile_size + 24)
+        return (x * data.tile_size + 24, y * data.tile_size + 24)
 
     def screen2board(self, coord):
         x, y = coord
-        return ((x - 24) / theme.tile_size, (y - 24) / theme.tile_size)
+        return ((x - 24) / data.tile_size, (y - 24) / data.tile_size)
 
     def board_draw(self):
         # Have a random piece blink
@@ -312,86 +340,62 @@ class Game:
                 self.lost_offset[c] = (xoff, yoff)
             # Decide the shape
             if n == 0:
-                shape = theme.special[self.special_index]
+                shape = data.special[self.special_index]
             elif self.level_timer and self.level_timer < SCROLL_DELAY / 2:
-                shape = theme.blink[n - 1]
+                shape = data.blink[n - 1]
             elif c in self.surprised_list \
               or self.board_timer > SCROLL_DELAY / 2 \
               or self.level_timer > SCROLL_DELAY / 2:
-                shape = theme.surprise[n - 1]
+                shape = data.surprise[n - 1]
             elif c in self.disappear_list:
-                shape = theme.exploded[n - 1]
+                shape = data.exploded[n - 1]
             elif n == self.angry_tiles:
-                shape = theme.angry[n - 1]
+                shape = data.angry[n - 1]
             elif self.blink_list.has_key(c):
-                shape = theme.blink[n - 1]
+                shape = data.blink[n - 1]
                 self.blink_list[c] -= 1
                 if self.blink_list[c] is 0: del self.blink_list[c]
             else:
-                shape = theme.normal[n - 1]
+                shape = data.normal[n - 1]
             # Remember the selector coordinates
             if c == self.select and not self.missed \
             or c == self.switch and self.missed:
                 select_coord = (x, y)
-                shape = theme.blink[n - 1] # Not sure if it looks nice
+                shape = data.blink[n - 1] # Not sure if it looks nice
             # Print the shit
             self.pieces_draw(shape, (x + xoff, y + yoff))
         # Draw selector if necessary
         if self.select:
-            bg.blit(theme.selector, select_coord)
+            bg.blit(data.selector, select_coord)
 
     def pieces_draw(self, sprite, (x, y)):
-        width = theme.tile_size
+        width = data.tile_size
         crop = sprite.subsurface
         # Constrain X
-        if x < 10 - theme.tile_size or x > 24 + 8 * theme.tile_size + 14:
+        if x < 10 - data.tile_size or x > 24 + 8 * data.tile_size + 14:
             return
         elif x < 10:
             delta = 10 - x
-            sprite = crop((delta, 0, theme.tile_size - delta, theme.tile_size))
+            sprite = crop((delta, 0, data.tile_size - delta, data.tile_size))
             crop = sprite.subsurface
             x += delta
             width -= delta
-        elif x > 24 + 7 * theme.tile_size + 14:
-            delta = x - 24 - 7 * theme.tile_size - 14
-            sprite = crop((0, 0, theme.tile_size - delta, theme.tile_size))
+        elif x > 24 + 7 * data.tile_size + 14:
+            delta = x - 24 - 7 * data.tile_size - 14
+            sprite = crop((0, 0, data.tile_size - delta, data.tile_size))
             crop = sprite.subsurface
             width -= delta
         # Constrain Y
-        if y < 10 - theme.tile_size or y > 24 + 8 * theme.tile_size + 14:
+        if y < 10 - data.tile_size or y > 24 + 8 * data.tile_size + 14:
             return
         elif y < 10:
             delta = 10 - y
-            sprite = crop((0, delta, width, theme.tile_size - delta))
+            sprite = crop((0, delta, width, data.tile_size - delta))
             y += delta
-        elif y > 24 + 7 * theme.tile_size + 14:
-            delta = y - 24 - 7 * theme.tile_size - 14
-            sprite = crop((0, 0, width, theme.tile_size - delta))
+        elif y > 24 + 7 * data.tile_size + 14:
+            delta = y - 24 - 7 * data.tile_size - 14
+            sprite = crop((0, 0, width, data.tile_size - delta))
         bg.blit(sprite, (x, y))
-
-    def render_text(self, msg, size):
-        for i, (m, s, t) in enumerate(self.text_cache):
-            if s == size and m == msg:
-                del self.text_cache[i]
-                self.text_cache.append((m, s, t))
-                return t
-        font = pygame.font.Font(None, size * 2)
-        delta = 2 + size / 8
-        black = font.render(msg, 2, (0, 0, 0))
-        w, h = black.get_size()
-        text = pygame.Surface((w + delta, h + delta)).convert_alpha()
-        text.fill(black.get_at((0, 0)))
-        for x, y in [(5, 5), (6, 3), (5, 1), (3, 0),
-                     (1, 1), (0, 3), (1, 5), (3, 6)]:
-            text.blit(black, (x * delta / 6, y * delta / 6))
-        white = font.render(msg, 2, (255, 255, 255))
-        text.blit(white, (delta / 2, delta / 2))
-        text = pygame.transform.rotozoom(text, 0.0, 0.5)
-        self.text_cache.append((msg, size, text))
-        # Keep 48 items in our cache, we need 31 for the high scores
-        if len(self.text_cache) > 48:
-            self.text_cache.pop(0)
-        return text
 
     def game_draw(self):
         # Draw timebar
@@ -418,58 +422,58 @@ class Game:
         # Draw pieces
         if self.pause:
             bg.blit(self.pause_bitmap, (72, 24))
-            text = self.render_text('PAUSED', 120)
+            text = fonter.render('PAUSED', 120)
             w, h = text.get_rect().size
             bg.blit(text, (24 + 192 - w / 2, 24 + 336 - h / 2))
         elif self.lost_timer >= 0:
             self.board_draw()
         # Print play again message
         if self.lost_timer < 0:
-            text = self.render_text('GAME OVER', 80)
+            text = fonter.render('GAME OVER', 80)
             w, h = text.get_rect().size
             bg.blit(text, (24 + 192 - w / 2, 24 + 192 - h / 2))
-            text = self.render_text('CLICK TO CONTINUE', 24)
+            text = fonter.render('CLICK TO CONTINUE', 24)
             w, h = text.get_rect().size
             bg.blit(text, (24 + 192 - w / 2, 24 + 240 - h / 2))
         # Print new level stuff
         if self.level_timer > SCROLL_DELAY / 2:
-            text = self.render_text('LEVEL UP!', 80)
+            text = fonter.render('LEVEL UP!', 80)
             w, h = text.get_rect().size
             bg.blit(text, (24 + 192 - w / 2, 24 + 192 - h / 2))
         # When no more moves are possible
         if self.board_timer > SCROLL_DELAY / 2:
-            text = self.render_text('NO MORE MOVES!', 60)
+            text = fonter.render('NO MORE MOVES!', 60)
             w, h = text.get_rect().size
             bg.blit(text, (24 + 192 - w / 2, 24 + 192 - h / 2))
         # Print bonus
         for b in self.bonus_list:
-            text = self.render_text(str(b[1]), 36)
+            text = fonter.render(str(b[1]), 36)
             w, h = text.get_rect().size
             x, y = self.board2screen(b[0])
             bg.blit(text, (x + 24 - w / 2, y + 24 - h / 2))
         # Print score
-        bg.blit(self.render_text(str(self.score), 60), (444, 10))
+        bg.blit(fonter.render(str(self.score), 60), (444, 10))
         # Print level
         msg = 'LEVEL ' + str(self.level)
         if self.needed[1]: msg += ' - ' + str(self.needed[1])
-        text = self.render_text(msg, 36)
+        text = fonter.render(msg, 36)
         bg.blit(text, (444, 58))
         # Print done/needed
         for i in range(self.population):
             if not self.needed[i + 1]:
                 break
             if self.done[i + 1] >= self.needed[i + 1]:
-                surf = theme.tiny[i]
+                surf = data.tiny[i]
             else:
-                surf = theme.shaded[i]
+                surf = data.shaded[i]
             bg.blit(surf, (444, 100 + i * 38))
-            text = self.render_text(str(self.done[i + 1]), 36)
+            text = fonter.render(str(self.done[i + 1]), 36)
             bg.blit(text, (488, 102 + i * 38))
 
     def toggle_pause(self):
         self.pause = not self.pause
         if self.pause:
-            self.pause_bitmap = pygame.transform.scale(theme.normal[self.get_random(no_special = True) - 1], (6 * theme.tile_size, 6 * theme.tile_size))
+            self.pause_bitmap = pygame.transform.scale(data.normal[self.get_random(no_special = True) - 1], (6 * data.tile_size, 6 * data.tile_size))
         else:
             del self.pause_bitmap
 
@@ -486,7 +490,7 @@ class Game:
                 iterator = self.iterate_help
             elif self.status == STATUS_SCORES:
                 iterator = self.iterate_scores
-            elif game.status == STATUS_QUIT:
+            elif self.status == STATUS_QUIT:
                 return
             self.status = None
             iterator()
@@ -495,7 +499,7 @@ class Game:
             self.clock.tick(12)
 
     def generic_draw(self):
-        bg.blit(theme.board, (0, 0))
+        bg.blit(data.board, (0, 0))
 
     def generic_event(self, event):
         if event.type == QUIT:
@@ -507,29 +511,45 @@ class Game:
         return False
 
     def iterate_menu(self):
+        x, y = self.screen2board(pygame.mouse.get_pos())
+        colors = [(255, 255, 255)] * 4
+        if y == 4 and x >= 1 and x <= 6:
+            area = STATUS_PLAY
+            colors[0] = (0, 255, 0)
+        elif y == 5 and x >= 1 and x <= 4:
+            area = STATUS_HELP
+            colors[1] = (255, 0, 255)
+        elif y == 6 and x >= 1 and x <= 5:
+            area = STATUS_SCORES
+            colors[2] = (255, 255, 0)
+        elif y == 7 and x >= 1 and x <= 4:
+            area = STATUS_QUIT
+            colors[3] = (255, 0, 0)
+        else:
+            area = None
         self.generic_draw()
-        w, h = theme.logo.get_size()
-        bg.blit(theme.logo, (24 + 192 - w / 2, 24 + 96 - h / 2))
+        w, h = data.logo.get_size()
+        bg.blit(data.logo, (24 + 192 - w / 2, 24 + 96 - h / 2))
         # PLAY
-        text = self.render_text('NEW GAME', 48)
+        text = fonter.render('NEW GAME', 48, colors[0])
         w, h = text.get_rect().size
         bg.blit(text, (24 + 102, 24 + 216 - h / 2))
-        bg.blit(theme.normal[2], self.board2screen((1, 4)))
+        bg.blit(data.normal[2], self.board2screen((1, 4)))
         # HELP
-        text = self.render_text('HELP', 48)
+        text = fonter.render('HELP', 48, colors[1])
         w, h = text.get_rect().size
         bg.blit(text, (24 + 102, 24 + 264 - h / 2))
-        bg.blit(theme.surprise[3], self.board2screen((1, 5)))
+        bg.blit(data.surprise[3], self.board2screen((1, 5)))
         # SCORES
-        text = self.render_text('SCORES', 48)
+        text = fonter.render('SCORES', 48, colors[2])
         w, h = text.get_rect().size
         bg.blit(text, (24 + 102, 24 + 312 - h / 2))
-        bg.blit(theme.blink[4], self.board2screen((1, 6)))
+        bg.blit(data.blink[4], self.board2screen((1, 6)))
         # QUIT
-        text = self.render_text('QUIT', 48)
+        text = fonter.render('QUIT', 48, colors[3])
         w, h = text.get_rect().size
         bg.blit(text, (24 + 102, 24 + 360 - h / 2))
-        bg.blit(theme.angry[0], self.board2screen((1, 7)))
+        bg.blit(data.angry[0], self.board2screen((1, 7)))
         # Handle events
         for event in pygame.event.get():
             if self.generic_event(event):
@@ -537,20 +557,9 @@ class Game:
             elif event.type == KEYDOWN and event.key == K_ESCAPE:
                 self.status = STATUS_QUIT
                 return
-            elif event.type == MOUSEBUTTONDOWN:
-                x, y = self.screen2board(event.pos)
-                if y == 4 and x >= 1 and x <= 6:
-                    self.status = STATUS_PLAY
-                    return
-                elif y == 5 and x >= 1 and x <= 4:
-                    self.status = STATUS_HELP
-                    return
-                elif y == 6 and x >= 1 and x <= 5:
-                    self.status = STATUS_SCORES
-                    return
-                elif y == 7 and x >= 1 and x <= 4:
-                    self.status = STATUS_QUIT
-                    return
+            elif event.type == MOUSEBUTTONDOWN and area:
+                self.status = area
+                return
 
     def iterate_play(self):
         ask_pause = False
@@ -564,7 +573,7 @@ class Game:
             for move in self.list_moves():
                 break
             else:
-                theme.play_sound('ding')
+                data.play_sound('ding')
                 self.board_timer = SCROLL_DELAY
             self.check_moves = False
             self.clicks = []
@@ -595,7 +604,7 @@ class Game:
             if self.board_timer is SCROLL_DELAY / 2:
                 self.new_board()
             elif self.board_timer is 0:
-                theme.play_sound('boing')
+                data.play_sound('boing')
                 self.check_moves = True # Need to check again
             return
         if self.lost_timer:
@@ -616,7 +625,7 @@ class Game:
                 else:
                     self.wins = self.get_wins()
                     if not self.wins:
-                        theme.play_sound('whip')
+                        data.play_sound('whip')
                         self.missed = True
                         self.switch_timer = SWITCH_DELAY
                         return
@@ -631,19 +640,19 @@ class Game:
                 self.level += 1
                 self.new_level()
             elif self.level_timer is 0:
-                theme.play_sound('boing')
+                data.play_sound('boing')
                 self.blink_list = {}
                 self.check_moves = True
             return
         if self.win_timer:
             self.win_timer -= 1
             if self.win_timer is WIN_DELAY - 1:
-                theme.play_sound('duh')
+                data.play_sound('duh')
                 for w in self.wins:
                     for x, y in w:
                         self.surprised_list.append((x, y))
             elif self.win_timer is WIN_DELAY * 3 / 6:
-                theme.play_sound('pop')
+                data.play_sound('pop')
                 self.scorebonus = 0
                 self.timebonus = 0
                 for w in self.wins:
@@ -673,7 +682,7 @@ class Game:
                             unfinished += 1
                             angry = i + 1
                     if unfinished == 1:
-                        theme.play_sound('grunt')
+                        data.play_sound('grunt')
                         self.angry_tiles = angry
                 self.disappear_list = []
             elif self.win_timer is WIN_DELAY / 6:
@@ -682,7 +691,7 @@ class Game:
                     self.time = 2000000
                 self.score += self.scorebonus
                 self.fill_board()
-                theme.play_sound('boing')
+                data.play_sound('boing')
             elif self.win_timer is 0:
                 self.wins = self.get_wins()
                 if self.wins:
@@ -695,19 +704,19 @@ class Game:
                             self.check_moves = True
                             break
                     else:
-                        theme.play_sound('applause')
+                        data.play_sound('applause')
                         self.select = None
                         self.level_timer = SCROLL_DELAY
             return
         if self.warning_timer:
             self.warning_timer -= 1
         elif self.time <= 200000:
-            theme.play_sound('warning')
+            data.play_sound('warning')
             self.warning_timer = WARNING_DELAY
         # Update time
         self.time -= delta
         if self.time <= 0:
-            theme.play_sound('laugh')
+            data.play_sound('laugh')
             self.select = None
             self.lost_timer = LOST_DELAY
             return
@@ -761,17 +770,17 @@ class Game:
                 x1, y1 = self.select
                 x2, y2 = played
                 if x1 == x2 and y1 == y2:
-                    theme.play_sound('click')
+                    data.play_sound('click')
                     self.select = None
                     return
                 if abs(x1 - x2) + abs(y1 - y2) != 1:
                     return
-                theme.play_sound('whip')
+                data.play_sound('whip')
                 self.switch = played
                 self.switch_timer = SWITCH_DELAY
             else:
                 if self.board[played] != 0:
-                    theme.play_sound('click')
+                    data.play_sound('click')
                     self.select = played
                     return
                 # Deal with the special block
@@ -792,62 +801,62 @@ class Game:
         self.generic_draw()
         self.special_index = (self.special_index + 1) % 7
         # Title
-        text = self.render_text('INSTRUCTIONS', 60)
+        text = fonter.render('INSTRUCTIONS', 60)
         w, h = text.get_rect().size
         bg.blit(text, (24 + 192 - w / 2, 24 + 24 - h / 2))
         # Explanation 1
-        text = self.render_text('SWAP ADJACENT MONSTERS TO CREATE', 24)
+        text = fonter.render('SWAP ADJACENT MONSTERS TO CREATE', 24)
         w, h = text.get_rect().size
         bg.blit(text, (24 + 6, 24 + 60 - h / 2))
-        text = self.render_text('ALIGNMENTS OF THREE OR MORE.', 24)
+        text = fonter.render('ALIGNMENTS OF THREE OR MORE.', 24)
         w, h = text.get_rect().size
         bg.blit(text, (24 + 6, 24 + 84 - h / 2))
         # Iter 1
-        bg.blit(theme.normal[2], self.board2screen((0, 2)))
-        bg.blit(theme.normal[3], self.board2screen((0, 3)))
-        bg.blit(theme.blink[0], self.board2screen((0, 4)))
-        bg.blit(theme.normal[0], self.board2screen((1, 2)))
-        bg.blit(theme.normal[0], self.board2screen((1, 3)))
-        bg.blit(theme.normal[4], self.board2screen((1, 4)))
-        bg.blit(theme.selector, self.board2screen((0, 4)))
+        bg.blit(data.normal[2], self.board2screen((0, 2)))
+        bg.blit(data.normal[3], self.board2screen((0, 3)))
+        bg.blit(data.blink[0], self.board2screen((0, 4)))
+        bg.blit(data.normal[0], self.board2screen((1, 2)))
+        bg.blit(data.normal[0], self.board2screen((1, 3)))
+        bg.blit(data.normal[4], self.board2screen((1, 4)))
+        bg.blit(data.selector, self.board2screen((0, 4)))
         # Iter 2
-        bg.blit(theme.normal[2], self.board2screen((3, 2)))
-        bg.blit(theme.normal[3], self.board2screen((3, 3)))
-        bg.blit(theme.normal[4], self.board2screen((3, 4)))
-        bg.blit(theme.surprise[0], self.board2screen((4, 2)))
-        bg.blit(theme.surprise[0], self.board2screen((4, 3)))
-        bg.blit(theme.surprise[0], self.board2screen((4, 4)))
-        bg.blit(theme.selector, self.board2screen((4, 4)))
+        bg.blit(data.normal[2], self.board2screen((3, 2)))
+        bg.blit(data.normal[3], self.board2screen((3, 3)))
+        bg.blit(data.normal[4], self.board2screen((3, 4)))
+        bg.blit(data.surprise[0], self.board2screen((4, 2)))
+        bg.blit(data.surprise[0], self.board2screen((4, 3)))
+        bg.blit(data.surprise[0], self.board2screen((4, 4)))
+        bg.blit(data.selector, self.board2screen((4, 4)))
         # Iter 2
-        bg.blit(theme.normal[2], self.board2screen((6, 2)))
-        bg.blit(theme.normal[3], self.board2screen((6, 3)))
-        bg.blit(theme.normal[4], self.board2screen((6, 4)))
-        bg.blit(theme.exploded[0], self.board2screen((7, 2)))
-        bg.blit(theme.exploded[0], self.board2screen((7, 3)))
-        bg.blit(theme.exploded[0], self.board2screen((7, 4)))
+        bg.blit(data.normal[2], self.board2screen((6, 2)))
+        bg.blit(data.normal[3], self.board2screen((6, 3)))
+        bg.blit(data.normal[4], self.board2screen((6, 4)))
+        bg.blit(data.exploded[0], self.board2screen((7, 2)))
+        bg.blit(data.exploded[0], self.board2screen((7, 3)))
+        bg.blit(data.exploded[0], self.board2screen((7, 4)))
         # Explanation 2
-        text = self.render_text('CLICK ON THE BONUS TO REMOVE ALL', 24)
+        text = fonter.render('CLICK ON THE BONUS TO REMOVE ALL', 24)
         w, h = text.get_rect().size
         bg.blit(text, (24 + 6, 24 + 252 - h / 2))
-        text = self.render_text('MONSTERS OF A RANDOM KIND.', 24)
+        text = fonter.render('MONSTERS OF A RANDOM KIND.', 24)
         w, h = text.get_rect().size
         bg.blit(text, (24 + 6, 24 + 276 - h / 2))
-        shape = theme.special[self.special_index]
+        shape = data.special[self.special_index]
         # Iter 1
-        bg.blit(theme.normal[1], self.board2screen((0, 6)))
-        bg.blit(theme.normal[2], self.board2screen((0, 7)))
-        bg.blit(theme.special[self.special_index], self.board2screen((1, 6)))
-        bg.blit(theme.normal[5], self.board2screen((1, 7)))
-        bg.blit(theme.normal[2], self.board2screen((2, 6)))
-        bg.blit(theme.normal[4], self.board2screen((2, 7)))
+        bg.blit(data.normal[1], self.board2screen((0, 6)))
+        bg.blit(data.normal[2], self.board2screen((0, 7)))
+        bg.blit(data.special[self.special_index], self.board2screen((1, 6)))
+        bg.blit(data.normal[5], self.board2screen((1, 7)))
+        bg.blit(data.normal[2], self.board2screen((2, 6)))
+        bg.blit(data.normal[4], self.board2screen((2, 7)))
         # Iter 2
-        bg.blit(theme.normal[1], self.board2screen((4, 6)))
-        bg.blit(theme.exploded[2], self.board2screen((4, 7)))
-        bg.blit(theme.normal[5], self.board2screen((5, 7)))
-        bg.blit(theme.exploded[2], self.board2screen((6, 6)))
-        bg.blit(theme.normal[4], self.board2screen((6, 7)))
+        bg.blit(data.normal[1], self.board2screen((4, 6)))
+        bg.blit(data.exploded[2], self.board2screen((4, 7)))
+        bg.blit(data.normal[5], self.board2screen((5, 7)))
+        bg.blit(data.exploded[2], self.board2screen((6, 6)))
+        bg.blit(data.normal[4], self.board2screen((6, 7)))
         # Print bonus
-        text = self.render_text('10', 36)
+        text = fonter.render('10', 36)
         w, h = text.get_rect().size
         x, y = self.board2screen((7, 3))
         bg.blit(text, (x + 24 - w / 2, y + 24 - h / 2))
@@ -870,17 +879,17 @@ class Game:
 
     def iterate_scores(self):
         self.generic_draw()
-        text = self.render_text('SCORES', 60)
+        text = fonter.render('SCORES', 60)
         w, h = text.get_rect().size
         bg.blit(text, (24 + 192 - w / 2, 24 + 24 - h / 2))
         for x in range(10):
-            text = self.render_text(str(x + 1) + '. UNIMPLEMENTED', 32)
+            text = fonter.render(str(x + 1) + '. UNIMPLEMENTED', 32)
             w, h = text.get_rect().size
             bg.blit(text, (24 + 24, 24 + 72 + 32 * x - h / 2))
-            text = self.render_text(str(100 - x * 10), 32)
+            text = fonter.render(str(100 - x * 10), 32)
             w, h = text.get_rect().size
             bg.blit(text, (24 + 324 - w, 24 + 72 + 32 * x - h / 2))
-            text = self.render_text(str(1), 32)
+            text = fonter.render(str(1), 32)
             w, h = text.get_rect().size
             bg.blit(text, (24 + 360 - w, 24 + 72 + 32 * x - h / 2))
         # Handle events
@@ -906,8 +915,9 @@ if HAVE_SOUND:
 win = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 bg = pygame.Surface(win.get_size())
 pygame.display.set_caption('Monsterz')
-theme = Theme()
+data = Data()
+fonter = Fonter()
 # Go!
-game = Game()
-game.go()
+monsterz = Monsterz()
+monsterz.go()
 
