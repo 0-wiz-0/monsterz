@@ -1024,7 +1024,7 @@ class Monsterz:
     def iterate_game(self):
         x, y = pygame.mouse.get_pos()
         parea = None
-        if self.lost_timer >= 0:
+        if self.game.lost_timer >= 0:
             if 440 < x < 440 + 180 and 288 < y < 288 + 24:
                 parea = 1
                 self.game.psat[0] = 255
@@ -1054,7 +1054,7 @@ class Monsterz:
                 system.play('whip')
                 self.status = STATUS_MENU
                 return
-            elif event.type == KEYDOWN and (event.key == K_p or event.key == K_SPACE):
+            elif event.type == KEYDOWN and (event.key == K_p or event.key == K_SPACE) and self.game.lost_timer >= 0:
                 self.game.pause()
             elif event.type == MOUSEBUTTONDOWN:
                 x, y = pygame.mouse.get_pos()
