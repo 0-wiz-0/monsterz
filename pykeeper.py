@@ -6,8 +6,8 @@ from random import randint
 
 # constants
 AI = False
-screen_width = 640
-screen_height = 480
+screen_width = 800
+screen_height = 600
 
 class MySprite(pygame.sprite.Sprite):
     def __init__(self, image, group=None):
@@ -20,9 +20,8 @@ class Game:
     def __init__(self, size = (8, 8), level = 1):
         pygame.init()
         # Init display
-        #self.window = pygame.display.set_mode((screen_width, screen_height), pygame.FULLSCREEN)
         self.window = pygame.display.set_mode((screen_width, screen_height))
-        pygame.display.set_caption('Le meilleur jeu du monde')
+        pygame.display.set_caption('Alienkeeper')
         self.background = pygame.Surface(self.window.get_size())
         self.backsprites = pygame.sprite.RenderUpdates()
         self.frontsprites = pygame.sprite.RenderUpdates()
@@ -42,16 +41,16 @@ class Game:
         self.exploded = {}
         self.special = {}
         # Compute stuff
-        self.sprite_size = screen_width / self.board_width
+        self.tile_size = screen_width / self.board_width
         tmp = screen_height * 17 / 20 / self.board_height
-        if tmp < self.sprite_size:
-            self.sprite_size = tmp
+        if tmp < self.tile_size:
+            self.tile_size = tmp
         # Create sprites
         for x in range(8):
-            self.happy[x] = pygame.transform.scale(self.tiles.subsurface((0, (x + 1) * 128, 128, 128)), (self.sprite_size, self.sprite_size))
-            self.surprised[x] = pygame.transform.scale(self.tiles.subsurface((128, (x + 1) * 128, 128, 128)), (self.sprite_size, self.sprite_size))
-            self.angry[x] = pygame.transform.scale(self.tiles.subsurface((256, (x + 1) * 128, 128, 128)), (self.sprite_size, self.sprite_size))
-            self.exploded[x] = pygame.transform.scale(self.tiles.subsurface((384, (x + 1) * 128, 128, 128)), (self.sprite_size, self.sprite_size))
+            self.happy[x] = pygame.transform.scale(self.tiles.subsurface((0, (x + 1) * 128, 128, 128)), (self.tile_size, self.tile_size))
+            self.surprised[x] = pygame.transform.scale(self.tiles.subsurface((128, (x + 1) * 128, 128, 128)), (self.tile_size, self.tile_size))
+            self.angry[x] = pygame.transform.scale(self.tiles.subsurface((256, (x + 1) * 128, 128, 128)), (self.tile_size, self.tile_size))
+            self.exploded[x] = pygame.transform.scale(self.tiles.subsurface((384, (x + 1) * 128, 128, 128)), (self.tile_size, self.tile_size))
             tmp = pygame.Surface((128, 128))
             tmp.blit(self.tiles.subsurface((128, 0, 128, 128)), (0, 0))
             tmp2 = self.tiles.subsurface((0, (x + 1) * 128, 128, 128))
@@ -59,9 +58,9 @@ class Game:
             #tmp2 = pygame.transform.scale(tmp2, (24, 24))
             #tmp2 = pygame.transform.scale(tmp2, (128, 128))
             tmp.blit(tmp2, (0, 0))
-            self.special[x] = pygame.transform.scale(tmp, (self.sprite_size, self.sprite_size))
+            self.special[x] = pygame.transform.scale(tmp, (self.tile_size, self.tile_size))
         # Create selector sprite
-        self.selector = pygame.transform.scale(self.tiles.subsurface((0, 0, 128, 128)), (self.sprite_size, self.sprite_size))
+        self.selector = pygame.transform.scale(self.tiles.subsurface((0, 0, 128, 128)), (self.tile_size, self.tile_size))
         # Other initialisation stuff
         self.score = 0
         self.timer = 0
@@ -85,7 +84,6 @@ class Game:
         return randint(1, self.population)
 
     def new_board(self):
-        print 'new board'
         self.board = {}
         for y in range(self.board_height):
             while True:
@@ -96,8 +94,6 @@ class Game:
                 msg = ''
                 for x in range(self.board_width):
                     msg += str(self.board[(x, y)])
-                print 'argh, starting again for y =', y, msg
-        print 'done.'
 
     def fill_board(self):
         for z in range(self.board_height):
@@ -219,43 +215,43 @@ class Game:
             else:
                 tmp = MySprite(self.happy[n - 1], self.backsprites)
             (x, y) = coord
-            x *= self.sprite_size
-            y *= self.sprite_size
-            tmp.rect.center = (x + self.sprite_size / 2, y + self.sprite_size / 2)
+            x *= self.tile_size
+            y *= self.tile_size
+            tmp.rect.center = (x + self.tile_size / 2, y + self.tile_size / 2)
         # Draw selector
         if self.select:
             tmp = MySprite(self.selector, self.backsprites)
             (x, y) = self.select
-            x *= self.sprite_size
-            y *= self.sprite_size
-            tmp.rect.center = (x + self.sprite_size / 2, y + self.sprite_size / 2)
+            x *= self.tile_size
+            y *= self.tile_size
+            tmp.rect.center = (x + self.tile_size / 2, y + self.tile_size / 2)
         # Print score
         font = pygame.font.Font(None, screen_height / 8)
         delta = 1 + screen_height / 200
         for x in range(2):
             text = font.render(str(self.score), 2, (x * 255, x * 255, x * 255))
-            self.background.blit(text, (self.sprite_size * self.board_width + self.sprite_size / 2 - delta * x, - delta * x))
+            self.background.blit(text, (self.tile_size * self.board_width + self.tile_size / 2 - delta * x, - delta * x))
         # Print done/needed:
         font = pygame.font.Font(None, screen_height / 12)
         delta = 1 + screen_height / 300
-        x = self.sprite_size * self.board_width + self.sprite_size / 2
-        y = self.sprite_size / 2 + screen_height / 8
+        x = self.tile_size * self.board_width + self.tile_size / 2
+        y = self.tile_size / 2 + screen_height / 8
         for i in range(self.population):
             self.background.blit(self.happy[i], (x, y))
             for d in range(2):
                 text = font.render(str(self.done[i + 1]) + '/' + str(self.needed[i + 1]), 2, (d * 255, d * 255, d * 255))
-                self.background.blit(text, (x + self.sprite_size * 5 / 4 - delta * d, y + screen_height / 64 - delta * d))
+                self.background.blit(text, (x + self.tile_size * 5 / 4 - delta * d, y + screen_height / 64 - delta * d))
             y += screen_height / 10
         # Print bonus:
         for x in self.bonus_list:
             for d in range(2):
                 text = font.render(str(x[2]), 2, (d * 255, d * 255, d * 255))
-                self.background.blit(text, (x[0] * self.sprite_size + self.sprite_size / 4 - delta * d, x[1] * self.sprite_size + self.sprite_size / 4 - delta * d))
+                self.background.blit(text, (x[0] * self.tile_size + self.tile_size / 4 - delta * d, x[1] * self.tile_size + self.tile_size / 4 - delta * d))
 
     def draw_time(self):
-        x = self.sprite_size / 2
+        x = self.tile_size / 2
         y = screen_height * 18 / 20
-        w = (self.board_width - 1) * self.sprite_size
+        w = (self.board_width - 1) * self.tile_size
         h = screen_height / 20
         w2 = w * self.time / 2000000
         if self.time <= 350000:
@@ -343,11 +339,9 @@ class Game:
             elif self.win_timer is 0:
                 self.wins = self.get_wins()
                 if self.wins:
-                    print '  cascade wins!'
                     self.win_timer = 12
                     self.win_iter += 1
                 else:
-                    print '  no more wins'
                     self.resolve_wins = False
                     # Check for new level
                     finished = True
@@ -376,8 +370,8 @@ class Game:
                 return
             elif event.type == MOUSEBUTTONDOWN:
                 (x2, y2) = event.pos
-                x2 /= self.sprite_size
-                y2 /= self.sprite_size
+                x2 /= self.tile_size
+                y2 /= self.tile_size
                 if x2 < 0 or x2 >= self.board_width or y2 < 0 or y2 >= self.board_height:
                     continue
                 played = (x2, y2)
@@ -463,7 +457,6 @@ class Game:
             self.select = None
             self.win_iter = 0
             self.win_timer = 12
-            print 'winning!'
             self.resolve_wins = True
 
 level = 1
