@@ -54,7 +54,7 @@ class Theme:
         self.selector = None
         if HAVE_SOUND:
             pygame.mixer.music.load(join(dir, 'music.s3m'))
-            pygame.mixer.music.set_volume(0.8)
+            pygame.mixer.music.set_volume(0.9)
             pygame.mixer.music.play(-1, 0.0)
             self.click = pygame.mixer.Sound(join(dir, 'click.wav'))
             self.grunt = pygame.mixer.Sound(join(dir, 'grunt.wav'))
