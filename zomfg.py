@@ -47,6 +47,7 @@ class Theme:
         self.normal = {}
         self.blink = {}
         self.tiny = {}
+        self.gray = {}
         self.surprise = {}
         self.angry = {}
         self.exploded = {}
@@ -78,7 +79,15 @@ class Theme:
         # Create sprites
         for x in range(8):
             self.normal[x] = scale(crop((0, (x+1) * s, s, s)), (t, t))
-            self.tiny[x] = scale(crop((0, (x+1) * s, s, s)), (t / 2, t / 2))
+            self.tiny[x] = scale(crop((0, (x+1) * s, s, s)), (t * 3 / 4, t * 3 / 4))
+            self.gray[x] = scale(crop((0, (x+1) * s, s, s)), (t * 3 / 4, t * 3 / 4))
+            pixels = pygame.surfarray.pixels3d(self.gray[x])
+            for line in pixels:
+                for p in line:
+                    r, g, b = p
+                    val = (6 * r + 7 * g + 3 * b) / 16
+                    p[:] = val, val, val
+            del pixels
             self.blink[x] = scale(crop((s, (x+1) * s, s, s)), (t, t))
             self.surprise[x] = scale(crop((s * 2, (x+1) * s, s, s)), (t, t))
             self.angry[x] = scale(crop((s * 3, (x+1) * s, s, s)), (t, t))
@@ -444,7 +453,10 @@ class Game:
         x = theme.tile_size * self.board_width + theme.tile_size * 3 / 2
         y = theme.tile_size / 2 + SCREEN_HEIGHT / 8
         for i in range(self.population):
-            bg.blit(theme.tiny[i], (x, y))
+            if self.done[i + 1] >= self.needed[i + 1]:
+                bg.blit(theme.tiny[i], (x, y))
+            else:
+                bg.blit(theme.gray[i], (x, y))
             for d in range(2):
                 text = theme.font[36].render(str(self.done[i + 1]) + '/' + str(self.needed[i + 1]), 2, (d * 255, d * 255, d * 255))
                 bg.blit(text, (x + theme.tile_size * 3 / 4 - delta * d, y - delta * d))
