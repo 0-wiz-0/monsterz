@@ -11,8 +11,8 @@
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    sodipodi:docname="svgtiles.svg"
    sodipodi:docbase="/home/sam/alienkeeper"
-   height="297mm"
-   width="210mm"
+   height="768.00000pt"
+   width="1024.0000pt"
    inkscape:version="0.41"
    sodipodi:version="0.32"
    id="svg3056"
@@ -36,6 +36,28 @@
   </metadata>
   <defs
      id="defs3059">
+    <linearGradient
+       id="linearGradient3835">
+      <stop
+         id="stop3837"
+         offset="0.0000000"
+         style="stop-color:#ffffff;stop-opacity:0.42268041;" />
+      <stop
+         id="stop3839"
+         offset="1.0000000"
+         style="stop-color:#ffffff;stop-opacity:0.68041235;" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient3807">
+      <stop
+         id="stop3809"
+         offset="0.0000000"
+         style="stop-color:#ffffff;stop-opacity:0.0000000;" />
+      <stop
+         id="stop3811"
+         offset="1.0000000"
+         style="stop-color:#ffffff;stop-opacity:0.77319586;" />
+    </linearGradient>
     <marker
        inkscape:stockid="Arrow1Lstart"
        orient="auto"
@@ -143,7 +165,7 @@
        fx="157.91504"
        cy="85.428688"
        cx="157.61028"
-       gradientTransform="matrix(1.231775,0.000000,0.000000,0.811837,-40.00413,477.3313)"
+       gradientTransform="matrix(1.231775,0.000000,0.000000,0.811837,-40.00458,24.96694)"
        id="radialGradient5640"
        xlink:href="#linearGradient5606"
        inkscape:collect="always" />
@@ -252,7 +274,7 @@
        fx="157.91504"
        cy="85.428688"
        cx="157.61028"
-       gradientTransform="matrix(1.231775,0.000000,0.000000,0.811837,6.252200,526.8159)"
+       gradientTransform="matrix(1.231775,0.000000,0.000000,0.811837,6.251760,74.45154)"
        gradientUnits="userSpaceOnUse"
        id="radialGradient7631"
        xlink:href="#linearGradient5606"
@@ -263,7 +285,7 @@
        fx="157.91504"
        cy="85.428688"
        cx="157.61028"
-       gradientTransform="matrix(-1.231775,0.000000,0.000000,0.811837,414.5284,526.8159)"
+       gradientTransform="matrix(-1.231775,0.000000,0.000000,0.811837,414.5279,74.45154)"
        gradientUnits="userSpaceOnUse"
        id="radialGradient7635"
        xlink:href="#linearGradient5606"
@@ -528,7 +550,7 @@
        fx="89.796280"
        cy="896.46143"
        cx="89.588936"
-       gradientTransform="matrix(0.967382,-0.109572,5.644157e-2,0.498307,72.64146,275.1585)"
+       gradientTransform="matrix(0.967382,-0.109572,5.644157e-2,0.498307,72.64101,-177.2060)"
        id="radialGradient8395"
        xlink:href="#linearGradient5606"
        inkscape:collect="always" />
@@ -549,7 +571,7 @@
        fx="-499.20203"
        cy="427.50131"
        cx="-499.20203"
-       gradientTransform="matrix(0.999137,-5.764624e-7,5.774582e-7,1.000863,238.4132,175.8643)"
+       gradientTransform="matrix(0.999137,-5.764624e-7,5.774582e-7,1.000863,442.3763,-227.9087)"
        gradientUnits="userSpaceOnUse"
        id="radialGradient8507"
        xlink:href="#linearGradient5606"
@@ -560,7 +582,7 @@
        fx="-461.73318"
        cy="475.19144"
        cx="-462.08267"
-       gradientTransform="matrix(0.999137,-5.848820e-9,5.858924e-9,1.000863,-171.2735,-251.4387)"
+       gradientTransform="matrix(0.999137,-5.848826e-9,5.858930e-9,1.000863,278.9797,-295.0932)"
        gradientUnits="userSpaceOnUse"
        id="radialGradient8511"
        xlink:href="#linearGradient5606"
@@ -571,7 +593,7 @@
        fx="-461.73318"
        cy="475.19144"
        cx="-462.08267"
-       gradientTransform="matrix(0.999138,-3.071966e-7,3.077273e-7,1.000864,90.52927,79.13032)"
+       gradientTransform="matrix(0.999138,-3.071966e-7,3.077273e-7,1.000864,415.0288,-236.0417)"
        gradientUnits="userSpaceOnUse"
        id="radialGradient8515"
        xlink:href="#linearGradient5606"
@@ -583,7 +605,7 @@
        fx="149.70648"
        cy="626.76788"
        cx="149.70648"
-       gradientTransform="matrix(0.953374,0.000000,0.000000,1.048906,61.25632,2.617187e-6)"
+       gradientTransform="matrix(0.953374,0.000000,0.000000,1.048906,61.25587,-452.3645)"
        id="radialGradient8527"
        xlink:href="#linearGradient5606"
        inkscape:collect="always" />
@@ -593,7 +615,7 @@
        fx="149.70648"
        cy="626.76788"
        cx="149.70648"
-       gradientTransform="matrix(-0.953374,0.000000,0.000000,1.048906,360.5287,-4.765626e-6)"
+       gradientTransform="matrix(-0.953374,0.000000,0.000000,1.048906,360.5282,-452.3645)"
        gradientUnits="userSpaceOnUse"
        id="radialGradient8531"
        xlink:href="#linearGradient5606"
@@ -648,7 +670,7 @@
        fx="157.91504"
        cy="85.428688"
        cx="157.61028"
-       gradientTransform="matrix(1.214158,0.207583,-0.136814,0.800226,21.39320,675.8457)"
+       gradientTransform="matrix(1.214158,0.207583,-0.136814,0.800226,21.39275,223.4812)"
        gradientUnits="userSpaceOnUse"
        id="radialGradient8811"
        xlink:href="#linearGradient5606"
@@ -659,7 +681,7 @@
        fx="157.91504"
        cy="85.428688"
        cx="157.61028"
-       gradientTransform="matrix(-1.214120,-0.207800,-0.136957,0.800201,423.4228,745.0820)"
+       gradientTransform="matrix(-1.214120,-0.207800,-0.136957,0.800201,423.4223,292.7175)"
        gradientUnits="userSpaceOnUse"
        id="radialGradient8813"
        xlink:href="#linearGradient5606"
@@ -725,7 +747,7 @@
        fx="157.91504"
        cy="85.428688"
        cx="157.61028"
-       gradientTransform="matrix(1.008709,6.750180e-2,-3.115830e-2,0.949253,45.99084,755.2065)"
+       gradientTransform="matrix(1.008709,6.750180e-2,-3.115830e-2,0.949253,45.99039,302.8420)"
        gradientUnits="userSpaceOnUse"
        id="radialGradient9124"
        xlink:href="#linearGradient5606"
@@ -736,7 +758,7 @@
        fx="157.91504"
        cy="85.428688"
        cx="157.61028"
-       gradientTransform="matrix(-1.008709,-6.750180e-2,-3.115830e-2,0.949253,381.1622,777.2095)"
+       gradientTransform="matrix(-1.008709,-6.750180e-2,-3.115830e-2,0.949253,381.1617,324.8450)"
        gradientUnits="userSpaceOnUse"
        id="radialGradient9126"
        xlink:href="#linearGradient5606"
@@ -791,7 +813,7 @@
        fx="157.91504"
        cy="85.428688"
        cx="157.61028"
-       gradientTransform="matrix(0.902036,-0.100558,8.994575e-2,0.806839,53.69399,965.8433)"
+       gradientTransform="matrix(0.902036,-0.100558,8.994575e-2,0.806839,53.69354,513.4788)"
        gradientUnits="userSpaceOnUse"
        id="radialGradient9224"
        xlink:href="#linearGradient5606"
@@ -802,7 +824,7 @@
        fx="157.91504"
        cy="85.428688"
        cx="157.61028"
-       gradientTransform="matrix(-0.902036,0.100558,8.994575e-2,0.806839,350.0058,933.0845)"
+       gradientTransform="matrix(-0.902036,0.100558,8.994575e-2,0.806839,350.0053,480.7200)"
        gradientUnits="userSpaceOnUse"
        id="radialGradient9226"
        xlink:href="#linearGradient5606"
@@ -901,7 +923,7 @@
        fx="157.91504"
        cy="85.428688"
        cx="157.61028"
-       gradientTransform="matrix(1.006824,-8.755859e-2,0.112628,0.751495,35.18271,863.9132)"
+       gradientTransform="matrix(1.006824,-8.755859e-2,0.112628,0.751495,35.18226,411.5487)"
        gradientUnits="userSpaceOnUse"
        id="radialGradient9411"
        xlink:href="#linearGradient5606"
@@ -912,7 +934,7 @@
        fx="157.91504"
        cy="85.428688"
        cx="157.61028"
-       gradientTransform="matrix(-1.006824,8.755859e-2,0.112628,0.751495,368.8981,834.8918)"
+       gradientTransform="matrix(-1.006824,8.755859e-2,0.112628,0.751495,368.8976,382.5273)"
        gradientUnits="userSpaceOnUse"
        id="radialGradient9413"
        xlink:href="#linearGradient5606"
@@ -978,7 +1000,7 @@
        fx="157.91504"
        cy="85.428688"
        cx="157.61028"
-       gradientTransform="matrix(1.014891,-8.755859e-2,4.339141e-2,0.751495,38.26130,902.6632)"
+       gradientTransform="matrix(1.014891,-8.755859e-2,4.339141e-2,0.751495,38.26085,450.2987)"
        gradientUnits="userSpaceOnUse"
        id="radialGradient9598"
        xlink:href="#linearGradient5606"
@@ -989,7 +1011,7 @@
        fx="157.91504"
        cy="85.428688"
        cx="157.61028"
-       gradientTransform="matrix(-1.014891,8.755859e-2,4.339141e-2,0.751495,374.6505,873.6418)"
+       gradientTransform="matrix(-1.014891,8.755859e-2,4.339141e-2,0.751495,374.6500,421.2773)"
        gradientUnits="userSpaceOnUse"
        id="radialGradient9600"
        xlink:href="#linearGradient5606"
@@ -1011,7 +1033,7 @@
        fx="-499.20203"
        cy="427.50131"
        cx="-499.20203"
-       gradientTransform="matrix(0.999137,2.800516e-16,-3.112175e-16,1.000863,-0.331283,-1.591734)"
+       gradientTransform="matrix(0.999137,1.294721e-15,-1.224415e-15,1.000863,352.9421,-284.1367)"
        gradientUnits="userSpaceOnUse"
        id="radialGradient9614"
        xlink:href="#linearGradient5606"
@@ -1038,6 +1060,413 @@
        id="radialGradient9618"
        xlink:href="#linearGradient5606"
        inkscape:collect="always" />
+    <radialGradient
+       gradientTransform="translate(953.0197,36.25000)"
+       gradientUnits="userSpaceOnUse"
+       r="74.980522"
+       fy="78.750000"
+       fx="198.00000"
+       cy="78.750000"
+       cx="198.00000"
+       id="radialGradient3813"
+       xlink:href="#linearGradient3807"
+       inkscape:collect="always" />
+    <radialGradient
+       gradientTransform="translate(201.2500,10.00000)"
+       r="43.936264"
+       fy="78.750000"
+       fx="198.00000"
+       cy="78.750000"
+       cx="198.00000"
+       gradientUnits="userSpaceOnUse"
+       id="radialGradient3821"
+       xlink:href="#linearGradient3807"
+       inkscape:collect="always" />
+    <radialGradient
+       gradientTransform="translate(201.2500,130.0000)"
+       r="43.936264"
+       fy="78.750000"
+       fx="198.00000"
+       cy="78.750000"
+       cx="198.00000"
+       gradientUnits="userSpaceOnUse"
+       id="radialGradient3823"
+       xlink:href="#linearGradient3807"
+       inkscape:collect="always" />
+    <radialGradient
+       gradientTransform="translate(261.2500,70.00000)"
+       r="43.936264"
+       fy="78.750000"
+       fx="198.00000"
+       cy="78.750000"
+       cx="198.00000"
+       gradientUnits="userSpaceOnUse"
+       id="radialGradient3825"
+       xlink:href="#linearGradient3807"
+       inkscape:collect="always" />
+    <radialGradient
+       gradientTransform="translate(962.5000,-39.27546)"
+       gradientUnits="userSpaceOnUse"
+       r="30.752295"
+       fy="101.71875"
+       fx="281.07693"
+       cy="101.71875"
+       cx="281.07693"
+       id="radialGradient3833"
+       xlink:href="#linearGradient3835"
+       inkscape:collect="always" />
+    <radialGradient
+       gradientTransform="translate(160.0000,-30.00000)"
+       r="24.000675"
+       fy="77.343750"
+       fx="253.84615"
+       cy="76.875000"
+       cx="254.30769"
+       gradientUnits="userSpaceOnUse"
+       id="radialGradient3857"
+       xlink:href="#linearGradient3835"
+       inkscape:collect="always" />
+    <radialGradient
+       r="24.000675"
+       fy="77.343750"
+       fx="253.84615"
+       cy="76.875000"
+       cx="254.30769"
+       gradientTransform="translate(160.0000,-30.00000)"
+       gradientUnits="userSpaceOnUse"
+       id="radialGradient3875"
+       xlink:href="#linearGradient3835"
+       inkscape:collect="always" />
+    <radialGradient
+       r="24.000675"
+       fy="77.343750"
+       fx="253.84615"
+       cy="76.875000"
+       cx="254.30769"
+       gradientTransform="translate(160.0000,-30.00000)"
+       gradientUnits="userSpaceOnUse"
+       id="radialGradient3887"
+       xlink:href="#linearGradient3835"
+       inkscape:collect="always" />
+    <radialGradient
+       r="24.000675"
+       fy="77.343750"
+       fx="253.84615"
+       cy="76.875000"
+       cx="254.30769"
+       gradientTransform="translate(160.0000,-30.00000)"
+       gradientUnits="userSpaceOnUse"
+       id="radialGradient3899"
+       xlink:href="#linearGradient3835"
+       inkscape:collect="always" />
+    <radialGradient
+       r="24.000675"
+       fy="77.343750"
+       fx="253.84615"
+       cy="76.875000"
+       cx="254.30769"
+       gradientTransform="translate(160.0000,-30.00000)"
+       gradientUnits="userSpaceOnUse"
+       id="radialGradient4049"
+       xlink:href="#linearGradient3835"
+       inkscape:collect="always" />
+    <radialGradient
+       r="24.000675"
+       fy="77.343750"
+       fx="253.84615"
+       cy="76.875000"
+       cx="254.30769"
+       gradientTransform="translate(160.0000,-30.00000)"
+       gradientUnits="userSpaceOnUse"
+       id="radialGradient4051"
+       xlink:href="#linearGradient3835"
+       inkscape:collect="always" />
+    <radialGradient
+       r="24.000675"
+       fy="77.343750"
+       fx="253.84615"
+       cy="76.875000"
+       cx="254.30769"
+       gradientTransform="translate(160.0000,-30.00000)"
+       gradientUnits="userSpaceOnUse"
+       id="radialGradient4053"
+       xlink:href="#linearGradient3835"
+       inkscape:collect="always" />
+    <radialGradient
+       r="24.000675"
+       fy="77.343750"
+       fx="253.84615"
+       cy="76.875000"
+       cx="254.30769"
+       gradientTransform="translate(160.0000,-30.00000)"
+       gradientUnits="userSpaceOnUse"
+       id="radialGradient4055"
+       xlink:href="#linearGradient3835"
+       inkscape:collect="always" />
+    <radialGradient
+       r="24.000675"
+       fy="77.343750"
+       fx="253.84615"
+       cy="76.875000"
+       cx="254.30769"
+       gradientTransform="translate(160.0000,-30.00000)"
+       gradientUnits="userSpaceOnUse"
+       id="radialGradient4057"
+       xlink:href="#linearGradient3835"
+       inkscape:collect="always" />
+    <radialGradient
+       r="24.000675"
+       fy="77.343750"
+       fx="253.84615"
+       cy="76.875000"
+       cx="254.30769"
+       gradientTransform="translate(160.0000,-30.00000)"
+       gradientUnits="userSpaceOnUse"
+       id="radialGradient4059"
+       xlink:href="#linearGradient3835"
+       inkscape:collect="always" />
+    <radialGradient
+       r="24.000675"
+       fy="77.343750"
+       fx="253.84615"
+       cy="76.875000"
+       cx="254.30769"
+       gradientTransform="translate(160.0000,-30.00000)"
+       gradientUnits="userSpaceOnUse"
+       id="radialGradient4061"
+       xlink:href="#linearGradient3835"
+       inkscape:collect="always" />
+    <radialGradient
+       r="24.000675"
+       fy="77.343750"
+       fx="253.84615"
+       cy="76.875000"
+       cx="254.30769"
+       gradientTransform="translate(160.0000,-30.00000)"
+       gradientUnits="userSpaceOnUse"
+       id="radialGradient4063"
+       xlink:href="#linearGradient3835"
+       inkscape:collect="always" />
+    <radialGradient
+       r="24.000675"
+       fy="77.343750"
+       fx="253.84615"
+       cy="76.875000"
+       cx="254.30769"
+       gradientTransform="translate(160.0000,-30.00000)"
+       gradientUnits="userSpaceOnUse"
+       id="radialGradient4065"
+       xlink:href="#linearGradient3835"
+       inkscape:collect="always" />
+    <radialGradient
+       r="24.000675"
+       fy="77.343750"
+       fx="253.84615"
+       cy="76.875000"
+       cx="254.30769"
+       gradientTransform="translate(160.0000,-30.00000)"
+       gradientUnits="userSpaceOnUse"
+       id="radialGradient4067"
+       xlink:href="#linearGradient3835"
+       inkscape:collect="always" />
+    <radialGradient
+       r="24.000675"
+       fy="77.343750"
+       fx="253.84615"
+       cy="76.875000"
+       cx="254.30769"
+       gradientTransform="translate(160.0000,-30.00000)"
+       gradientUnits="userSpaceOnUse"
+       id="radialGradient4069"
+       xlink:href="#linearGradient3835"
+       inkscape:collect="always" />
+    <radialGradient
+       r="24.000675"
+       fy="77.343750"
+       fx="253.84615"
+       cy="76.875000"
+       cx="254.30769"
+       gradientTransform="translate(160.0000,-30.00000)"
+       gradientUnits="userSpaceOnUse"
+       id="radialGradient4071"
+       xlink:href="#linearGradient3835"
+       inkscape:collect="always" />
+    <radialGradient
+       r="24.000675"
+       fy="77.343750"
+       fx="253.84615"
+       cy="76.875000"
+       cx="254.30769"
+       gradientTransform="translate(160.0000,-30.00000)"
+       gradientUnits="userSpaceOnUse"
+       id="radialGradient4159"
+       xlink:href="#linearGradient3835"
+       inkscape:collect="always" />
+    <radialGradient
+       r="24.000675"
+       fy="77.343750"
+       fx="253.84615"
+       cy="76.875000"
+       cx="254.30769"
+       gradientTransform="translate(160.0000,-30.00000)"
+       gradientUnits="userSpaceOnUse"
+       id="radialGradient4161"
+       xlink:href="#linearGradient3835"
+       inkscape:collect="always" />
+    <radialGradient
+       r="24.000675"
+       fy="77.343750"
+       fx="253.84615"
+       cy="76.875000"
+       cx="254.30769"
+       gradientTransform="translate(160.0000,-30.00000)"
+       gradientUnits="userSpaceOnUse"
+       id="radialGradient4163"
+       xlink:href="#linearGradient3835"
+       inkscape:collect="always" />
+    <radialGradient
+       r="24.000675"
+       fy="77.343750"
+       fx="253.84615"
+       cy="76.875000"
+       cx="254.30769"
+       gradientTransform="translate(160.0000,-30.00000)"
+       gradientUnits="userSpaceOnUse"
+       id="radialGradient4165"
+       xlink:href="#linearGradient3835"
+       inkscape:collect="always" />
+    <radialGradient
+       r="24.000675"
+       fy="77.343750"
+       fx="253.84615"
+       cy="76.875000"
+       cx="254.30769"
+       gradientTransform="translate(160.0000,-30.00000)"
+       gradientUnits="userSpaceOnUse"
+       id="radialGradient4167"
+       xlink:href="#linearGradient3835"
+       inkscape:collect="always" />
+    <radialGradient
+       r="24.000675"
+       fy="77.343750"
+       fx="253.84615"
+       cy="76.875000"
+       cx="254.30769"
+       gradientTransform="translate(160.0000,-30.00000)"
+       gradientUnits="userSpaceOnUse"
+       id="radialGradient4169"
+       xlink:href="#linearGradient3835"
+       inkscape:collect="always" />
+    <radialGradient
+       r="24.000675"
+       fy="77.343750"
+       fx="253.84615"
+       cy="76.875000"
+       cx="254.30769"
+       gradientTransform="translate(160.0000,-30.00000)"
+       gradientUnits="userSpaceOnUse"
+       id="radialGradient4171"
+       xlink:href="#linearGradient3835"
+       inkscape:collect="always" />
+    <radialGradient
+       r="24.000675"
+       fy="77.343750"
+       fx="253.84615"
+       cy="76.875000"
+       cx="254.30769"
+       gradientTransform="translate(160.0000,-30.00000)"
+       gradientUnits="userSpaceOnUse"
+       id="radialGradient4173"
+       xlink:href="#linearGradient3835"
+       inkscape:collect="always" />
+    <radialGradient
+       r="24.000675"
+       fy="77.343750"
+       fx="253.84615"
+       cy="76.875000"
+       cx="254.30769"
+       gradientTransform="translate(160.0000,-30.00000)"
+       gradientUnits="userSpaceOnUse"
+       id="radialGradient4175"
+       xlink:href="#linearGradient3835"
+       inkscape:collect="always" />
+    <radialGradient
+       r="24.000675"
+       fy="77.343750"
+       fx="253.84615"
+       cy="76.875000"
+       cx="254.30769"
+       gradientTransform="translate(160.0000,-30.00000)"
+       gradientUnits="userSpaceOnUse"
+       id="radialGradient4177"
+       xlink:href="#linearGradient3835"
+       inkscape:collect="always" />
+    <radialGradient
+       r="24.000675"
+       fy="77.343750"
+       fx="253.84615"
+       cy="76.875000"
+       cx="254.30769"
+       gradientTransform="translate(160.0000,-30.00000)"
+       gradientUnits="userSpaceOnUse"
+       id="radialGradient4179"
+       xlink:href="#linearGradient3835"
+       inkscape:collect="always" />
+    <radialGradient
+       r="24.000675"
+       fy="77.343750"
+       fx="253.84615"
+       cy="76.875000"
+       cx="254.30769"
+       gradientTransform="translate(160.0000,-30.00000)"
+       gradientUnits="userSpaceOnUse"
+       id="radialGradient4181"
+       xlink:href="#linearGradient3835"
+       inkscape:collect="always" />
+    <radialGradient
+       r="24.000675"
+       fy="77.343750"
+       fx="253.84615"
+       cy="76.875000"
+       cx="254.30769"
+       gradientTransform="translate(160.0000,-30.00000)"
+       gradientUnits="userSpaceOnUse"
+       id="radialGradient4183"
+       xlink:href="#linearGradient3835"
+       inkscape:collect="always" />
+    <radialGradient
+       r="24.000675"
+       fy="77.343750"
+       fx="253.84615"
+       cy="76.875000"
+       cx="254.30769"
+       gradientTransform="translate(160.0000,-30.00000)"
+       gradientUnits="userSpaceOnUse"
+       id="radialGradient4185"
+       xlink:href="#linearGradient3835"
+       inkscape:collect="always" />
+    <radialGradient
+       r="24.000675"
+       fy="77.343750"
+       fx="253.84615"
+       cy="76.875000"
+       cx="254.30769"
+       gradientTransform="translate(160.0000,-30.00000)"
+       gradientUnits="userSpaceOnUse"
+       id="radialGradient4187"
+       xlink:href="#linearGradient3835"
+       inkscape:collect="always" />
+    <radialGradient
+       r="24.000675"
+       fy="77.343750"
+       fx="253.84615"
+       cy="76.875000"
+       cx="254.30769"
+       gradientTransform="translate(160.0000,-30.00000)"
+       gradientUnits="userSpaceOnUse"
+       id="radialGradient4189"
+       xlink:href="#linearGradient3835"
+       inkscape:collect="always" />
   </defs>
   <sodipodi:namedview
      gridempopacity="0.51372549"
@@ -1045,8 +1474,8 @@
      inkscape:guide-bbox="true"
      showguides="true"
      inkscape:current-layer="svg3056"
-     inkscape:window-y="14"
-     inkscape:window-x="108"
+     inkscape:window-y="55"
+     inkscape:window-x="192"
      gridempspacing="8"
      gridtolerance="0.40000000pt"
      gridopacity="0.34117647"
@@ -1057,9 +1486,9 @@
      gridspacingy="1.0000000pt"
      inkscape:grid-points="true"
      showgrid="true"
-     inkscape:zoom="2.8934232"
-     inkscape:cx="106.66407"
-     inkscape:cy="135.35715"
+     inkscape:zoom="4.4722543"
+     inkscape:cx="342.53092"
+     inkscape:cy="905.38323"
      inkscape:window-height="916"
      inkscape:window-width="831"
      inkscape:pageshadow="2"
@@ -1068,10 +1497,27 @@
      bordercolor="#666666"
      pagecolor="#ffffff"
      id="base" />
+  <rect
+     y="12.500000"
+     x="1106.2500"
+     height="163.75000"
+     width="166.95827"
+     id="rect4193"
+     style="color:#000000;fill:#efe5a6;fill-opacity:1.0000000;fill-rule:nonzero;stroke:none;stroke-width:1.0749561pt;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4.0000000;stroke-dashoffset:0.0000000;stroke-opacity:1.0000000;marker:none;marker-start:none;marker-mid:none;marker-end:none;visibility:visible" />
+  <rect
+     inkscape:export-ydpi="72.000000"
+     inkscape:export-xdpi="72.000000"
+     inkscape:export-filename="/home/sam/alienkeeper/board.png"
+     y="-0.0021859638"
+     x="299.99957"
+     height="600.00000"
+     width="800.00000"
+     id="rect3803"
+     style="color:#000000;fill:#efe5a6;fill-opacity:1.0000000;fill-rule:nonzero;stroke:none;stroke-width:1.0749561pt;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4.0000000;stroke-dashoffset:0.0000000;stroke-opacity:1.0000000;marker:none;marker-start:none;marker-mid:none;marker-end:none;visibility:visible" />
   <use
      height="1052.3622"
      width="744.09448"
-     transform="matrix(0.999997,0.000000,0.000000,1.000000,180.0001,2.086740e-7)"
+     transform="matrix(0.999997,0.000000,0.000000,1.000000,180.0001,2.086747e-7)"
      id="use9021"
      xlink:href="#g8984"
      y="0.0000000"
@@ -1079,7 +1525,7 @@
   <use
      height="1052.3622"
      width="744.09448"
-     transform="matrix(0.999997,0.000000,0.000000,1.000000,120.0001,2.086740e-7)"
+     transform="matrix(0.999997,0.000000,0.000000,1.000000,120.0001,2.086747e-7)"
      id="use9019"
      xlink:href="#g8984"
      y="0.0000000"
@@ -1088,7 +1534,7 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="matrix(0.956984,0.000000,0.000000,0.957029,32.59470,492.2624)"
+     transform="matrix(0.956984,0.000000,0.000000,0.957029,32.59425,39.89804)"
      id="g5772">
     <rect
        rx="2.9453802"
@@ -1124,7 +1570,7 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="matrix(0.957918,0.000000,0.000000,0.957917,-84.96315,492.1905)"
+     transform="matrix(0.957918,0.000000,0.000000,0.957917,-84.96360,39.82614)"
      id="g5778">
     <use
        height="1052.3622"
@@ -1251,8 +1697,8 @@
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
      ry="2.8186846"
      rx="2.8186829"
-     y="514.83411"
-     x="122.47234"
+     y="62.469734"
+     x="122.47191"
      height="55.056900"
      width="55.027660"
      id="rect5764"
@@ -1261,7 +1707,7 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="translate(25.37768,391.1807)"
+     transform="translate(25.37723,-61.18366)"
      d="M 115.86819 137.36218 A 6.1977272 6.1227274 0 1 1  103.47274,137.36218 A 6.1977272 6.1227274 0 1 1  115.86819 137.36218 z"
      sodipodi:ry="6.1227274"
      sodipodi:rx="6.1977272"
@@ -1276,7 +1722,7 @@
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
      sodipodi:nodetypes="csc"
      id="path5632"
-     d="M 162.02209,547.19473 C 162.02209,547.19473 144.85323,534.77336 143.27209,537.93564 C 138.27209,547.93564 158.94482,555.94473 162.02209,547.19473 z "
+     d="M 162.02164,94.830362 C 162.02164,94.830362 144.85278,82.408992 143.27164,85.571272 C 138.27164,95.571272 158.94437,103.58037 162.02164,94.830362 z "
      style="fill:url(#radialGradient5640);fill-opacity:1.0000000;fill-rule:evenodd;stroke:#000000;stroke-width:2.5000000;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4.0000000;stroke-opacity:1.0000000" />
   <use
      inkscape:export-ydpi="72.000000"
@@ -1284,7 +1730,7 @@
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
      height="1052.3622"
      width="744.09448"
-     transform="translate(119.9999,1.875833e-10)"
+     transform="translate(119.9999,1.873559e-10)"
      id="use8213"
      xlink:href="#g8191"
      y="0.0000000"
@@ -1293,7 +1739,7 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="translate(-19.22645,411.9510)"
+     transform="translate(-19.22690,-40.41336)"
      id="g5861">
     <path
        sodipodi:nodetypes="cc"
@@ -1307,7 +1753,7 @@
        style="fill:none;fill-opacity:0.75000000;fill-rule:evenodd;stroke:#000000;stroke-width:2.5000000;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4.0000000;stroke-opacity:1.0000000" />
   </g>
   <g
-     transform="translate(-30.00413,490.0580)"
+     transform="translate(-30.00458,37.69364)"
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
@@ -1332,7 +1778,7 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="translate(-30.00413,490.0580)"
+     transform="translate(-30.00458,37.69364)"
      id="g8047">
     <path
        inkscape:export-ydpi="72.000000"
@@ -1363,7 +1809,7 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="translate(31.03001,490.0486)"
+     transform="translate(31.02956,37.68424)"
      id="g6761">
     <g
        transform="translate(6.940015,-2.995164)"
@@ -1535,7 +1981,7 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="translate(30.17221,851.1792)"
+     transform="translate(30.17176,398.8147)"
      id="g7393">
     <g
        transform="translate(7.797811,56.86996)"
@@ -1707,7 +2153,7 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="translate(30.17221,430.4606)"
+     transform="translate(30.17176,-21.90376)"
      id="g7423">
     <g
        transform="translate(7.797811,116.7350)"
@@ -1879,7 +2325,7 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="translate(30.17221,430.7379)"
+     transform="translate(30.17176,-21.62646)"
      id="g7453">
     <g
        transform="translate(7.797811,176.6000)"
@@ -2051,7 +2497,7 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="translate(30.17221,431.0150)"
+     transform="translate(30.17176,-21.34936)"
      id="g7483">
     <g
        transform="translate(7.797812,236.4651)"
@@ -2223,7 +2669,7 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="translate(29.85134,490.0486)"
+     transform="translate(29.85089,37.68424)"
      id="g8101">
     <g
        transform="translate(8.118689,237.5738)"
@@ -2395,7 +2841,7 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="translate(30.17221,431.5694)"
+     transform="translate(30.17176,-20.79496)"
      id="g7543">
     <g
        transform="translate(7.797812,356.1952)"
@@ -2567,7 +3013,7 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="translate(30.17221,431.8466)"
+     transform="translate(30.17176,-20.51776)"
      id="g7573">
     <g
        transform="translate(7.797811,416.0602)"
@@ -2741,7 +3187,7 @@
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
      height="1052.3622"
      width="744.09448"
-     transform="translate(180.0114,1.875833e-10)"
+     transform="translate(180.0114,1.873559e-10)"
      id="use8215"
      xlink:href="#g8191"
      y="0.0000000"
@@ -2752,7 +3198,7 @@
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
      sodipodi:nodetypes="csc"
      id="path7629"
-     d="M 208.27841,596.67927 C 208.27841,596.67927 191.10955,584.25791 189.52841,587.42019 C 184.52841,597.42018 205.20114,605.42927 208.27841,596.67927 z "
+     d="M 208.27796,144.31491 C 208.27796,144.31491 191.10910,131.89355 189.52796,135.05583 C 184.52796,145.05582 205.20069,153.06491 208.27796,144.31491 z "
      style="fill:url(#radialGradient7631);fill-opacity:1.0000000;fill-rule:evenodd;stroke:#000000;stroke-width:2.5000000;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4.0000000;stroke-opacity:1.0000000" />
   <path
      inkscape:export-ydpi="72.000000"
@@ -2760,13 +3206,13 @@
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
      sodipodi:nodetypes="csc"
      id="path7633"
-     d="M 212.50219,596.67927 C 212.50219,596.67927 229.67105,584.25791 231.25219,587.42019 C 236.25219,597.42018 215.57946,605.42927 212.50219,596.67927 z "
+     d="M 212.50174,144.31491 C 212.50174,144.31491 229.67060,131.89355 231.25174,135.05583 C 236.25174,145.05582 215.57901,153.06491 212.50174,144.31491 z "
      style="fill:url(#radialGradient7635);fill-opacity:1.0000000;fill-rule:evenodd;stroke:#000000;stroke-width:2.5000000;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4.0000000;stroke-opacity:1.0000000" />
   <g
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="translate(58.28400,470.0000)"
+     transform="translate(58.28355,17.63564)"
      id="g7637">
     <path
        sodipodi:nodetypes="cc"
@@ -2783,7 +3229,7 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="matrix(1.181115,0.000000,0.000000,1.000000,32.96244,391.7261)"
+     transform="matrix(1.181115,0.000000,0.000000,1.000000,32.96199,-60.63826)"
      d="M 119.43183 137.36218 A 9.7613640 10.831819 0 1 1  99.909100,137.36218 A 9.7613640 10.831819 0 1 1  119.43183 137.36218 z"
      sodipodi:ry="10.831819"
      sodipodi:rx="9.7613640"
@@ -2796,7 +3242,7 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="translate(-30.11822,489.7349)"
+     transform="translate(-30.11867,37.37054)"
      id="g8067">
     <path
        sodipodi:open="true"
@@ -2849,7 +3295,7 @@
        sodipodi:type="arc" />
   </g>
   <g
-     transform="matrix(1.000060,0.000000,0.000000,1.000000,0.337901,-0.516487)"
+     transform="matrix(1.000060,0.000000,0.000000,1.000000,0.337461,-452.8810)"
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
@@ -2961,7 +3407,7 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="translate(-14.69383,541.2503)"
+     transform="translate(-14.69428,88.88594)"
      id="g8217">
     <path
        sodipodi:open="true"
@@ -3017,7 +3463,7 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="matrix(1.181115,0.000000,0.000000,1.000000,10.47289,452.5000)"
+     transform="matrix(1.181115,0.000000,0.000000,1.000000,10.47245,0.135632)"
      d="M 119.43183 137.36218 A 9.7613640 10.831819 0 1 1  99.909100,137.36218 A 9.7613640 10.831819 0 1 1  119.43183 137.36218 z"
      sodipodi:ry="10.831819"
      sodipodi:rx="9.7613640"
@@ -3030,7 +3476,7 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="matrix(1.007820,0.000000,0.000000,0.896539,50.56593,470.1728)"
+     transform="matrix(1.007820,0.000000,0.000000,0.896539,50.56548,17.80844)"
      d="M 119.43183 137.36218 A 9.7613640 10.831819 0 1 1  99.909100,137.36218 A 9.7613640 10.831819 0 1 1  119.43183 137.36218 z"
      sodipodi:ry="10.831819"
      sodipodi:rx="9.7613640"
@@ -3043,7 +3489,7 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="translate(-2.493680,466.8931)"
+     transform="translate(-2.494120,14.52874)"
      id="g8235">
     <path
        sodipodi:nodetypes="cc"
@@ -3057,7 +3503,7 @@
        style="fill:none;fill-opacity:0.75000000;fill-rule:evenodd;stroke:#000000;stroke-width:2.5000000;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4.0000000;stroke-opacity:1.0000000" />
   </g>
   <g
-     transform="matrix(1.000000,0.000000,0.000000,0.625000,16.52421,566.1169)"
+     transform="matrix(1.000000,0.000000,0.000000,0.625000,16.52376,113.7524)"
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
@@ -3082,7 +3528,7 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="translate(-88.36819,456.1227)"
+     transform="translate(-88.36864,3.758332)"
      d="M 115.86819 137.36218 A 6.1977272 6.1227274 0 1 1  103.47274,137.36218 A 6.1977272 6.1227274 0 1 1  115.86819 137.36218 z"
      sodipodi:ry="6.1227274"
      sodipodi:rx="6.1977272"
@@ -3095,7 +3541,7 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="translate(-70.97274,456.3773)"
+     transform="translate(-70.97319,4.012932)"
      d="M 115.86819 137.36218 A 6.1977272 6.1227274 0 1 1  103.47274,137.36218 A 6.1977272 6.1227274 0 1 1  115.86819 137.36218 z"
      sodipodi:ry="6.1227274"
      sodipodi:rx="6.1977272"
@@ -3108,7 +3554,7 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="translate(-167.5000,548.7500)"
+     transform="translate(-167.5005,96.38564)"
      id="g8257">
     <path
        inkscape:export-ydpi="72.000000"
@@ -3139,7 +3585,7 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="translate(-121.7223,468.7500)"
+     transform="translate(-121.7228,16.38564)"
      id="g8265">
     <path
        sodipodi:nodetypes="cc"
@@ -3156,7 +3602,7 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="matrix(0.978601,0.000000,0.000000,0.962168,0.562123,27.50069)"
+     transform="matrix(0.978601,0.000000,0.000000,0.962168,0.561683,-424.8638)"
      id="g8300">
     <g
        style="stroke:none;stroke-opacity:1.0000000"
@@ -3254,7 +3700,7 @@
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
      height="1052.3622"
      width="744.09448"
-     transform="matrix(0.999996,0.000000,0.000000,1.000000,120.0001,-2.884480e-6)"
+     transform="matrix(0.999996,0.000000,0.000000,1.000000,120.0001,-5.676700e-6)"
      id="use8319"
      xlink:href="#g8300"
      y="0.0000000"
@@ -3265,7 +3711,7 @@
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
      height="1052.3622"
      width="744.09448"
-     transform="matrix(0.999996,0.000000,0.000000,1.000000,180.0001,-2.884480e-6)"
+     transform="matrix(0.999996,0.000000,0.000000,1.000000,180.0001,-5.676700e-6)"
      id="use8321"
      xlink:href="#g8300"
      y="0.0000000"
@@ -3274,7 +3720,7 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="matrix(1.000000,0.000000,0.000000,-4.088866e-2,-121.2500,726.4498)"
+     transform="matrix(1.000000,0.000000,0.000000,-4.088866e-2,-121.2505,274.0853)"
      id="g8323">
     <path
        sodipodi:nodetypes="cc"
@@ -3291,7 +3737,7 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="translate(-167.6034,663.2100)"
+     transform="translate(-167.6039,210.8455)"
      id="g8329">
     <path
        inkscape:export-ydpi="72.000000"
@@ -3322,7 +3768,7 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="matrix(0.962929,0.317707,-0.466192,0.884684,-11.51548,552.1198)"
+     transform="matrix(0.962929,0.317707,-0.466192,0.884684,-11.51593,99.75543)"
      d="M 115.86819 137.36218 A 6.1977272 6.1227274 0 1 1  103.47274,137.36218 A 6.1977272 6.1227274 0 1 1  115.86819 137.36218 z"
      sodipodi:ry="6.1227274"
      sodipodi:rx="6.1977272"
@@ -3335,7 +3781,7 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="matrix(1.196547,-0.240741,0.197244,0.980354,-58.75908,703.3350)"
+     transform="matrix(1.196547,-0.240741,0.197244,0.980354,-58.75953,250.9705)"
      id="g8341">
     <path
        sodipodi:open="true"
@@ -3388,7 +3834,7 @@
        sodipodi:type="arc" />
   </g>
   <g
-     transform="matrix(1.255368,-0.173093,0.136590,0.990628,-40.83478,694.6655)"
+     transform="matrix(1.255368,-0.173093,0.136590,0.990628,-40.83523,242.3010)"
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
@@ -3413,7 +3859,7 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="matrix(1.255875,-0.118265,0.000000,0.793917,12.51487,612.6006)"
+     transform="matrix(1.255875,-0.118265,0.000000,0.793917,12.51442,160.2361)"
      d="M 119.43183 137.36218 A 9.7613640 10.831819 0 1 1  99.909100,137.36218 A 9.7613640 10.831819 0 1 1  119.43183 137.36218 z"
      sodipodi:ry="10.831819"
      sodipodi:rx="9.7613640"
@@ -3426,7 +3872,7 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="matrix(0.994171,-0.107816,-4.408448e-3,-4.065031e-2,0.238720,743.9907)"
+     transform="matrix(0.994171,-0.107816,-4.408448e-3,-4.065031e-2,0.238280,291.6262)"
      id="g8375">
     <path
        sodipodi:nodetypes="cc"
@@ -3443,7 +3889,7 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="matrix(1.000000,0.000000,0.000000,-4.088866e-2,58.28400,726.5491)"
+     transform="matrix(1.000000,0.000000,0.000000,-4.088866e-2,58.28355,274.1846)"
      id="g8381">
     <path
        sodipodi:nodetypes="cc"
@@ -3462,10 +3908,10 @@
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
      sodipodi:nodetypes="csss"
      id="path8387"
-     d="M 201.23121,711.19409 C 206.40572,717.55134 214.97739,717.10459 218.75632,709.61610 C 223.63836,699.94164 211.11829,707.99356 209.27833,708.20196 C 207.43838,708.41037 194.73678,703.21523 201.23121,711.19409 z "
+     d="M 201.23076,258.82973 C 206.40527,265.18698 214.97694,264.74023 218.75587,257.25174 C 223.63791,247.57728 211.11784,255.62920 209.27788,255.83760 C 207.43793,256.04601 194.73633,250.85087 201.23076,258.82973 z "
      style="fill:url(#radialGradient8395);fill-opacity:1.0000000;fill-rule:evenodd;stroke:#000000;stroke-width:2.5000000;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4.0000000;stroke-opacity:1.0000000" />
   <g
-     transform="matrix(1.000009,0.000000,0.000000,1.000000,-0.336934,-0.223206)"
+     transform="matrix(1.000009,0.000000,0.000000,1.000000,-0.337374,-452.5877)"
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
@@ -3631,7 +4077,7 @@
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
      height="1052.3622"
      width="744.09448"
-     transform="translate(120.0017,-3.911694e-7)"
+     transform="translate(120.0017,-5.676700e-6)"
      id="use8491"
      xlink:href="#g8456"
      y="0.0000000"
@@ -3642,7 +4088,7 @@
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
      height="1052.3622"
      width="744.09448"
-     transform="translate(180.0022,-3.911694e-7)"
+     transform="translate(180.0022,-5.676700e-6)"
      id="use8493"
      xlink:href="#g8456"
      y="0.0000000"
@@ -3654,12 +4100,12 @@
      transform="matrix(0.624595,-0.780949,0.780949,0.624595,0.000000,0.000000)"
      ry="0.0000000"
      rx="0.0000000"
-     y="420.99835"
-     x="-504.37201"
-     height="10.560878"
-     width="10.538355"
+     y="138.45375"
+     x="-151.09904"
+     height="10.560884"
+     width="10.538361"
      id="rect8495"
-     style="color:#000000;fill:url(#radialGradient9614);fill-opacity:1.0000000;fill-rule:nonzero;stroke:#000000;stroke-width:2.5000005;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4.0000000;stroke-dashoffset:0.0000000;stroke-opacity:1.0000000;marker:none;marker-start:none;marker-mid:none;marker-end:none;visibility:visible" />
+     style="color:#000000;fill:url(#radialGradient9614);fill-opacity:1.0000000;fill-rule:nonzero;stroke:#000000;stroke-width:2.5000019;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4.0000000;stroke-dashoffset:0.0000000;stroke-opacity:1.0000000;marker:none;marker-start:none;marker-mid:none;marker-end:none;visibility:visible" />
   <rect
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
@@ -3667,12 +4113,12 @@
      transform="matrix(0.892583,-0.450883,0.450883,0.892583,0.000000,0.000000)"
      ry="0.0000000"
      rx="0.0000000"
-     y="598.45441"
-     x="-265.62759"
-     height="10.560877"
-     width="10.538354"
+     y="194.68132"
+     x="-61.664528"
+     height="10.560871"
+     width="10.538348"
      id="rect8505"
-     style="color:#000000;fill:url(#radialGradient8507);fill-opacity:1.0000000;fill-rule:nonzero;stroke:#000000;stroke-width:2.5000002;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4.0000000;stroke-dashoffset:0.0000000;stroke-opacity:1.0000000;marker:none;marker-start:none;marker-mid:none;marker-end:none;visibility:visible" />
+     style="color:#000000;fill:url(#radialGradient8507);fill-opacity:1.0000000;fill-rule:nonzero;stroke:#000000;stroke-width:2.4999988;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4.0000000;stroke-dashoffset:0.0000000;stroke-opacity:1.0000000;marker:none;marker-start:none;marker-mid:none;marker-end:none;visibility:visible" />
   <rect
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
@@ -3680,32 +4126,32 @@
      transform="matrix(0.696721,-0.717342,0.717342,0.696721,0.000000,0.000000)"
      ry="0.0000000"
      rx="0.0000000"
-     y="544.18671"
-     x="-380.87219"
-     height="21.470934"
-     width="19.738607"
+     y="229.01425"
+     x="-56.372318"
+     height="21.470911"
+     width="19.738585"
      id="rect8513"
-     style="color:#000000;fill:url(#radialGradient8515);fill-opacity:1.0000000;fill-rule:nonzero;stroke:#000000;stroke-width:2.5000010;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4.0000000;stroke-dashoffset:0.0000000;stroke-opacity:1.0000000;marker:none;marker-start:none;marker-mid:none;marker-end:none;visibility:visible" />
+     style="color:#000000;fill:url(#radialGradient8515);fill-opacity:1.0000000;fill-rule:nonzero;stroke:#000000;stroke-width:2.4999981;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4.0000000;stroke-dashoffset:0.0000000;stroke-opacity:1.0000000;marker:none;marker-start:none;marker-mid:none;marker-end:none;visibility:visible" />
   <rect
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="matrix(9.650158e-2,-0.995333,0.995333,9.650158e-2,0.000000,0.000000)"
+     transform="matrix(9.650146e-2,-0.995333,0.995333,9.650146e-2,0.000000,0.000000)"
      ry="0.0000000"
      rx="0.0000000"
-     y="213.61777"
-     x="-642.67548"
-     height="21.470945"
-     width="19.738619"
+     y="169.96367"
+     x="-192.42282"
+     height="21.470968"
+     width="19.738642"
      id="rect8509"
-     style="color:#000000;fill:url(#radialGradient8511);fill-opacity:1.0;fill-rule:nonzero;stroke:#000000;stroke-width:2.5000024;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4.0000000;stroke-dashoffset:0.0000000;stroke-opacity:1.0000000;marker:none;marker-start:none;marker-mid:none;marker-end:none;visibility:visible" />
+     style="color:#000000;fill:url(#radialGradient8511);fill-opacity:1.0000000;fill-rule:nonzero;stroke:#000000;stroke-width:2.5000052;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4.0000000;stroke-dashoffset:0.0000000;stroke-opacity:1.0000000;marker:none;marker-start:none;marker-mid:none;marker-end:none;visibility:visible" />
   <path
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
      sodipodi:nodetypes="ccccc"
      id="path8519"
-     d="M 197.50632,648.61219 L 208.75632,656.11218 L 205.00632,664.24582 L 195.00632,652.36218 L 197.50632,648.61219 z "
+     d="M 197.50587,196.24783 L 208.75587,203.74782 L 205.00587,211.88146 L 195.00587,199.99782 L 197.50587,196.24783 z "
      style="fill:url(#radialGradient8527);fill-opacity:1.0000000;fill-rule:evenodd;stroke:#000000;stroke-width:2.5000000;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4.0000000;stroke-opacity:1.0000000" />
   <path
      inkscape:export-ydpi="72.000000"
@@ -3713,13 +4159,13 @@
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
      sodipodi:nodetypes="ccccc"
      id="path8529"
-     d="M 224.27869,648.61218 L 213.02869,656.11217 L 216.77869,664.24581 L 226.77869,652.36217 L 224.27869,648.61218 z "
+     d="M 224.27824,196.24782 L 213.02824,203.74781 L 216.77824,211.88145 L 226.77824,199.99781 L 224.27824,196.24782 z "
      style="fill:url(#radialGradient8531);fill-opacity:1.0000000;fill-rule:evenodd;stroke:#000000;stroke-width:2.5000000;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4.0000000;stroke-opacity:1.0000000" />
   <g
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="translate(-1.307300e-2,2.617187e-6)"
+     transform="translate(-1.351330e-2,-452.3645)"
      id="g8544">
     <path
        sodipodi:nodetypes="ccccc"
@@ -3738,7 +4184,7 @@
        style="fill:none;fill-opacity:0.75000000;fill-rule:evenodd;stroke:#000000;stroke-width:2.5000000;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4.0000000;stroke-opacity:0.13725491" />
   </g>
   <g
-     transform="translate(60.00632,0.000000)"
+     transform="translate(60.00587,-452.3645)"
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
@@ -3760,7 +4206,7 @@
        style="fill:none;fill-opacity:0.75000000;fill-rule:evenodd;stroke:#000000;stroke-width:2.5000000;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4.0000000;stroke-opacity:1.0000000" />
   </g>
   <g
-     transform="translate(60.00632,0.000000)"
+     transform="translate(60.00587,-452.3645)"
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
@@ -3795,7 +4241,7 @@
        sodipodi:type="arc" />
   </g>
   <g
-     transform="matrix(0.999943,0.000000,0.000000,1.000000,1.443979e-2,-0.104565)"
+     transform="matrix(0.999943,0.000000,0.000000,1.000000,1.399970e-2,-452.4691)"
      id="g8984">
     <path
        sodipodi:sides="10"
@@ -3988,7 +4434,7 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="translate(-85.92046,638.6227)"
+     transform="translate(-85.92091,186.2582)"
      d="M 115.86819 137.36218 A 6.1977272 6.1227274 0 1 1  103.47274,137.36218 A 6.1977272 6.1227274 0 1 1  115.86819 137.36218 z"
      sodipodi:ry="6.1227274"
      sodipodi:rx="6.1977272"
@@ -4001,7 +4447,7 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="translate(-67.86621,643.6227)"
+     transform="translate(-67.86666,191.2582)"
      d="M 115.86819 137.36218 A 6.1977272 6.1227274 0 1 1  103.47274,137.36218 A 6.1977272 6.1227274 0 1 1  115.86819 137.36218 z"
      sodipodi:ry="6.1227274"
      sodipodi:rx="6.1977272"
@@ -4014,7 +4460,7 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="matrix(1.000000,0.000000,-0.216982,2.497409,-154.9868,633.3979)"
+     transform="matrix(1.000000,0.000000,-0.216982,2.497409,-154.9873,181.0334)"
      id="g8773">
     <path
        inkscape:export-ydpi="72.000000"
@@ -4045,7 +4491,7 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="matrix(1.187576,0.281681,-0.230787,0.973004,-28.82660,678.1109)"
+     transform="matrix(1.187576,0.281681,-0.230787,0.973004,-28.82705,225.7464)"
      id="g8781">
     <path
        sodipodi:open="true"
@@ -4101,7 +4547,7 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="matrix(1.181115,0.000000,0.000000,1.000000,33.25218,637.5000)"
+     transform="matrix(1.181115,0.000000,0.000000,1.000000,33.25173,185.1355)"
      d="M 119.43183 137.36218 A 9.7613640 10.831819 0 1 1  99.909100,137.36218 A 9.7613640 10.831819 0 1 1  119.43183 137.36218 z"
      sodipodi:ry="10.831819"
      sodipodi:rx="9.7613640"
@@ -4114,7 +4560,7 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="matrix(0.982006,0.000000,0.000000,0.862114,33.55927,654.5286)"
+     transform="matrix(0.982006,0.000000,0.000000,0.862114,33.55882,202.1641)"
      d="M 119.43183 137.36218 A 9.7613640 10.831819 0 1 1  99.909100,137.36218 A 9.7613640 10.831819 0 1 1  119.43183 137.36218 z"
      sodipodi:ry="10.831819"
      sodipodi:rx="9.7613640"
@@ -4124,7 +4570,7 @@
      style="fill:url(#radialGradient9618);fill-opacity:1.0000000;fill-rule:nonzero;stroke:#000000;stroke-width:2.7170675;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4.0000000;stroke-opacity:1.0000000"
      sodipodi:type="arc" />
   <g
-     transform="matrix(1.057146,-7.439580e-2,2.046533e-2,0.996928,3.958260,734.1220)"
+     transform="matrix(1.057146,-7.439580e-2,2.046533e-2,0.996928,3.957820,281.7575)"
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
@@ -4151,7 +4597,7 @@
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
      sodipodi:nodetypes="csc"
      id="path8807"
-     d="M 208.75632,778.75606 C 208.75632,778.75606 193.92631,763.61900 191.83486,766.46959 C 185.22114,775.48394 204.24848,786.86233 208.75632,778.75606 z "
+     d="M 208.75587,326.39170 C 208.75587,326.39170 193.92586,311.25464 191.83441,314.10523 C 185.22069,323.11958 204.24803,334.49797 208.75587,326.39170 z "
      style="fill:url(#radialGradient8811);fill-opacity:1.0000000;fill-rule:evenodd;stroke:#000000;stroke-width:2.5000000;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4.0000000;stroke-opacity:1.0000000" />
   <path
      inkscape:export-ydpi="72.000000"
@@ -4159,10 +4605,10 @@
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
      sodipodi:nodetypes="csc"
      id="path8809"
-     d="M 212.50632,779.86218 C 212.50632,779.86218 231.52458,770.51524 232.54958,773.89893 C 235.79092,784.59909 214.06336,789.00590 212.50632,779.86218 z "
+     d="M 212.50587,327.49782 C 212.50587,327.49782 231.52413,318.15088 232.54913,321.53457 C 235.79047,332.23473 214.06291,336.64154 212.50587,327.49782 z "
      style="fill:url(#radialGradient8813);fill-opacity:1.0000000;fill-rule:evenodd;stroke:#000000;stroke-width:2.4999988;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4.0000000;stroke-opacity:1.0000000" />
   <g
-     transform="matrix(0.999913,0.000000,0.000000,0.976757,-0.427744,19.62352)"
+     transform="matrix(0.999913,0.000000,0.000000,0.976757,-0.428184,-432.7410)"
      id="g9049">
     <path
        inkscape:export-ydpi="72.000000"
@@ -4209,7 +4655,7 @@
   <use
      height="1052.3622"
      width="744.09448"
-     transform="matrix(0.999996,0.000000,0.000000,1.000000,120.0001,-9.496830e-8)"
+     transform="matrix(0.999996,0.000000,0.000000,1.000000,120.0001,-5.676700e-6)"
      id="use9058"
      xlink:href="#g9049"
      y="0.0000000"
@@ -4217,7 +4663,7 @@
   <use
      height="1052.3622"
      width="744.09448"
-     transform="matrix(0.999996,0.000000,0.000000,1.000000,180.0001,-9.496830e-8)"
+     transform="matrix(0.999996,0.000000,0.000000,1.000000,180.0001,-5.676700e-6)"
      id="use9060"
      xlink:href="#g9049"
      y="0.0000000"
@@ -4226,7 +4672,7 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="translate(-87.22274,702.3727)"
+     transform="translate(-87.22319,250.0082)"
      d="M 115.86819 137.36218 A 6.1977272 6.1227274 0 1 1  103.47274,137.36218 A 6.1977272 6.1227274 0 1 1  115.86819 137.36218 z"
      sodipodi:ry="6.1227274"
      sodipodi:rx="6.1977272"
@@ -4239,7 +4685,7 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="translate(-69.72274,703.6227)"
+     transform="translate(-69.72319,251.2582)"
      d="M 115.86819 137.36218 A 6.1977272 6.1227274 0 1 1  103.47274,137.36218 A 6.1977272 6.1227274 0 1 1  115.86819 137.36218 z"
      sodipodi:ry="6.1227274"
      sodipodi:rx="6.1977272"
@@ -4252,7 +4698,7 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="matrix(1.181115,0.000000,0.000000,1.000000,33.25218,637.5000)"
+     transform="matrix(1.181115,0.000000,0.000000,1.000000,33.25173,185.1355)"
      d="M 119.43183 137.36218 A 9.7613640 10.831819 0 1 1  99.909100,137.36218 A 9.7613640 10.831819 0 1 1  119.43183 137.36218 z"
      sodipodi:ry="10.831819"
      sodipodi:rx="9.7613640"
@@ -4265,7 +4711,7 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="matrix(0.982006,0.000000,0.000000,0.862114,33.55927,654.5286)"
+     transform="matrix(0.982006,0.000000,0.000000,0.862114,33.55882,202.1641)"
      d="M 119.43183 137.36218 A 9.7613640 10.831819 0 1 1  99.909100,137.36218 A 9.7613640 10.831819 0 1 1  119.43183 137.36218 z"
      sodipodi:ry="10.831819"
      sodipodi:rx="9.7613640"
@@ -4278,7 +4724,7 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="matrix(0.825268,-8.823740e-2,0.108997,0.911080,35.77041,725.5480)"
+     transform="matrix(0.825268,-8.823740e-2,0.108997,0.911080,35.76996,273.1835)"
      d="M 119.43183 137.36218 A 9.7613640 10.831819 0 1 1  99.909100,137.36218 A 9.7613640 10.831819 0 1 1  119.43183 137.36218 z"
      sodipodi:ry="10.831819"
      sodipodi:rx="9.7613640"
@@ -4291,7 +4737,7 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="matrix(0.803100,0.211682,-0.247199,0.937846,106.6652,690.3223)"
+     transform="matrix(0.803100,0.211682,-0.247199,0.937846,106.6647,237.9578)"
      d="M 119.43183 137.36218 A 9.7613640 10.831819 0 1 1  99.909100,137.36218 A 9.7613640 10.831819 0 1 1  119.43183 137.36218 z"
      sodipodi:ry="10.831819"
      sodipodi:rx="9.7613640"
@@ -4304,7 +4750,7 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="translate(-168.8534,798.0281)"
+     transform="translate(-168.8539,345.6636)"
      id="g9086">
     <path
        inkscape:export-ydpi="72.000000"
@@ -4335,7 +4781,7 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="matrix(0.996892,7.878351e-2,-7.878351e-2,0.996892,69.38824,709.2016)"
+     transform="matrix(0.996892,7.878351e-2,-7.878351e-2,0.996892,69.38779,256.8371)"
      id="g9106">
     <path
        sodipodi:nodetypes="cc"
@@ -4349,7 +4795,7 @@
        style="fill:none;fill-opacity:0.75000000;fill-rule:evenodd;stroke:#000000;stroke-width:2.5000000;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4.0000000;stroke-opacity:1.0000000" />
   </g>
   <g
-     transform="matrix(1.000000,0.000000,0.000000,0.625000,15.98843,815.7296)"
+     transform="matrix(1.000000,0.000000,0.000000,0.625000,15.98798,363.3651)"
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
@@ -4376,7 +4822,7 @@
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
      sodipodi:nodetypes="csc"
      id="path9120"
-     d="M 208.75000,847.96601 C 208.75000,847.96601 195.16704,832.50128 193.75087,836.11218 C 189.27254,847.53081 205.89417,858.02845 208.75000,847.96601 z "
+     d="M 208.74955,395.60165 C 208.74955,395.60165 195.16659,380.13692 193.75042,383.74782 C 189.27209,395.16645 205.89372,405.66409 208.74955,395.60165 z "
      style="fill:url(#radialGradient9124);fill-opacity:1.0000000;fill-rule:evenodd;stroke:#000000;stroke-width:2.5000002;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4.0000000;stroke-opacity:1.0000000" />
   <path
      inkscape:export-ydpi="72.000000"
@@ -4384,13 +4830,13 @@
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
      sodipodi:nodetypes="csc"
      id="path9122"
-     d="M 213.04014,847.82674 C 213.04014,847.82674 227.57656,834.24372 228.75000,838.02792 C 232.46073,849.99456 215.22431,858.22644 213.04014,847.82674 z "
+     d="M 213.03969,395.46238 C 213.03969,395.46238 227.57611,381.87936 228.74955,385.66356 C 232.46028,397.63020 215.22386,405.86208 213.03969,395.46238 z "
      style="fill:url(#radialGradient9126);fill-opacity:1.0000000;fill-rule:evenodd;stroke:#000000;stroke-width:2.5000002;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4.0000000;stroke-opacity:1.0000000" />
   <g
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="matrix(0.996892,7.878351e-2,-7.878351e-2,0.996892,9.847440,708.6016)"
+     transform="matrix(0.996892,7.878351e-2,-7.878351e-2,0.996892,9.847002,256.2371)"
      id="g9128">
     <path
        sodipodi:nodetypes="cc"
@@ -4407,7 +4853,7 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="matrix(0.996892,7.878351e-2,-7.878351e-2,0.996892,-111.4089,709.5190)"
+     transform="matrix(0.996892,7.878351e-2,-7.878351e-2,0.996892,-111.4094,257.1545)"
      id="g9134">
     <path
        sodipodi:nodetypes="cc"
@@ -4424,7 +4870,7 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="matrix(0.989499,0.000000,0.000000,0.676994,-12.29611,815.3748)"
+     transform="matrix(0.989499,0.000000,0.000000,0.676994,-12.29656,363.0103)"
      id="g9140">
     <path
        sodipodi:open="true"
@@ -4477,7 +4923,7 @@
        sodipodi:type="arc" />
   </g>
   <g
-     transform="matrix(0.999997,0.000000,0.000000,0.988293,0.462053,11.84343)"
+     transform="matrix(0.999997,0.000000,0.000000,0.988293,0.461613,-440.5211)"
      id="g9164">
     <path
        inkscape:export-ydpi="72.000000"
@@ -4529,7 +4975,7 @@
   <use
      height="1052.3622"
      width="744.09448"
-     transform="translate(120.0000,-2.998813e-4)"
+     transform="translate(120.0000,-3.056767e-4)"
      id="use9174"
      xlink:href="#g9164"
      y="0.0000000"
@@ -4537,7 +4983,7 @@
   <use
      height="1052.3622"
      width="744.09448"
-     transform="translate(180.0000,-2.998813e-4)"
+     transform="translate(180.0000,-3.056767e-4)"
      id="use9176"
      xlink:href="#g9164"
      y="0.0000000"
@@ -4546,7 +4992,7 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="matrix(0.839183,0.000000,0.000000,0.839088,-66.83256,906.9657)"
+     transform="matrix(0.839183,0.000000,0.000000,0.839088,-66.83301,454.6012)"
      d="M 115.86819 137.36218 A 6.1977272 6.1227274 0 1 1  103.47274,137.36218 A 6.1977272 6.1227274 0 1 1  115.86819 137.36218 z"
      sodipodi:ry="6.1227274"
      sodipodi:rx="6.1977272"
@@ -4559,7 +5005,7 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="matrix(0.839183,0.000000,0.000000,0.839088,-55.98462,905.7157)"
+     transform="matrix(0.839183,0.000000,0.000000,0.839088,-55.98507,453.3512)"
      d="M 115.86819 137.36218 A 6.1977272 6.1227274 0 1 1  103.47274,137.36218 A 6.1977272 6.1227274 0 1 1  115.86819 137.36218 z"
      sodipodi:ry="6.1227274"
      sodipodi:rx="6.1977272"
@@ -4572,7 +5018,7 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="matrix(0.997523,-7.033936e-2,7.033936e-2,0.997523,-170.2348,982.6294)"
+     transform="matrix(0.997523,-7.033936e-2,7.033936e-2,0.997523,-170.2353,530.2649)"
      id="g9186">
     <path
        inkscape:export-ydpi="72.000000"
@@ -4603,7 +5049,7 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="matrix(0.825268,-8.823740e-2,0.108997,0.911080,35.16948,896.2668)"
+     transform="matrix(0.825268,-8.823740e-2,0.108997,0.911080,35.16903,443.9023)"
      d="M 119.43183 137.36218 A 9.7613640 10.831819 0 1 1  99.909100,137.36218 A 9.7613640 10.831819 0 1 1  119.43183 137.36218 z"
      sodipodi:ry="10.831819"
      sodipodi:rx="9.7613640"
@@ -4616,7 +5062,7 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="matrix(0.825944,8.166502e-2,-7.881474e-2,0.914186,77.75082,875.3966)"
+     transform="matrix(0.825944,8.166502e-2,-7.881474e-2,0.914186,77.75037,423.0321)"
      d="M 119.43183 137.36218 A 9.7613640 10.831819 0 1 1  99.909100,137.36218 A 9.7613640 10.831819 0 1 1  119.43183 137.36218 z"
      sodipodi:ry="10.831819"
      sodipodi:rx="9.7613640"
@@ -4629,7 +5075,7 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="matrix(0.987484,-0.121305,0.157720,0.759493,-22.22250,995.5206)"
+     transform="matrix(0.987484,-0.121305,0.157720,0.759493,-22.22295,543.1561)"
      id="g9202">
     <path
        sodipodi:open="true"
@@ -4682,7 +5128,7 @@
        sodipodi:type="arc" />
   </g>
   <g
-     transform="matrix(0.829268,0.000000,0.000000,0.978264,50.55515,958.7281)"
+     transform="matrix(0.829268,0.000000,0.000000,0.978264,50.55470,506.3636)"
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
@@ -4709,7 +5155,7 @@
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
      sodipodi:nodetypes="csc"
      id="path9220"
-     d="M 209.37928,1018.7836 C 209.37928,1018.7836 195.43023,1007.8404 194.62272,1011.1122 C 192.06911,1021.4589 208.09522,1027.7311 209.37928,1018.7836 z "
+     d="M 209.37883,566.41924 C 209.37883,566.41924 195.42978,555.47604 194.62227,558.74784 C 192.06866,569.09454 208.09477,575.36674 209.37883,566.41924 z "
      style="fill:url(#radialGradient9224);fill-opacity:1.0000000;fill-rule:evenodd;stroke:#000000;stroke-width:2.4999998;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4.0000000;stroke-opacity:1.0000000" />
   <path
      inkscape:export-ydpi="72.000000"
@@ -4717,10 +5163,10 @@
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
      sodipodi:nodetypes="csc"
      id="path9222"
-     d="M 209.80142,1019.0104 C 209.80142,1019.0104 220.99809,1005.2640 222.50632,1008.2777 C 227.27577,1017.8079 213.02437,1027.4554 209.80142,1019.0104 z "
+     d="M 209.80097,566.64604 C 209.80097,566.64604 220.99764,552.89964 222.50587,555.91334 C 227.27532,565.44354 213.02392,575.09104 209.80097,566.64604 z "
      style="fill:url(#radialGradient9226);fill-opacity:1.0000000;fill-rule:evenodd;stroke:#000000;stroke-width:2.4999998;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4.0000000;stroke-opacity:1.0000000" />
   <g
-     transform="matrix(1.000000,0.000000,0.000000,0.951658,-0.391463,44.26465)"
+     transform="matrix(1.000000,0.000000,0.000000,0.951658,-0.391903,-408.0998)"
      id="g9349">
     <path
        sodipodi:nodetypes="cc"
@@ -4744,7 +5190,7 @@
        style="fill:#000000;fill-opacity:0.13725491;fill-rule:evenodd;stroke:none;stroke-width:0.25000000pt;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1.0000000" />
   </g>
   <g
-     transform="matrix(1.000101,0.000000,0.000000,1.000000,-0.521953,3.660914)"
+     transform="matrix(1.000101,0.000000,0.000000,1.000000,-0.522394,-448.7036)"
      id="g9355">
     <path
        sodipodi:nodetypes="csss"
@@ -4808,7 +5254,7 @@
   <use
      height="1052.3622"
      width="744.09448"
-     transform="matrix(0.999972,0.000000,0.000000,1.000000,120.0002,-2.136791e-6)"
+     transform="matrix(0.999972,0.000000,0.000000,1.000000,120.0002,-5.676700e-6)"
      id="use9369"
      xlink:href="#g9349"
      y="0.0000000"
@@ -4816,7 +5262,7 @@
   <use
      height="1052.3622"
      width="744.09448"
-     transform="matrix(0.999972,0.000000,0.000000,1.000000,180.0002,-2.136791e-6)"
+     transform="matrix(0.999972,0.000000,0.000000,1.000000,180.0002,-5.676700e-6)"
      id="use9371"
      xlink:href="#g9349"
      y="0.0000000"
@@ -4824,13 +5270,13 @@
   <path
      sodipodi:nodetypes="cccccccc"
      id="path9415"
-     d="M 200.00632,922.36218 L 204.28485,929.86218 L 208.75632,922.36218 L 212.50632,929.86218 L 216.25632,921.77542 L 220.54743,928.61218 L 224.29743,920.40329 L 200.00632,922.36218 z "
+     d="M 200.00587,469.99782 L 204.28440,477.49782 L 208.75587,469.99782 L 212.50587,477.49782 L 216.25587,469.41106 L 220.54698,476.24782 L 224.29698,468.03893 L 200.00587,469.99782 z "
      style="fill:#ffffff;fill-opacity:1.0000000;fill-rule:evenodd;stroke:#000000;stroke-width:2.5000000;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4.0000000;stroke-opacity:1.0000000" />
   <g
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="matrix(1.621846,-0.153910,6.395795e-2,0.673966,-116.9149,901.1503)"
+     transform="matrix(1.621846,-0.153910,6.395795e-2,0.673966,-116.9154,448.7858)"
      id="g9397">
     <path
        sodipodi:open="true"
@@ -4885,7 +5331,7 @@
   <use
      height="1052.3622"
      width="744.09448"
-     transform="matrix(1.000004,0.000000,0.000000,1.000000,119.9999,-2.500001)"
+     transform="matrix(1.000004,0.000000,0.000000,1.000000,119.9999,-2.500005)"
      id="use9373"
      xlink:href="#g9355"
      y="0.0000000"
@@ -4893,7 +5339,7 @@
   <use
      height="1052.3622"
      width="744.09448"
-     transform="matrix(1.000004,0.000000,0.000000,1.000000,179.9999,-2.500001)"
+     transform="matrix(1.000004,0.000000,0.000000,1.000000,179.9999,-2.500005)"
      id="use9375"
      xlink:href="#g9355"
      y="0.0000000"
@@ -4902,7 +5348,7 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="matrix(1.000000,0.000000,0.000000,0.830454,-85.97274,801.9546)"
+     transform="matrix(1.000000,0.000000,0.000000,0.830454,-85.97319,349.5901)"
      d="M 115.86819 137.36218 A 6.1977272 6.1227274 0 1 1  103.47274,137.36218 A 6.1977272 6.1227274 0 1 1  115.86819 137.36218 z"
      sodipodi:ry="6.1227274"
      sodipodi:rx="6.1977272"
@@ -4915,7 +5361,7 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="matrix(0.993257,-0.115933,9.627686e-2,0.824854,-82.09024,813.6657)"
+     transform="matrix(0.993257,-0.115933,9.627686e-2,0.824854,-82.09069,361.3012)"
      d="M 115.86819 137.36218 A 6.1977272 6.1227274 0 1 1  103.47274,137.36218 A 6.1977272 6.1227274 0 1 1  115.86819 137.36218 z"
      sodipodi:ry="6.1227274"
      sodipodi:rx="6.1977272"
@@ -4928,7 +5374,7 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="matrix(1.132835,0.000000,0.000000,0.838164,15.76782,793.7742)"
+     transform="matrix(1.132835,0.000000,0.000000,0.838164,15.76737,341.4097)"
      d="M 119.43183 137.36218 A 9.7613640 10.831819 0 1 1  99.909100,137.36218 A 9.7613640 10.831819 0 1 1  119.43183 137.36218 z"
      sodipodi:ry="10.831819"
      sodipodi:rx="9.7613640"
@@ -4941,7 +5387,7 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="matrix(1.072757,0.000000,-0.111183,0.862112,59.58743,787.6906)"
+     transform="matrix(1.072757,0.000000,-0.111183,0.862112,59.58698,335.3261)"
      d="M 119.43183 137.36218 A 9.7613640 10.831819 0 1 1  99.909100,137.36218 A 9.7613640 10.831819 0 1 1  119.43183 137.36218 z"
      sodipodi:ry="10.831819"
      sodipodi:rx="9.7613640"
@@ -4956,7 +5402,7 @@
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
      sodipodi:nodetypes="csc"
      id="path9407"
-     d="M 210.00632,914.22281 C 210.00632,914.22281 194.24966,903.94513 193.39599,906.98475 C 190.69643,916.59686 208.70494,922.54119 210.00632,914.22281 z "
+     d="M 210.00587,461.85845 C 210.00587,461.85845 194.24921,451.58077 193.39554,454.62039 C 190.69598,464.23250 208.70449,470.17683 210.00587,461.85845 z "
      style="fill:url(#radialGradient9411);fill-opacity:1.0000000;fill-rule:evenodd;stroke:#000000;stroke-width:2.5000000;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4.0000000;stroke-opacity:1.0000000" />
   <path
      inkscape:export-ydpi="72.000000"
@@ -4964,10 +5410,10 @@
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
      sodipodi:nodetypes="csc"
      id="path9409"
-     d="M 213.45873,913.92257 C 213.45873,913.92257 225.76889,901.20405 227.50000,904.01889 C 232.97420,912.92018 217.18792,921.80345 213.45873,913.92257 z "
+     d="M 213.45828,461.55821 C 213.45828,461.55821 225.76844,448.83969 227.49955,451.65453 C 232.97375,460.55582 217.18747,469.43909 213.45828,461.55821 z "
      style="fill:url(#radialGradient9413);fill-opacity:1.0000000;fill-rule:evenodd;stroke:#000000;stroke-width:2.5000000;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4.0000000;stroke-opacity:1.0000000" />
   <g
-     transform="matrix(0.999925,0.000000,0.000000,0.986910,9.214731e-5,12.33958)"
+     transform="matrix(0.999925,0.000000,0.000000,0.986910,-3.483000e-4,-440.0249)"
      id="g9526">
     <g
        id="g9506">
@@ -5087,7 +5533,7 @@
   <use
      height="1052.3622"
      width="744.09448"
-     transform="translate(120.0042,-1.640000e-6)"
+     transform="translate(120.0042,-5.676700e-6)"
      id="use9552"
      xlink:href="#g9526"
      y="0.0000000"
@@ -5095,7 +5541,7 @@
   <use
      height="1052.3622"
      width="744.09448"
-     transform="translate(180.0042,-1.640000e-6)"
+     transform="translate(180.0042,-5.676700e-6)"
      id="use9554"
      xlink:href="#g9526"
      y="0.0000000"
@@ -5104,7 +5550,7 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="matrix(0.839183,0.000000,0.000000,0.839088,-70.58256,835.7157)"
+     transform="matrix(0.839183,0.000000,0.000000,0.839088,-70.58301,383.3512)"
      d="M 115.86819 137.36218 A 6.1977272 6.1227274 0 1 1  103.47274,137.36218 A 6.1977272 6.1227274 0 1 1  115.86819 137.36218 z"
      sodipodi:ry="6.1227274"
      sodipodi:rx="6.1977272"
@@ -5117,7 +5563,7 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="matrix(0.839183,0.000000,0.000000,0.839088,-54.73462,833.4907)"
+     transform="matrix(0.839183,0.000000,0.000000,0.839088,-54.73507,381.1262)"
      d="M 115.86819 137.36218 A 6.1977272 6.1227274 0 1 1  103.47274,137.36218 A 6.1977272 6.1227274 0 1 1  115.86819 137.36218 z"
      sodipodi:ry="6.1227274"
      sodipodi:rx="6.1977272"
@@ -5130,7 +5576,7 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="matrix(0.997523,-7.033936e-2,7.033936e-2,0.997523,-169.6710,934.6780)"
+     transform="matrix(0.997523,-7.033936e-2,7.033936e-2,0.997523,-169.6715,482.3135)"
      id="g9564">
     <path
        inkscape:export-ydpi="72.000000"
@@ -5161,7 +5607,7 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="matrix(1.079192,0.000000,0.000000,0.964136,18.52583,814.9264)"
+     transform="matrix(1.079192,0.000000,0.000000,0.964136,18.52538,362.5619)"
      d="M 119.43183 137.36218 A 9.7613640 10.831819 0 1 1  99.909100,137.36218 A 9.7613640 10.831819 0 1 1  119.43183 137.36218 z"
      sodipodi:ry="10.831819"
      sodipodi:rx="9.7613640"
@@ -5174,7 +5620,7 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="matrix(0.992294,-0.122652,0.173064,0.623099,-21.94199,960.0797)"
+     transform="matrix(0.992294,-0.122652,0.173064,0.623099,-21.94244,507.7152)"
      id="g9584">
     <path
        sodipodi:open="true"
@@ -5232,7 +5678,7 @@
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
      sodipodi:nodetypes="csc"
      id="path9594"
-     d="M 208.44979,952.97281 C 208.44979,952.97281 193.64004,942.69513 192.50632,945.73475 C 188.92118,955.34686 206.38203,961.29119 208.44979,952.97281 z "
+     d="M 208.44934,500.60845 C 208.44934,500.60845 193.63959,490.33077 192.50587,493.37039 C 188.92073,502.98250 206.38158,508.92683 208.44934,500.60845 z "
      style="fill:url(#radialGradient9598);fill-opacity:1.0000000;fill-rule:evenodd;stroke:#000000;stroke-width:2.5000000;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4.0000000;stroke-opacity:1.0000000" />
   <path
      inkscape:export-ydpi="72.000000"
@@ -5240,10 +5686,10 @@
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
      sodipodi:nodetypes="csc"
      id="path9596"
-     d="M 211.92987,952.67257 C 211.92987,952.67257 225.41181,939.95405 226.88358,942.76889 C 231.53769,951.67018 214.93298,960.55345 211.92987,952.67257 z "
+     d="M 211.92942,500.30821 C 211.92942,500.30821 225.41136,487.58969 226.88313,490.40453 C 231.53724,499.30582 214.93253,508.18909 211.92942,500.30821 z "
      style="fill:url(#radialGradient9600);fill-opacity:1.0000000;fill-rule:evenodd;stroke:#000000;stroke-width:2.5000000;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4.0000000;stroke-opacity:1.0000000" />
   <g
-     transform="matrix(0.829268,0.000000,0.000000,0.703465,51.80515,931.9318)"
+     transform="matrix(0.829268,0.000000,0.000000,0.703465,51.80470,479.5673)"
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
@@ -5268,7 +5714,7 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="matrix(1.079192,0.000000,0.000000,0.964136,42.18522,812.4264)"
+     transform="matrix(1.079192,0.000000,0.000000,0.964136,42.18477,360.0619)"
      d="M 119.43183 137.36218 A 9.7613640 10.831819 0 1 1  99.909100,137.36218 A 9.7613640 10.831819 0 1 1  119.43183 137.36218 z"
      sodipodi:ry="10.831819"
      sodipodi:rx="9.7613640"
@@ -5280,7 +5726,7 @@
   <use
      height="1052.3622"
      width="744.09448"
-     transform="matrix(0.999997,0.000000,0.000000,1.000000,60.00007,2.086740e-7)"
+     transform="matrix(0.999997,0.000000,0.000000,1.000000,60.00007,-5.676700e-6)"
      id="use2797"
      xlink:href="#g8984"
      y="0.0000000"
@@ -5291,7 +5737,7 @@
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
      height="1052.3622"
      width="744.09448"
-     transform="translate(60.00407,1.875833e-10)"
+     transform="translate(60.00407,-5.676700e-6)"
      id="use2799"
      xlink:href="#g8191"
      y="0.0000000"
@@ -5302,7 +5748,7 @@
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
      height="1052.3622"
      width="744.09448"
-     transform="matrix(0.999996,0.000000,0.000000,1.000000,59.99814,-2.884480e-6)"
+     transform="matrix(0.999996,0.000000,0.000000,1.000000,59.99814,-5.676700e-6)"
      id="use2801"
      xlink:href="#g8300"
      y="0.0000000"
@@ -5313,7 +5759,7 @@
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
      height="1052.3622"
      width="744.09448"
-     transform="translate(60.00111,-3.911694e-7)"
+     transform="translate(60.00111,-5.676700e-6)"
      id="use2803"
      xlink:href="#g8456"
      y="0.0000000"
@@ -5321,7 +5767,7 @@
   <use
      height="1052.3622"
      width="744.09448"
-     transform="translate(60.00011,-2.812612e-9)"
+     transform="translate(60.00011,-5.676700e-6)"
      id="use2805"
      xlink:href="#g9049"
      y="0.0000000"
@@ -5329,7 +5775,7 @@
   <use
      height="1052.3622"
      width="744.09448"
-     transform="translate(60.00001,-2.998813e-4)"
+     transform="translate(60.00001,-3.056767e-4)"
      id="use2807"
      xlink:href="#g9164"
      y="0.0000000"
@@ -5337,7 +5783,7 @@
   <use
      height="1052.3622"
      width="744.09448"
-     transform="translate(60.00000,-2.136791e-6)"
+     transform="translate(60.00000,-5.676700e-6)"
      id="use2887"
      xlink:href="#g9349"
      y="0.0000000"
@@ -5345,7 +5791,7 @@
   <use
      height="1052.3622"
      width="744.09448"
-     transform="translate(59.99967,-1.640000e-6)"
+     transform="translate(59.99967,-5.676700e-6)"
      id="use2811"
      xlink:href="#g9526"
      y="0.0000000"
@@ -5354,7 +5800,7 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="translate(-107.5753,548.7500)"
+     transform="translate(-107.5758,96.38564)"
      id="g2813">
     <path
        inkscape:export-ydpi="72.000000"
@@ -5385,7 +5831,7 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="translate(-61.79760,468.7500)"
+     transform="translate(-61.79805,16.38564)"
      id="g2821">
     <path
        sodipodi:nodetypes="cc"
@@ -5402,7 +5848,7 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="matrix(1.000000,0.000000,0.000000,-4.088866e-2,-61.32530,726.4498)"
+     transform="matrix(1.000000,0.000000,0.000000,-4.088866e-2,-61.32575,274.0853)"
      id="g2827">
     <path
        sodipodi:nodetypes="cc"
@@ -5419,7 +5865,7 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="translate(-107.6787,663.2100)"
+     transform="translate(-107.6792,210.8455)"
      id="g2833">
     <path
        inkscape:export-ydpi="72.000000"
@@ -5450,7 +5896,7 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="translate(59.91163,2.617187e-6)"
+     transform="translate(59.91118,-452.3645)"
      id="g2841">
     <path
        sodipodi:nodetypes="ccccc"
@@ -5472,7 +5918,7 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="matrix(1.000000,0.000000,-0.216982,2.497409,-95.06210,633.3979)"
+     transform="matrix(1.000000,0.000000,-0.216982,2.497409,-95.06255,181.0334)"
      id="g2849">
     <path
        inkscape:export-ydpi="72.000000"
@@ -5503,7 +5949,7 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="translate(-108.9287,798.0281)"
+     transform="translate(-108.9292,345.6636)"
      id="g2857">
     <path
        inkscape:export-ydpi="72.000000"
@@ -5534,7 +5980,7 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="matrix(0.996892,7.878351e-2,-7.878351e-2,0.996892,-51.48420,709.5190)"
+     transform="matrix(0.996892,7.878351e-2,-7.878351e-2,0.996892,-51.48465,257.1545)"
      id="g2865">
     <path
        sodipodi:nodetypes="cc"
@@ -5551,7 +5997,7 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="matrix(0.997523,-7.033936e-2,7.033936e-2,0.997523,-110.3101,982.6294)"
+     transform="matrix(0.997523,-7.033936e-2,7.033936e-2,0.997523,-110.3106,530.2649)"
      id="g2871">
     <path
        inkscape:export-ydpi="72.000000"
@@ -5582,7 +6028,7 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="matrix(0.997523,-7.033936e-2,7.033936e-2,0.997523,-109.7463,934.6780)"
+     transform="matrix(0.997523,-7.033936e-2,7.033936e-2,0.997523,-109.7468,482.3135)"
      id="g2879">
     <path
        inkscape:export-ydpi="72.000000"
@@ -5613,7 +6059,7 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="matrix(-0.809638,4.297539e-2,-3.482670e-2,-0.999076,243.7197,649.4082)"
+     transform="matrix(-0.809638,4.297539e-2,-3.482670e-2,-0.999076,243.7192,197.0437)"
      id="g2889">
     <path
        inkscape:export-ydpi="72.000000"
@@ -5644,7 +6090,7 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="matrix(-0.809638,4.297539e-2,-3.482670e-2,-0.999076,261.0065,649.6857)"
+     transform="matrix(-0.809638,4.297539e-2,-3.482670e-2,-0.999076,261.0060,197.3212)"
      id="g2905">
     <path
        inkscape:export-ydpi="72.000000"
@@ -5675,7 +6121,7 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="matrix(-0.986006,0.139951,-0.140177,-0.990119,294.1190,743.8613)"
+     transform="matrix(-0.986006,0.139951,-0.140177,-0.990119,294.1185,291.4968)"
      id="g2913">
     <path
        inkscape:export-ydpi="72.000000"
@@ -5706,7 +6152,7 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="matrix(-0.780855,-0.218233,0.286543,-0.957736,221.2360,880.9354)"
+     transform="matrix(-0.780855,-0.218233,0.286543,-0.957736,221.2355,428.5709)"
      id="g2921">
     <path
        inkscape:export-ydpi="72.000000"
@@ -5737,7 +6183,7 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="matrix(-0.780855,-0.218233,0.286543,-0.957736,237.0229,885.1983)"
+     transform="matrix(-0.780855,-0.218233,0.286543,-0.957736,237.0224,432.8338)"
      id="g2929">
     <path
        inkscape:export-ydpi="72.000000"
@@ -5768,7 +6214,7 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="matrix(-0.810763,-4.820923e-3,2.412128e-2,-0.999392,242.2593,904.3171)"
+     transform="matrix(-0.810763,-4.820923e-3,2.412128e-2,-0.999392,242.2588,451.9526)"
      id="g2937">
     <path
        inkscape:export-ydpi="72.000000"
@@ -5799,7 +6245,7 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="matrix(-0.810763,-4.820923e-3,2.412128e-2,-0.999392,259.4997,905.6130)"
+     transform="matrix(-0.810763,-4.820923e-3,2.412128e-2,-0.999392,259.4992,453.2485)"
      id="g2945">
     <path
        inkscape:export-ydpi="72.000000"
@@ -5829,7 +6275,7 @@
   <use
      height="1052.3622"
      width="744.09448"
-     transform="matrix(1.000004,0.000000,0.000000,1.000000,59.99986,-6.556950e-7)"
+     transform="matrix(1.000004,0.000000,0.000000,1.000000,59.99985,-5.676700e-6)"
      id="use3001"
      xlink:href="#g9355"
      y="0.0000000"
@@ -5838,7 +6284,7 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="matrix(-0.853365,0.145651,-0.173934,-0.986526,262.5385,947.9575)"
+     transform="matrix(-0.853365,0.145651,-0.173934,-0.986526,262.5380,495.5930)"
      id="g2953">
     <path
        inkscape:export-ydpi="72.000000"
@@ -5869,7 +6315,7 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="matrix(-0.853365,0.145651,-0.173934,-0.986526,280.9227,946.0330)"
+     transform="matrix(-0.853365,0.145651,-0.173934,-0.986526,280.9222,493.6685)"
      id="g2961">
     <path
        inkscape:export-ydpi="72.000000"
@@ -5900,7 +6346,7 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="matrix(-0.853365,0.145651,-0.173934,-0.986526,262.0321,984.6966)"
+     transform="matrix(-0.853365,0.145651,-0.173934,-0.986526,262.0316,532.3321)"
      id="g2969">
     <path
        inkscape:export-ydpi="72.000000"
@@ -5931,7 +6377,7 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="matrix(-0.853365,0.145651,-0.173934,-0.986526,277.1602,982.5304)"
+     transform="matrix(-0.853365,0.145651,-0.173934,-0.986526,277.1597,530.1659)"
      id="g2977">
     <path
        inkscape:export-ydpi="72.000000"
@@ -5962,7 +6408,7 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="matrix(-0.673032,0.124746,-0.149214,-0.988307,228.3232,1059.241)"
+     transform="matrix(-0.673032,0.124746,-0.149214,-0.988307,228.3227,606.8765)"
      id="g2985">
     <path
        inkscape:export-ydpi="72.000000"
@@ -5993,7 +6439,7 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="matrix(-0.673032,0.124746,-0.149214,-0.988307,239.1645,1057.931)"
+     transform="matrix(-0.673032,0.124746,-0.149214,-0.988307,239.1640,605.5665)"
      id="g2993">
     <path
        inkscape:export-ydpi="72.000000"
@@ -6024,7 +6470,7 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="matrix(-0.871630,0.157190,-0.177477,-0.984125,233.8680,1311.167)"
+     transform="matrix(-0.871630,0.157190,-0.177477,-0.984125,233.8675,858.8022)"
      id="g3003">
     <path
        sodipodi:nodetypes="ccc"
@@ -6046,7 +6492,7 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/test.png"
-     transform="matrix(-0.870775,-0.161854,0.182743,-0.983161,9.042311,1322.697)"
+     transform="matrix(-0.870775,-0.161854,0.182743,-0.983161,9.041871,870.3322)"
      id="g3019">
     <path
        sodipodi:nodetypes="ccc"
@@ -6064,4 +6510,632 @@
        d="M 30.370839,671.74265 L 37.513073,674.86218 L 44.171738,672.14291"
        style="fill:none;fill-opacity:0.75000000;fill-rule:evenodd;stroke:#000000;stroke-width:2.6564338;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4.0000000;stroke-opacity:0.13725491" />
   </g>
+  <rect
+     y="96.250000"
+     x="1133.0197"
+     height="60.000000"
+     width="60.000000"
+     id="rect3805"
+     style="color:#000000;fill:url(#radialGradient3813);fill-opacity:1.0000000;fill-rule:nonzero;stroke:none;stroke-width:1.0749561pt;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4.0000000;stroke-dashoffset:0.0000000;stroke-opacity:1.0000000;marker:none;marker-start:none;marker-mid:none;marker-end:none;visibility:visible" />
+  <rect
+     y="20.724541"
+     x="1202.5000"
+     height="60.000000"
+     width="60.000000"
+     id="rect3827"
+     style="color:#000000;fill:url(#radialGradient3833);fill-opacity:1.0000000;fill-rule:nonzero;stroke:none;stroke-width:1.0749561pt;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4.0000000;stroke-dashoffset:0.0000000;stroke-opacity:1.0000000;marker:none;marker-start:none;marker-mid:none;marker-end:none;visibility:visible" />
+  <rect
+     inkscape:export-ydpi="72.000000"
+     inkscape:export-xdpi="72.000000"
+     inkscape:export-filename="/home/sam/alienkeeper/board.png"
+     rx="10.000001"
+     ry="9.9999971"
+     y="11.251324"
+     x="311.22610"
+     height="517.49854"
+     width="517.52368"
+     id="rect4191"
+     style="visibility:visible;marker-end:none;marker-mid:none;marker-start:none;marker:none;stroke-opacity:0.19607843;stroke-dashoffset:0.0000000;stroke-miterlimit:4.0000000;stroke-linejoin:miter;stroke-linecap:butt;stroke-width:2.5000010;stroke:#000000;fill-rule:nonzero;fill-opacity:0.058823530;fill:#000000;color:#000000" />
+  <g
+     inkscape:export-ydpi="72.000000"
+     inkscape:export-xdpi="72.000000"
+     inkscape:export-filename="/home/sam/alienkeeper/board.png"
+     transform="translate(-10.00000,1.136868e-13)"
+     id="g4073">
+    <g
+       id="g3901">
+      <g
+         id="g3859">
+        <use
+           height="960.00000"
+           width="1280.0000"
+           transform="translate(-793.0197,-66.25000)"
+           id="use3841"
+           xlink:href="#rect3805"
+           y="0.0000000"
+           x="0.0000000" />
+        <use
+           height="960.00000"
+           width="1280.0000"
+           transform="translate(-862.5000,69.27546)"
+           id="use3843"
+           xlink:href="#rect3827"
+           y="0.0000000"
+           x="0.0000000" />
+        <use
+           height="960.00000"
+           width="1280.0000"
+           transform="translate(-733.0197,-6.250000)"
+           id="use3851"
+           xlink:href="#rect3805"
+           y="0.0000000"
+           x="0.0000000" />
+        <rect
+           y="30.000000"
+           x="400.00000"
+           height="60.000000"
+           width="60.000000"
+           id="rect3855"
+           style="color:#000000;fill:url(#radialGradient4159);fill-opacity:1.0000000;fill-rule:nonzero;stroke:none;stroke-width:1.0749561pt;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4.0000000;stroke-dashoffset:0.0000000;stroke-opacity:1.0000000;marker:none;marker-start:none;marker-mid:none;marker-end:none;visibility:visible" />
+      </g>
+      <g
+         transform="translate(120.0000,0.000000)"
+         id="g3865">
+        <use
+           height="960.00000"
+           width="1280.0000"
+           transform="translate(-793.0197,-66.25000)"
+           id="use3867"
+           xlink:href="#rect3805"
+           y="0.0000000"
+           x="0.0000000" />
+        <use
+           height="960.00000"
+           width="1280.0000"
+           transform="translate(-862.5000,69.27546)"
+           id="use3869"
+           xlink:href="#rect3827"
+           y="0.0000000"
+           x="0.0000000" />
+        <use
+           height="960.00000"
+           width="1280.0000"
+           transform="translate(-733.0197,-6.250000)"
+           id="use3871"
+           xlink:href="#rect3805"
+           y="0.0000000"
+           x="0.0000000" />
+        <rect
+           y="30.000000"
+           x="400.00000"
+           height="60.000000"
+           width="60.000000"
+           id="rect3873"
+           style="color:#000000;fill:url(#radialGradient4161);fill-opacity:1.0000000;fill-rule:nonzero;stroke:none;stroke-width:1.0749561pt;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4.0000000;stroke-dashoffset:0.0000000;stroke-opacity:1.0000000;marker:none;marker-start:none;marker-mid:none;marker-end:none;visibility:visible" />
+      </g>
+      <g
+         transform="translate(0.000000,120.0000)"
+         id="g3877">
+        <use
+           height="960.00000"
+           width="1280.0000"
+           transform="translate(-793.0197,-66.25000)"
+           id="use3879"
+           xlink:href="#rect3805"
+           y="0.0000000"
+           x="0.0000000" />
+        <use
+           height="960.00000"
+           width="1280.0000"
+           transform="translate(-862.5000,69.27546)"
+           id="use3881"
+           xlink:href="#rect3827"
+           y="0.0000000"
+           x="0.0000000" />
+        <use
+           height="960.00000"
+           width="1280.0000"
+           transform="translate(-733.0197,-6.250000)"
+           id="use3883"
+           xlink:href="#rect3805"
+           y="0.0000000"
+           x="0.0000000" />
+        <rect
+           y="30.000000"
+           x="400.00000"
+           height="60.000000"
+           width="60.000000"
+           id="rect3885"
+           style="color:#000000;fill:url(#radialGradient4163);fill-opacity:1.0000000;fill-rule:nonzero;stroke:none;stroke-width:1.0749561pt;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4.0000000;stroke-dashoffset:0.0000000;stroke-opacity:1.0000000;marker:none;marker-start:none;marker-mid:none;marker-end:none;visibility:visible" />
+      </g>
+      <g
+         transform="translate(120.0000,120.0000)"
+         id="g3889">
+        <use
+           height="960.00000"
+           width="1280.0000"
+           transform="translate(-793.0197,-66.25000)"
+           id="use3891"
+           xlink:href="#rect3805"
+           y="0.0000000"
+           x="0.0000000" />
+        <use
+           height="960.00000"
+           width="1280.0000"
+           transform="translate(-862.5000,69.27546)"
+           id="use3893"
+           xlink:href="#rect3827"
+           y="0.0000000"
+           x="0.0000000" />
+        <use
+           height="960.00000"
+           width="1280.0000"
+           transform="translate(-733.0197,-6.250000)"
+           id="use3895"
+           xlink:href="#rect3805"
+           y="0.0000000"
+           x="0.0000000" />
+        <rect
+           y="30.000000"
+           x="400.00000"
+           height="60.000000"
+           width="60.000000"
+           id="rect3897"
+           style="color:#000000;fill:url(#radialGradient4165);fill-opacity:1.0000000;fill-rule:nonzero;stroke:none;stroke-width:1.0749561pt;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4.0000000;stroke-dashoffset:0.0000000;stroke-opacity:1.0000000;marker:none;marker-start:none;marker-mid:none;marker-end:none;visibility:visible" />
+      </g>
+    </g>
+    <g
+       transform="translate(240.0000,240.0000)"
+       id="g3923">
+      <g
+         id="g3925">
+        <use
+           height="960.00000"
+           width="1280.0000"
+           transform="translate(-793.0197,-66.25000)"
+           id="use3927"
+           xlink:href="#rect3805"
+           y="0.0000000"
+           x="0.0000000" />
+        <use
+           height="960.00000"
+           width="1280.0000"
+           transform="translate(-862.5000,69.27546)"
+           id="use3929"
+           xlink:href="#rect3827"
+           y="0.0000000"
+           x="0.0000000" />
+        <use
+           height="960.00000"
+           width="1280.0000"
+           transform="translate(-733.0197,-6.250000)"
+           id="use3931"
+           xlink:href="#rect3805"
+           y="0.0000000"
+           x="0.0000000" />
+        <rect
+           y="30.000000"
+           x="400.00000"
+           height="60.000000"
+           width="60.000000"
+           id="rect3933"
+           style="color:#000000;fill:url(#radialGradient4167);fill-opacity:1.0000000;fill-rule:nonzero;stroke:none;stroke-width:1.0749561pt;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4.0000000;stroke-dashoffset:0.0000000;stroke-opacity:1.0000000;marker:none;marker-start:none;marker-mid:none;marker-end:none;visibility:visible" />
+      </g>
+      <g
+         transform="translate(120.0000,0.000000)"
+         id="g3935">
+        <use
+           height="960.00000"
+           width="1280.0000"
+           transform="translate(-793.0197,-66.25000)"
+           id="use3937"
+           xlink:href="#rect3805"
+           y="0.0000000"
+           x="0.0000000" />
+        <use
+           height="960.00000"
+           width="1280.0000"
+           transform="translate(-862.5000,69.27546)"
+           id="use3939"
+           xlink:href="#rect3827"
+           y="0.0000000"
+           x="0.0000000" />
+        <use
+           height="960.00000"
+           width="1280.0000"
+           transform="translate(-733.0197,-6.250000)"
+           id="use3941"
+           xlink:href="#rect3805"
+           y="0.0000000"
+           x="0.0000000" />
+        <rect
+           y="30.000000"
+           x="400.00000"
+           height="60.000000"
+           width="60.000000"
+           id="rect3943"
+           style="color:#000000;fill:url(#radialGradient4169);fill-opacity:1.0000000;fill-rule:nonzero;stroke:none;stroke-width:1.0749561pt;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4.0000000;stroke-dashoffset:0.0000000;stroke-opacity:1.0000000;marker:none;marker-start:none;marker-mid:none;marker-end:none;visibility:visible" />
+      </g>
+      <g
+         transform="translate(0.000000,120.0000)"
+         id="g3945">
+        <use
+           height="960.00000"
+           width="1280.0000"
+           transform="translate(-793.0197,-66.25000)"
+           id="use3947"
+           xlink:href="#rect3805"
+           y="0.0000000"
+           x="0.0000000" />
+        <use
+           height="960.00000"
+           width="1280.0000"
+           transform="translate(-862.5000,69.27546)"
+           id="use3949"
+           xlink:href="#rect3827"
+           y="0.0000000"
+           x="0.0000000" />
+        <use
+           height="960.00000"
+           width="1280.0000"
+           transform="translate(-733.0197,-6.250000)"
+           id="use3951"
+           xlink:href="#rect3805"
+           y="0.0000000"
+           x="0.0000000" />
+        <rect
+           y="30.000000"
+           x="400.00000"
+           height="60.000000"
+           width="60.000000"
+           id="rect3953"
+           style="color:#000000;fill:url(#radialGradient4171);fill-opacity:1.0000000;fill-rule:nonzero;stroke:none;stroke-width:1.0749561pt;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4.0000000;stroke-dashoffset:0.0000000;stroke-opacity:1.0000000;marker:none;marker-start:none;marker-mid:none;marker-end:none;visibility:visible" />
+      </g>
+      <g
+         transform="translate(120.0000,120.0000)"
+         id="g3955">
+        <use
+           height="960.00000"
+           width="1280.0000"
+           transform="translate(-793.0197,-66.25000)"
+           id="use3957"
+           xlink:href="#rect3805"
+           y="0.0000000"
+           x="0.0000000" />
+        <use
+           height="960.00000"
+           width="1280.0000"
+           transform="translate(-862.5000,69.27546)"
+           id="use3959"
+           xlink:href="#rect3827"
+           y="0.0000000"
+           x="0.0000000" />
+        <use
+           height="960.00000"
+           width="1280.0000"
+           transform="translate(-733.0197,-6.250000)"
+           id="use3961"
+           xlink:href="#rect3805"
+           y="0.0000000"
+           x="0.0000000" />
+        <rect
+           y="30.000000"
+           x="400.00000"
+           height="60.000000"
+           width="60.000000"
+           id="rect3963"
+           style="color:#000000;fill:url(#radialGradient4173);fill-opacity:1.0000000;fill-rule:nonzero;stroke:none;stroke-width:1.0749561pt;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4.0000000;stroke-dashoffset:0.0000000;stroke-opacity:1.0000000;marker:none;marker-start:none;marker-mid:none;marker-end:none;visibility:visible" />
+      </g>
+    </g>
+    <g
+       transform="translate(0.000000,240.0000)"
+       id="g3965">
+      <g
+         id="g3967">
+        <use
+           height="960.00000"
+           width="1280.0000"
+           transform="translate(-793.0197,-66.25000)"
+           id="use3969"
+           xlink:href="#rect3805"
+           y="0.0000000"
+           x="0.0000000" />
+        <use
+           height="960.00000"
+           width="1280.0000"
+           transform="translate(-862.5000,69.27546)"
+           id="use3971"
+           xlink:href="#rect3827"
+           y="0.0000000"
+           x="0.0000000" />
+        <use
+           height="960.00000"
+           width="1280.0000"
+           transform="translate(-733.0197,-6.250000)"
+           id="use3973"
+           xlink:href="#rect3805"
+           y="0.0000000"
+           x="0.0000000" />
+        <rect
+           y="30.000000"
+           x="400.00000"
+           height="60.000000"
+           width="60.000000"
+           id="rect3975"
+           style="color:#000000;fill:url(#radialGradient4175);fill-opacity:1.0000000;fill-rule:nonzero;stroke:none;stroke-width:1.0749561pt;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4.0000000;stroke-dashoffset:0.0000000;stroke-opacity:1.0000000;marker:none;marker-start:none;marker-mid:none;marker-end:none;visibility:visible" />
+      </g>
+      <g
+         transform="translate(120.0000,0.000000)"
+         id="g3977">
+        <use
+           height="960.00000"
+           width="1280.0000"
+           transform="translate(-793.0197,-66.25000)"
+           id="use3979"
+           xlink:href="#rect3805"
+           y="0.0000000"
+           x="0.0000000" />
+        <use
+           height="960.00000"
+           width="1280.0000"
+           transform="translate(-862.5000,69.27546)"
+           id="use3981"
+           xlink:href="#rect3827"
+           y="0.0000000"
+           x="0.0000000" />
+        <use
+           height="960.00000"
+           width="1280.0000"
+           transform="translate(-733.0197,-6.250000)"
+           id="use3983"
+           xlink:href="#rect3805"
+           y="0.0000000"
+           x="0.0000000" />
+        <rect
+           y="30.000000"
+           x="400.00000"
+           height="60.000000"
+           width="60.000000"
+           id="rect3985"
+           style="color:#000000;fill:url(#radialGradient4177);fill-opacity:1.0000000;fill-rule:nonzero;stroke:none;stroke-width:1.0749561pt;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4.0000000;stroke-dashoffset:0.0000000;stroke-opacity:1.0000000;marker:none;marker-start:none;marker-mid:none;marker-end:none;visibility:visible" />
+      </g>
+      <g
+         transform="translate(0.000000,120.0000)"
+         id="g3987">
+        <use
+           height="960.00000"
+           width="1280.0000"
+           transform="translate(-793.0197,-66.25000)"
+           id="use3989"
+           xlink:href="#rect3805"
+           y="0.0000000"
+           x="0.0000000" />
+        <use
+           height="960.00000"
+           width="1280.0000"
+           transform="translate(-862.5000,69.27546)"
+           id="use3991"
+           xlink:href="#rect3827"
+           y="0.0000000"
+           x="0.0000000" />
+        <use
+           height="960.00000"
+           width="1280.0000"
+           transform="translate(-733.0197,-6.250000)"
+           id="use3993"
+           xlink:href="#rect3805"
+           y="0.0000000"
+           x="0.0000000" />
+        <rect
+           y="30.000000"
+           x="400.00000"
+           height="60.000000"
+           width="60.000000"
+           id="rect3995"
+           style="color:#000000;fill:url(#radialGradient4179);fill-opacity:1.0000000;fill-rule:nonzero;stroke:none;stroke-width:1.0749561pt;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4.0000000;stroke-dashoffset:0.0000000;stroke-opacity:1.0000000;marker:none;marker-start:none;marker-mid:none;marker-end:none;visibility:visible" />
+      </g>
+      <g
+         transform="translate(120.0000,120.0000)"
+         id="g3997">
+        <use
+           height="960.00000"
+           width="1280.0000"
+           transform="translate(-793.0197,-66.25000)"
+           id="use3999"
+           xlink:href="#rect3805"
+           y="0.0000000"
+           x="0.0000000" />
+        <use
+           height="960.00000"
+           width="1280.0000"
+           transform="translate(-862.5000,69.27546)"
+           id="use4001"
+           xlink:href="#rect3827"
+           y="0.0000000"
+           x="0.0000000" />
+        <use
+           height="960.00000"
+           width="1280.0000"
+           transform="translate(-733.0197,-6.250000)"
+           id="use4003"
+           xlink:href="#rect3805"
+           y="0.0000000"
+           x="0.0000000" />
+        <rect
+           y="30.000000"
+           x="400.00000"
+           height="60.000000"
+           width="60.000000"
+           id="rect4005"
+           style="color:#000000;fill:url(#radialGradient4181);fill-opacity:1.0000000;fill-rule:nonzero;stroke:none;stroke-width:1.0749561pt;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4.0000000;stroke-dashoffset:0.0000000;stroke-opacity:1.0000000;marker:none;marker-start:none;marker-mid:none;marker-end:none;visibility:visible" />
+      </g>
+    </g>
+    <g
+       transform="translate(240.0000,0.000000)"
+       id="g4007">
+      <g
+         id="g4009">
+        <use
+           height="960.00000"
+           width="1280.0000"
+           transform="translate(-793.0197,-66.25000)"
+           id="use4011"
+           xlink:href="#rect3805"
+           y="0.0000000"
+           x="0.0000000" />
+        <use
+           height="960.00000"
+           width="1280.0000"
+           transform="translate(-862.5000,69.27546)"
+           id="use4013"
+           xlink:href="#rect3827"
+           y="0.0000000"
+           x="0.0000000" />
+        <use
+           height="960.00000"
+           width="1280.0000"
+           transform="translate(-733.0197,-6.250000)"
+           id="use4015"
+           xlink:href="#rect3805"
+           y="0.0000000"
+           x="0.0000000" />
+        <rect
+           y="30.000000"
+           x="400.00000"
+           height="60.000000"
+           width="60.000000"
+           id="rect4017"
+           style="color:#000000;fill:url(#radialGradient4183);fill-opacity:1.0000000;fill-rule:nonzero;stroke:none;stroke-width:1.0749561pt;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4.0000000;stroke-dashoffset:0.0000000;stroke-opacity:1.0000000;marker:none;marker-start:none;marker-mid:none;marker-end:none;visibility:visible" />
+      </g>
+      <g
+         transform="translate(120.0000,0.000000)"
+         id="g4019">
+        <use
+           height="960.00000"
+           width="1280.0000"
+           transform="translate(-793.0197,-66.25000)"
+           id="use4021"
+           xlink:href="#rect3805"
+           y="0.0000000"
+           x="0.0000000" />
+        <use
+           height="960.00000"
+           width="1280.0000"
+           transform="translate(-862.5000,69.27546)"
+           id="use4023"
+           xlink:href="#rect3827"
+           y="0.0000000"
+           x="0.0000000" />
+        <use
+           height="960.00000"
+           width="1280.0000"
+           transform="translate(-733.0197,-6.250000)"
+           id="use4025"
+           xlink:href="#rect3805"
+           y="0.0000000"
+           x="0.0000000" />
+        <rect
+           y="30.000000"
+           x="400.00000"
+           height="60.000000"
+           width="60.000000"
+           id="rect4027"
+           style="color:#000000;fill:url(#radialGradient4185);fill-opacity:1.0000000;fill-rule:nonzero;stroke:none;stroke-width:1.0749561pt;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4.0000000;stroke-dashoffset:0.0000000;stroke-opacity:1.0000000;marker:none;marker-start:none;marker-mid:none;marker-end:none;visibility:visible" />
+      </g>
+      <g
+         transform="translate(0.000000,120.0000)"
+         id="g4029">
+        <use
+           height="960.00000"
+           width="1280.0000"
+           transform="translate(-793.0197,-66.25000)"
+           id="use4031"
+           xlink:href="#rect3805"
+           y="0.0000000"
+           x="0.0000000" />
+        <use
+           height="960.00000"
+           width="1280.0000"
+           transform="translate(-862.5000,69.27546)"
+           id="use4033"
+           xlink:href="#rect3827"
+           y="0.0000000"
+           x="0.0000000" />
+        <use
+           height="960.00000"
+           width="1280.0000"
+           transform="translate(-733.0197,-6.250000)"
+           id="use4035"
+           xlink:href="#rect3805"
+           y="0.0000000"
+           x="0.0000000" />
+        <rect
+           y="30.000000"
+           x="400.00000"
+           height="60.000000"
+           width="60.000000"
+           id="rect4037"
+           style="color:#000000;fill:url(#radialGradient4187);fill-opacity:1.0000000;fill-rule:nonzero;stroke:none;stroke-width:1.0749561pt;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4.0000000;stroke-dashoffset:0.0000000;stroke-opacity:1.0000000;marker:none;marker-start:none;marker-mid:none;marker-end:none;visibility:visible" />
+      </g>
+      <g
+         transform="translate(120.0000,120.0000)"
+         id="g4039">
+        <use
+           height="960.00000"
+           width="1280.0000"
+           transform="translate(-793.0197,-66.25000)"
+           id="use4041"
+           xlink:href="#rect3805"
+           y="0.0000000"
+           x="0.0000000" />
+        <use
+           height="960.00000"
+           width="1280.0000"
+           transform="translate(-862.5000,69.27546)"
+           id="use4043"
+           xlink:href="#rect3827"
+           y="0.0000000"
+           x="0.0000000" />
+        <use
+           height="960.00000"
+           width="1280.0000"
+           transform="translate(-733.0197,-6.250000)"
+           id="use4045"
+           xlink:href="#rect3805"
+           y="0.0000000"
+           x="0.0000000" />
+        <rect
+           y="30.000000"
+           x="400.00000"
+           height="60.000000"
+           width="60.000000"
+           id="rect4047"
+           style="color:#000000;fill:url(#radialGradient4189);fill-opacity:1.0000000;fill-rule:nonzero;stroke:none;stroke-width:1.0749561pt;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4.0000000;stroke-dashoffset:0.0000000;stroke-opacity:1.0000000;marker:none;marker-start:none;marker-mid:none;marker-end:none;visibility:visible" />
+      </g>
+    </g>
+  </g>
+  <rect
+     inkscape:export-ydpi="72.000000"
+     inkscape:export-xdpi="72.000000"
+     inkscape:export-filename="/home/sam/alienkeeper/board.png"
+     rx="9.9999952"
+     ry="10.000005"
+     y="541.25378"
+     x="311.24774"
+     height="47.498814"
+     width="517.50403"
+     id="rect4195"
+     style="visibility:visible;marker-end:none;marker-mid:none;marker-start:none;marker:none;stroke-opacity:0.19607843;stroke-dashoffset:0.0000000;stroke-miterlimit:4.0000000;stroke-linejoin:miter;stroke-linecap:butt;stroke-width:2.5000019;stroke:#000000;fill-rule:nonzero;fill-opacity:0.058823530;fill:#000000;color:#000000" />
+  <rect
+     inkscape:export-ydpi="72.000000"
+     inkscape:export-xdpi="72.000000"
+     inkscape:export-filename="/home/sam/alienkeeper/board.png"
+     rx="10.000002"
+     ry="10.000001"
+     y="11.252702"
+     x="841.11169"
+     height="577.46436"
+     width="247.64053"
+     id="rect4197"
+     style="color:#000000;fill:#000000;fill-opacity:0.058823530;fill-rule:nonzero;stroke:#000000;stroke-width:2.5000014;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4.0000000;stroke-dashoffset:0.0000000;stroke-opacity:0.19607843;marker:none;marker-start:none;marker-mid:none;marker-end:none;visibility:visible" />
 </svg>
