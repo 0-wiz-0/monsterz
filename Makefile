@@ -23,7 +23,7 @@ monsterz: monsterz.c
 	$(CC) -Wall monsterz.c -DDATADIR=\"$(pkgdatadir)\" -DSCOREFILE=\"$(scorefile)\" -o monsterz
 
 graphics/icon.png: graphics/graphics.svg
-	inkscape graphics/graphics.svg -z -a 800:240:860:300 -w64 -h64 -e graphics/icon.png
+	inkscape graphics/graphics.svg -z -a 800:480:860:540 -w64 -h64 -e graphics/icon.png
 graphics/tiles.png: graphics/graphics.svg
 	inkscape graphics/graphics.svg -z -a 800:0:1100:660 -d 72 -e graphics/tiles.png
 graphics/bigtiles.png: graphics/graphics.svg
