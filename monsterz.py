@@ -792,8 +792,8 @@ class Game:
                 self.time += self.timebonus
                 if self.time > 2000000:
                     self.time = 2000000
-                # Get a new eye each 5000 points, but no more than 3
-                if (self.score % 5000) + self.scorebonus >= 5000 \
+                # Get a new eye each 10000 points, but no more than 3
+                if (self.score % 10000) + self.scorebonus >= 10000 \
                   and self.eyes < 3:
                     self.eyes += 1
                 self.score += self.scorebonus
