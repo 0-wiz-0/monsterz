@@ -20,7 +20,7 @@ from os.path import join, dirname
 from os import write
 
 # String constants
-VERSION = '0.4.1'
+VERSION = '0.4.2'
 COPYRIGHT = 'MONSTERZ - COPYRIGHT 2005 SAM HOCEVAR - MONSTERZ IS ' \
             'FREE SOFTWARE, YOU CAN REDISTRIBUTE IT AND/OR MODIFY IT ' \
             'UNDER THE TERMS OF THE DO WHAT THE FUCK YOU WANT TO ' \

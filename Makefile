@@ -6,7 +6,7 @@ pkgdatadir = $(datadir)/games/monsterz
 scoredir = /var/games
 scorefile = $(scoredir)/monsterz
 
-VERSION = 0.4.1
+VERSION = 0.4.2
 DIRECTORY = monsterz-$(VERSION)
 
 DATA = $(BITMAP) $(SOUND) $(MUSIC)
