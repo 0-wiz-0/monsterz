@@ -216,7 +216,7 @@ class Game:
 
     def new_level(self):
         # Compute level data
-        if self.level < 8:
+        if self.level < 7:
             self.population = 7
         else:
             self.population = 8
