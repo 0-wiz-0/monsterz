@@ -15,10 +15,12 @@
 import pygame
 from pygame.locals import *
 from random import randint
-from sys import argv
+from sys import argv, exit
+from getopt import getopt, GetoptError
 from os.path import join, dirname
 
 # String constants
+VERSION = '0.2'
 COPYRIGHT = 'MONSTERZ -- COPYRIGHT 2005 SAM HOCEVAR -- MONSTERZ IS ' \
             'FREE SOFTWARE, YOU CAN REDISTRIBUTE IT AND/OR MODIFY IT ' \
             'UNDER THE TERMS OF THE DO WHAT THE FUCK YOU WANT TO ' \
@@ -45,10 +47,13 @@ WIN_DELAY = 10
 SWITCH_DELAY = 4
 WARNING_DELAY = 12
 
+# Runtime flags
+FLAG_FULLSCREEN = False
+FLAG_MUSIC = True
+FLAG_SFX = True
+FLAG_OUTPUT = False
+
 class Data:
-    have_sound = False
-    do_sfx = False
-    do_music = False
     def __init__(self, dir = dirname(argv[0])):
         # Load stuff
         tiles = pygame.image.load(join(dir, 'tiles.png')).convert_alpha()
@@ -61,33 +66,27 @@ class Data:
         self.orig_size = w / 5
         self.tile_size = min((SCREEN_WIDTH - 20) / BOARD_WIDTH,
                              (SCREEN_HEIGHT - 20) * 17 / 20 / BOARD_HEIGHT)
-        self.normal = {}
-        self.blink = {}
-        self.tiny = {}
-        self.shaded = {}
-        self.surprise = {}
-        self.angry = {}
-        self.exploded = {}
-        self.special = {}
+        self.normal = [None] * 8
+        self.blink = [None] * 8
+        self.tiny = [None] * 8
+        self.shaded = [None] * 8
+        self.surprise = [None] * 8
+        self.angry = [None] * 8
+        self.exploded = [None] * 8
+        self.special = [None] * 8
         self.selector = None
-        # Initialise sound stuff
-        try:
-            self.have_sound = pygame.mixer.get_init()
-        except:
-            self.have_sound = False
-        if self.have_sound:
+        # Load sound stuff
+        if system.have_sound:
             self.wav = {}
             for s in ['click', 'grunt', 'ding', 'whip', 'pop', 'duh', \
                       'boing', 'applause', 'laugh', 'warning']:
                 self.wav[s] = pygame.mixer.Sound(join(dir, s + '.wav'))
-            self.do_sfx = True
-            try:
-                pygame.mixer.music.load(join(dir, 'music.s3m'))
-                pygame.mixer.music.set_volume(0.9)
-                pygame.mixer.music.play(-1, 0.0)
-                self.do_music = True
-            except:
-                pass
+            pygame.mixer.music.load(join(dir, 'music.s3m'))
+            pygame.mixer.music.set_volume(0.9)
+            # Play immediately
+            pygame.mixer.music.play(-1, 0.0)
+            if not FLAG_MUSIC:
+                pygame.mixer.music.pause()
         # Initialise tiles stuff
         t = self.tile_size
         s = self.orig_size
@@ -134,9 +133,6 @@ class Data:
             return pygame.transform.scale(surf, size)
         return pygame.transform.rotozoom(surf, 0.0, 1.0 * size[0] / w)
 
-    def play_sound(self, sound):
-        if self.do_sfx: self.wav[sound].play()
-
     def board2screen(self, coord):
         x, y = coord
         return (x * data.tile_size + 24, y * data.tile_size + 24)
@@ -144,6 +140,52 @@ class Data:
     def screen2board(self, coord):
         x, y = coord
         return ((x - 24) / data.tile_size, (y - 24) / data.tile_size)
+
+class System:
+    def __init__(self):
+        if FLAG_FULLSCREEN:
+            f = pygame.FULLSCREEN
+        else:
+            f = 0
+        pygame.init()
+        self.window = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), f)
+        self.background = pygame.Surface(self.window.get_size())
+        try:
+            self.have_sound = pygame.mixer.get_init()
+        except:
+            self.have_sound = False
+        pygame.display.set_caption('Monsterz')
+
+    def blit(self, surf, coords):
+        self.background.blit(surf, coords)
+
+    def flip(self):
+        self.window.blit(self.background, (0, 0))
+        pygame.display.flip()
+
+    def play(self, sound):
+        if self.have_sound and FLAG_SFX: data.wav[sound].play()
+
+    def toggle_fullscreen(self):
+        global FLAG_FULLSCREEN
+        self.play('whip')
+        FLAG_FULLSCREEN = not FLAG_FULLSCREEN
+        pygame.display.toggle_fullscreen()
+
+    def toggle_sfx(self):
+        global FLAG_SFX
+        self.play('whip')
+        FLAG_SFX = not FLAG_SFX
+        self.play('whip')
+
+    def toggle_music(self):
+        global FLAG_MUSIC
+        self.play('whip')
+        if FLAG_MUSIC:
+            pygame.mixer.music.pause()
+        else:
+            pygame.mixer.music.unpause()
+        FLAG_MUSIC = not FLAG_MUSIC
 
 class Fonter:
     def __init__(self, size = 48):
@@ -376,7 +418,7 @@ class Game:
             self.pieces_draw(shape, (x + xoff, y + yoff))
         # Draw selector if necessary
         if self.select:
-            bg.blit(data.selector, select_coord)
+            system.blit(data.selector, select_coord)
 
     def pieces_draw(self, sprite, (x, y)):
         width = data.tile_size
@@ -405,7 +447,7 @@ class Game:
         elif y > 24 + 7 * data.tile_size + 14:
             delta = y - 24 - 7 * data.tile_size - 14
             sprite = crop((0, 0, width, data.tile_size - delta))
-        bg.blit(sprite, (x, y))
+        system.blit(sprite, (x, y))
 
     def game_draw(self):
         # Draw timebar
@@ -428,43 +470,43 @@ class Game:
             else:
                 c = (0, 200, 0, 127)
             pygame.draw.rect(timebar, c, (0, 0, w, 24))
-        bg.blit(timebar, (16, 440))
+        system.blit(timebar, (16, 440))
         # Draw pieces
         if self.paused:
-            bg.blit(self.pause_bitmap, (72, 24))
+            system.blit(self.pause_bitmap, (72, 24))
             text = fonter.render('PAUSED', 120)
             w, h = text.get_rect().size
-            bg.blit(text, (24 + 192 - w / 2, 24 + 336 - h / 2))
+            system.blit(text, (24 + 192 - w / 2, 24 + 336 - h / 2))
         elif self.lost_timer >= 0:
             self.board_draw()
         # Print play again message
         if self.lost_timer < 0:
             text = fonter.render('GAME OVER', 80)
             w, h = text.get_rect().size
-            bg.blit(text, (24 + 192 - w / 2, 24 + 192 - h / 2))
+            system.blit(text, (24 + 192 - w / 2, 24 + 192 - h / 2))
             text = fonter.render('CLICK TO CONTINUE', 24)
             w, h = text.get_rect().size
-            bg.blit(text, (24 + 192 - w / 2, 24 + 240 - h / 2))
+            system.blit(text, (24 + 192 - w / 2, 24 + 240 - h / 2))
         # Print new level stuff
         if self.level_timer > SCROLL_DELAY / 2:
             text = fonter.render('LEVEL UP!', 80)
             w, h = text.get_rect().size
-            bg.blit(text, (24 + 192 - w / 2, 24 + 192 - h / 2))
+            system.blit(text, (24 + 192 - w / 2, 24 + 192 - h / 2))
         # When no more moves are possible
         if self.board_timer > SCROLL_DELAY / 2:
             text = fonter.render('NO MORE MOVES!', 60)
             w, h = text.get_rect().size
-            bg.blit(text, (24 + 192 - w / 2, 24 + 192 - h / 2))
+            system.blit(text, (24 + 192 - w / 2, 24 + 192 - h / 2))
         # Print bonus
         for b in self.bonus_list:
             text = fonter.render(str(b[1]), 36)
             w, h = text.get_rect().size
             x, y = data.board2screen(b[0])
-            bg.blit(text, (x + 24 - w / 2, y + 24 - h / 2))
+            system.blit(text, (x + 24 - w / 2, y + 24 - h / 2))
         # Print score
         text = fonter.render(str(self.score), 60)
         w, h = text.get_rect().size
-        bg.blit(text, (624 - w, 10))
+        system.blit(text, (624 - w, 10))
         # Print done/needed
         for i in range(self.population):
             if not self.needed[i + 1]:
@@ -475,30 +517,30 @@ class Game:
                 surf = data.shaded[i]
             x = 440 + i / 4 * 90
             y = 64 + (i % 4) * 38
-            bg.blit(surf, (x, y))
+            system.blit(surf, (x, y))
             text = fonter.render(str(self.done[i + 1]), 36)
-            bg.blit(text, (x + 44, y + 2))
+            system.blit(text, (x + 44, y + 2))
         # Print pause and abort buttons
         if self.paused:
             led, color = data.led_on, (255, 255, 255)
         else:
             led, color = data.led_off, (180, 150, 127)
-        bg.blit(led, (440, 288))
-        bg.blit(fonter.render('PAUSE', 30, color), (470, 286))
+        system.blit(led, (440, 288))
+        system.blit(fonter.render('PAUSE', 30, color), (470, 286))
         led, color = data.led_off, (180, 150, 127)
-        bg.blit(led, (440, 328))
-        bg.blit(fonter.render('ABORT', 30, color), (470, 326))
+        system.blit(led, (440, 328))
+        system.blit(fonter.render('ABORT', 30, color), (470, 326))
         # Print level
         msg = 'LEVEL ' + str(self.level)
         if self.needed[1]: msg += ' - ' + str(self.needed[1])
         text = fonter.render(msg, 36)
-        bg.blit(text, (444, 216))
+        system.blit(text, (444, 216))
 
     def pause(self):
         # TODO: prevent cheating by not allowing less than 1 second
         # since the last pause
         self.paused = not self.paused
-        data.play_sound('whip')
+        system.play('whip')
         if self.paused:
             self.pause_bitmap = pygame.transform.scale(data.normal[self.get_random(no_special = True) - 1], (6 * data.tile_size, 6 * data.tile_size))
             #self.pause_bitmap = pygame.transform.rotozoom(data.normal[self.get_random(no_special = True) - 1], 0.0, 6.0)
@@ -519,7 +561,7 @@ class Game:
             if self.board_timer is SCROLL_DELAY / 2:
                 self.new_board()
             elif self.board_timer is 0:
-                data.play_sound('boing')
+                system.play('boing')
                 self.check_moves = True # Need to check again
             return
         if self.lost_timer:
@@ -540,7 +582,7 @@ class Game:
                 else:
                     self.wins = self.get_wins()
                     if not self.wins:
-                        data.play_sound('whip')
+                        system.play('whip')
                         self.missed = True
                         self.switch_timer = SWITCH_DELAY
                         return
@@ -555,19 +597,19 @@ class Game:
                 self.level += 1
                 self.new_level()
             elif self.level_timer is 0:
-                data.play_sound('boing')
+                system.play('boing')
                 self.blink_list = {}
                 self.check_moves = True
             return
         if self.win_timer:
             self.win_timer -= 1
             if self.win_timer is WIN_DELAY - 1:
-                data.play_sound('duh')
+                system.play('duh')
                 for w in self.wins:
                     for x, y in w:
                         self.surprised_list.append((x, y))
             elif self.win_timer is WIN_DELAY * 3 / 6:
-                data.play_sound('pop')
+                system.play('pop')
                 self.scorebonus = 0
                 self.timebonus = 0
                 for w in self.wins:
@@ -597,7 +639,7 @@ class Game:
                             unfinished += 1
                             angry = i + 1
                     if unfinished == 1:
-                        data.play_sound('grunt')
+                        system.play('grunt')
                         self.angry_tiles = angry
                 self.disappear_list = []
             elif self.win_timer is WIN_DELAY / 6:
@@ -606,7 +648,7 @@ class Game:
                     self.time = 2000000
                 self.score += self.scorebonus
                 self.fill_board()
-                data.play_sound('boing')
+                system.play('boing')
             elif self.win_timer is 0:
                 self.wins = self.get_wins()
                 if self.wins:
@@ -619,19 +661,19 @@ class Game:
                             self.check_moves = True
                             break
                     else:
-                        data.play_sound('applause')
+                        system.play('applause')
                         self.select = None
                         self.level_timer = SCROLL_DELAY
             return
         if self.warning_timer:
             self.warning_timer -= 1
         elif self.time <= 200000:
-            data.play_sound('warning')
+            system.play('warning')
             self.warning_timer = WARNING_DELAY
         # Update time
         self.time -= delta
         if self.time <= 0:
-            data.play_sound('laugh')
+            system.play('laugh')
             self.select = None
             self.lost_timer = LOST_DELAY
             return
@@ -681,17 +723,17 @@ class Game:
                 x1, y1 = self.select
                 x2, y2 = played
                 if x1 == x2 and y1 == y2:
-                    data.play_sound('click')
+                    system.play('click')
                     self.select = None
                     return
                 if abs(x1 - x2) + abs(y1 - y2) != 1:
                     return
-                data.play_sound('whip')
+                system.play('whip')
                 self.switch = played
                 self.switch_timer = SWITCH_DELAY
             else:
                 if self.board[played] != 0:
-                    data.play_sound('click')
+                    system.play('click')
                     self.select = played
                     return
                 # Deal with the special block
@@ -731,8 +773,7 @@ class Monsterz:
                 break
             self.status = None
             iterator()
-            win.blit(bg, (0, 0))
-            pygame.display.flip()
+            system.flip()
             self.timer += 1
             self.clock.tick(12)
         # Close the display, but give time to hear the last sample
@@ -742,6 +783,7 @@ class Monsterz:
     def copyright_draw(self):
         scroll = pygame.Surface((406, 40)).convert_alpha()
         scroll.fill((0, 0, 0, 0))
+        # This very big text surface will be cached by the font system
         text = fonter.render(COPYRIGHT, 30)
         w, h = text.get_size()
         d = (self.timer * 2) % w
@@ -757,69 +799,56 @@ class Monsterz:
             del alpha
         except:
             pass
-        bg.blit(scroll, (13, 437))
+        system.blit(scroll, (13, 437))
 
     def generic_draw(self):
-        bg.blit(data.board, (0, 0))
+        system.blit(data.board, (0, 0))
         # Print various buttons
-        if data.have_sound:
-            if data.do_sfx:
+        if system.have_sound:
+            if FLAG_SFX:
                 led, color = data.led_on, (255, 255, 255)
             else:
                 led, color = data.led_off, (180, 150, 127)
-            bg.blit(led, (440, 378))
-            bg.blit(fonter.render('SOUND FX', 30, color), (470, 376))
-            if data.do_music:
+            system.blit(led, (440, 378))
+            system.blit(fonter.render('SOUND FX', 30, color), (470, 376))
+            if FLAG_MUSIC:
                 led, color = data.led_on, (255, 255, 255)
             else:
                 led, color = data.led_off, (180, 150, 127)
-            bg.blit(led, (440, 408))
-            bg.blit(fonter.render('MUSIC', 30, color), (470, 406))
-        if self.fullscreen:
+            system.blit(led, (440, 408))
+            system.blit(fonter.render('MUSIC', 30, color), (470, 406))
+        if FLAG_FULLSCREEN:
             led, color = data.led_on, (255, 255, 255)
         else:
             led, color = data.led_off, (180, 150, 127)
-        bg.blit(led, (440, 438))
-        bg.blit(fonter.render('FULLSCREEN', 30, color), (470, 436))
+        system.blit(led, (440, 438))
+        system.blit(fonter.render('FULLSCREEN', 30, color), (470, 436))
 
-    fullscreen = False
     def generic_event(self, event):
         if event.type == QUIT:
             self.status = STATUS_QUIT
             return True
         elif event.type == KEYDOWN and event.key == K_f:
-            self.fullscreen = not self.fullscreen
-            pygame.display.toggle_fullscreen()
+            system.toggle_fullscreen()
             return True
-        elif event.type == KEYDOWN and event.key == K_s:
-            data.do_sfx = not data.do_sfx
-            return True
-        elif event.type == KEYDOWN and event.key == K_m:
-            if data.do_music:
-                pygame.mixer.music.pause()
-            else:
-                pygame.mixer.music.unpause()
-            data.do_music = not data.do_music
-            return True
-        elif event.type == MOUSEBUTTONDOWN:
+        if system.have_sound:
+            if event.type == KEYDOWN and event.key == K_s:
+                system.toggle_sfx()
+                return True
+            elif event.type == KEYDOWN and event.key == K_m:
+                system.toggle_music()
+                return True
+        if event.type == MOUSEBUTTONDOWN:
             x, y = pygame.mouse.get_pos()
-            if x > 440 and y > 378 and x < 440 + 180 and y < 378 + 24:
-                data.play_sound('whip')
-                data.do_sfx = not data.do_sfx
-                data.play_sound('whip')
-                return True
-            elif x > 440 and y > 408 and x < 440 + 180 and y < 408 + 24:
-                data.play_sound('whip')
-                if data.do_music:
-                    pygame.mixer.music.pause()
-                else:
-                    pygame.mixer.music.unpause()
-                data.do_music = not data.do_music
-                return True
-            elif x > 440 and y > 438 and x < 440 + 180 and y < 438 + 24:
-                data.play_sound('whip')
-                self.fullscreen = not self.fullscreen
-                pygame.display.toggle_fullscreen()
+            if system.have_sound:
+                if x > 440 and y > 378 and x < 440 + 180 and y < 378 + 24:
+                    system.toggle_sfx()
+                    return True
+                elif x > 440 and y > 408 and x < 440 + 180 and y < 408 + 24:
+                    system.toggle_music()
+                    return True
+            if x > 440 and y > 438 and x < 440 + 180 and y < 438 + 24:
+                system.toggle_fullscreen()
                 return True
         return False
 
@@ -847,11 +876,11 @@ class Monsterz:
         else:
             area = None
         if area and area != self.area:
-            data.play_sound('click')
+            system.play('click')
         self.area = area
         # Print logo and menu
         w, h = data.logo.get_size()
-        bg.blit(data.logo, (24 + 192 - w / 2, 24 + 96 - h / 2))
+        system.blit(data.logo, (24 + 192 - w / 2, 24 + 96 - h / 2))
         for x in range(4):
             if self.sat[x] > 180:
                 monster = data.surprise[shapes[x]]
@@ -859,22 +888,23 @@ class Monsterz:
                 monster = data.normal[shapes[x]]
             else:
                 monster = data.blink[shapes[x]]
-            bg.blit(monster, data.board2screen((1, 4 + x)))
+            system.blit(monster, data.board2screen((1, 4 + x)))
             c = map(lambda a: 255 - (255 - a) * self.sat[x] / 255, colors[x])
             text = fonter.render(messages[x], 48, c)
             w, h = text.get_rect().size
-            bg.blit(text, (24 + 102, 24 + 216 + 48 * x - h / 2))
+            system.blit(text, (24 + 102, 24 + 216 + 48 * x - h / 2))
             if self.sat[x]:
-                self.sat[x] = self.sat[x] * 8 / 10#max(0, self.sat[x] - 20)
+                self.sat[x] = self.sat[x] * 8 / 10
         # Handle events
         for event in pygame.event.get():
             if self.generic_event(event):
                 return
             elif event.type == KEYDOWN and event.key == K_ESCAPE:
+                system.play('whip')
                 self.status = STATUS_QUIT
                 return
             elif event.type == MOUSEBUTTONDOWN and area:
-                data.play_sound('whip')
+                system.play('whip')
                 self.status = area
                 return
 
@@ -886,7 +916,7 @@ class Monsterz:
             for move in game.list_moves():
                 break
             else:
-                data.play_sound('ding')
+                system.play('ding')
                 game.board_timer = SCROLL_DELAY
             game.check_moves = False
             game.clicks = []
@@ -896,6 +926,7 @@ class Monsterz:
             if self.generic_event(event):
                 return
             elif event.type == KEYDOWN and event.key == K_ESCAPE:
+                system.play('whip')
                 self.status = STATUS_MENU
                 return
             elif event.type == KEYDOWN and (event.key == K_p or event.key == K_SPACE):
@@ -903,11 +934,11 @@ class Monsterz:
             elif event.type == MOUSEBUTTONDOWN:
                 x, y = pygame.mouse.get_pos()
                 if x > 440 and y > 288 and x < 440 + 180 and y < 288 + 24:
-                    data.play_sound('whip')
+                    system.play('whip')
                     game.pause()
                     return
                 elif x > 440 and y > 328 and x < 440 + 180 and y < 328 + 24:
-                    data.play_sound('whip')
+                    system.play('whip')
                     self.status = STATUS_MENU
                     return
                 if game.lost_timer < 0:
@@ -925,78 +956,79 @@ class Monsterz:
         # Title
         text = fonter.render('INSTRUCTIONS', 60)
         w, h = text.get_rect().size
-        bg.blit(text, (24 + 192 - w / 2, 24 + 24 - h / 2))
+        system.blit(text, (24 + 192 - w / 2, 24 + 24 - h / 2))
         # Explanation 1
         text = fonter.render('SWAP ADJACENT MONSTERS TO CREATE', 24)
         w, h = text.get_rect().size
-        bg.blit(text, (24 + 6, 24 + 60 - h / 2))
+        system.blit(text, (24 + 6, 24 + 60 - h / 2))
         text = fonter.render('ALIGNMENTS OF THREE OR MORE.', 24)
         w, h = text.get_rect().size
-        bg.blit(text, (24 + 6, 24 + 84 - h / 2))
+        system.blit(text, (24 + 6, 24 + 84 - h / 2))
         # Iter 1
-        bg.blit(data.blink[0], data.board2screen((0, 2)))
-        bg.blit(data.normal[3], data.board2screen((0, 3)))
-        bg.blit(data.normal[2], data.board2screen((0, 4)))
-        bg.blit(data.normal[4], data.board2screen((1, 2)))
-        bg.blit(data.normal[0], data.board2screen((1, 3)))
-        bg.blit(data.normal[0], data.board2screen((1, 4)))
-        bg.blit(data.selector, data.board2screen((0, 2)))
+        system.blit(data.blink[0], data.board2screen((0, 2)))
+        system.blit(data.normal[3], data.board2screen((0, 3)))
+        system.blit(data.normal[2], data.board2screen((0, 4)))
+        system.blit(data.normal[4], data.board2screen((1, 2)))
+        system.blit(data.normal[0], data.board2screen((1, 3)))
+        system.blit(data.normal[0], data.board2screen((1, 4)))
+        system.blit(data.selector, data.board2screen((0, 2)))
         # Iter 2
-        bg.blit(data.normal[4], data.board2screen((3, 2)))
-        bg.blit(data.normal[3], data.board2screen((3, 3)))
-        bg.blit(data.normal[2], data.board2screen((3, 4)))
-        bg.blit(data.surprise[0], data.board2screen((4, 2)))
-        bg.blit(data.surprise[0], data.board2screen((4, 3)))
-        bg.blit(data.surprise[0], data.board2screen((4, 4)))
-        bg.blit(data.selector, data.board2screen((4, 2)))
+        system.blit(data.normal[4], data.board2screen((3, 2)))
+        system.blit(data.normal[3], data.board2screen((3, 3)))
+        system.blit(data.normal[2], data.board2screen((3, 4)))
+        system.blit(data.surprise[0], data.board2screen((4, 2)))
+        system.blit(data.surprise[0], data.board2screen((4, 3)))
+        system.blit(data.surprise[0], data.board2screen((4, 4)))
+        system.blit(data.selector, data.board2screen((4, 2)))
         # Iter 2
-        bg.blit(data.normal[4], data.board2screen((6, 2)))
-        bg.blit(data.normal[3], data.board2screen((6, 3)))
-        bg.blit(data.normal[2], data.board2screen((6, 4)))
-        bg.blit(data.exploded[0], data.board2screen((7, 2)))
-        bg.blit(data.exploded[0], data.board2screen((7, 3)))
-        bg.blit(data.exploded[0], data.board2screen((7, 4)))
+        system.blit(data.normal[4], data.board2screen((6, 2)))
+        system.blit(data.normal[3], data.board2screen((6, 3)))
+        system.blit(data.normal[2], data.board2screen((6, 4)))
+        system.blit(data.exploded[0], data.board2screen((7, 2)))
+        system.blit(data.exploded[0], data.board2screen((7, 3)))
+        system.blit(data.exploded[0], data.board2screen((7, 4)))
         # Explanation 2
         text = fonter.render('CLICK ON THE BONUS TO REMOVE ALL', 24)
         w, h = text.get_rect().size
-        bg.blit(text, (24 + 6, 24 + 252 - h / 2))
+        system.blit(text, (24 + 6, 24 + 252 - h / 2))
         text = fonter.render('MONSTERS OF A RANDOM KIND.', 24)
         w, h = text.get_rect().size
-        bg.blit(text, (24 + 6, 24 + 276 - h / 2))
+        system.blit(text, (24 + 6, 24 + 276 - h / 2))
         shape = data.special[self.timer % 7]
         # Iter 1
-        bg.blit(data.normal[1], data.board2screen((0, 6)))
-        bg.blit(data.normal[2], data.board2screen((0, 7)))
-        bg.blit(shape, data.board2screen((1, 6)))
-        bg.blit(data.normal[5], data.board2screen((1, 7)))
-        bg.blit(data.normal[2], data.board2screen((2, 6)))
-        bg.blit(data.normal[4], data.board2screen((2, 7)))
+        system.blit(data.normal[1], data.board2screen((0, 6)))
+        system.blit(data.normal[2], data.board2screen((0, 7)))
+        system.blit(shape, data.board2screen((1, 6)))
+        system.blit(data.normal[5], data.board2screen((1, 7)))
+        system.blit(data.normal[2], data.board2screen((2, 6)))
+        system.blit(data.normal[4], data.board2screen((2, 7)))
         # Iter 2
-        bg.blit(data.normal[1], data.board2screen((4, 6)))
-        bg.blit(data.exploded[2], data.board2screen((4, 7)))
-        bg.blit(data.normal[5], data.board2screen((5, 7)))
-        bg.blit(data.exploded[2], data.board2screen((6, 6)))
-        bg.blit(data.normal[4], data.board2screen((6, 7)))
+        system.blit(data.normal[1], data.board2screen((4, 6)))
+        system.blit(data.exploded[2], data.board2screen((4, 7)))
+        system.blit(data.normal[5], data.board2screen((5, 7)))
+        system.blit(data.exploded[2], data.board2screen((6, 6)))
+        system.blit(data.normal[4], data.board2screen((6, 7)))
         # Print bonus
         text = fonter.render('10', 36)
         w, h = text.get_rect().size
         x, y = data.board2screen((7, 3))
-        bg.blit(text, (x + 24 - w / 2, y + 24 - h / 2))
+        system.blit(text, (x + 24 - w / 2, y + 24 - h / 2))
         x, y = data.board2screen((4, 7))
-        bg.blit(text, (x + 24 - w / 2, y + 24 - h / 2))
+        system.blit(text, (x + 24 - w / 2, y + 24 - h / 2))
         x, y = data.board2screen((5, 6))
-        bg.blit(text, (x + 24 - w / 2, y + 24 - h / 2))
+        system.blit(text, (x + 24 - w / 2, y + 24 - h / 2))
         x, y = data.board2screen((6, 6))
-        bg.blit(text, (x + 24 - w / 2, y + 24 - h / 2))
+        system.blit(text, (x + 24 - w / 2, y + 24 - h / 2))
         # Handle events
         for event in pygame.event.get():
             if self.generic_event(event):
                 return
             elif event.type == KEYDOWN and event.key == K_ESCAPE:
+                system.play('whip')
                 self.status = STATUS_MENU
                 return
             elif event.type == MOUSEBUTTONDOWN:
-                data.play_sound('whip')
+                system.play('whip')
                 self.status = STATUS_MENU
                 return
 
@@ -1005,41 +1037,91 @@ class Monsterz:
         self.copyright_draw()
         text = fonter.render('HIGH SCORES', 60)
         w, h = text.get_rect().size
-        bg.blit(text, (24 + 192 - w / 2, 24 + 24 - h / 2))
+        system.blit(text, (24 + 192 - w / 2, 24 + 24 - h / 2))
         # Dummy scores list
         scores = [['UNIMPLEMENTED', 100 - x * 10, 1] for x in range(10)]
         # Print our list
         for x, p in enumerate(scores):
             text = fonter.render(str(x + 1) + '. ' + p[0], 32)
             w, h = text.get_rect().size
-            bg.blit(text, (24 + 24, 24 + 72 + 32 * x - h / 2))
+            system.blit(text, (24 + 24, 24 + 72 + 32 * x - h / 2))
             text = fonter.render(str(p[1]), 32)
             w, h = text.get_rect().size
-            bg.blit(text, (24 + 324 - w, 24 + 72 + 32 * x - h / 2))
+            system.blit(text, (24 + 324 - w, 24 + 72 + 32 * x - h / 2))
             text = fonter.render(str(p[2]), 32)
             w, h = text.get_rect().size
-            bg.blit(text, (24 + 360 - w, 24 + 72 + 32 * x - h / 2))
+            system.blit(text, (24 + 360 - w, 24 + 72 + 32 * x - h / 2))
         # Handle events
         for event in pygame.event.get():
             if self.generic_event(event):
                 return
             elif event.type == KEYDOWN and event.key == K_ESCAPE:
+                system.play('whip')
                 self.status = STATUS_MENU
                 return
             elif event.type == MOUSEBUTTONDOWN:
-                data.play_sound('whip')
+                system.play('whip')
                 self.status = STATUS_MENU
                 return
 
-# Pygame init
-pygame.init()
-# Display init
-win = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-bg = pygame.Surface(win.get_size())
-pygame.display.set_caption('Monsterz')
-data = Data()
-fonter = Fonter()
-# Go!
-monsterz = Monsterz()
-monsterz.go()
+def version():
+    print 'monsterz ' + VERSION
+    print 'Written by Sam Hocevar, music by MenTaLguY, sound effects by Castle Music'
+    print 'Productions, Koumis Productions and Sam Hocevar.'
+    print
+    print 'Copyright (C) 2005 Sam Hocevar <sam@zoy.org>'
+    print '          (C) 2004 Koumis Productions <info@koumis.com>'
+    print '          (C) 2002 Castles Music Productions <info@castlesmusic.co.nz>'
+    print '          (C) 1998 MenTaLguY <mental@rydia.net>'
+    print 'This is free software; you can redistribute it and/or modify it under the terms'
+    print 'of the Do What The Fuck You Want To Public License, Version 2, as published'
+    print 'by Sam Hocevar. See http://sam.zoy.org/projects/COPYING.WTFPL for more details.'
+
+def usage():
+    print 'Usage: monsterz [OPTION]...'
+    print
+    print 'Options'
+    print ' -h, --help         display this help and exit'
+    print ' -v, --version      display version information and exit'
+    print ' -f, --fullscreen   start in full screen mode'
+    print ' -m, --nomusic      disable music'
+    print ' -s, --nosfx        disable sound effects'
+    print ' -o, --output       output scores to standard output'
+    print
+    print 'Report bugs or suggestions to <sam@zoy.org>.'
+
+def main():
+    global system, data, fonter, monsterz
+    global FLAG_FULLSCREEN, FLAG_MUSIC, FLAG_SFX, FLAG_OUTPUT
+    try:
+        long = ["help", "version", "music", "sound", "fullscreen", "output"]
+        opts = getopt(argv[1:], "hvmsfo", long)[0]
+    except GetoptError:
+        usage()
+        exit(2)
+    for opt, arg in opts:
+        if opt in ("-h", "--help"):
+            usage()
+            exit()
+        elif opt in ("-v", "--version"):
+            version()
+            exit()
+        elif opt in ("-m", "--nomusic"):
+            FLAG_MUSIC = False
+        elif opt in ("-s", "--nosfx"):
+            FLAG_SFX = False
+        elif opt in ("-f", "--fullscreen"):
+            FLAG_FULLSCREEN = True
+        elif opt in ("-o", "--output"):
+            FLAG_OUTPUT = True
+    # Init everything and launch the game
+    system = System()
+    data = Data()
+    fonter = Fonter()
+    monsterz = Monsterz()
+    monsterz.go()
+    exit()
+
+if __name__ == "__main__":
+    main()
 
