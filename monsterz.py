@@ -113,7 +113,6 @@ class Hiscores:
     def __init__(self, scorefile, outfd):
         self.scorefile = scorefile
         self.outfd = outfd
-        self.scores = {}
         # Get username
         if platform == 'win32':
             try:
@@ -128,6 +127,7 @@ class Hiscores:
         self._load()
 
     def _load(self):
+        self.scores = {}
         # Load current score file
         try:
             file = open(self.scorefile, 'r')
