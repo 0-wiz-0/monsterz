@@ -50,8 +50,10 @@ class Theme:
             self.surprised[x] = pygame.transform.scale(self.tiles.subsurface((self.orig_size, (x + 1) * self.orig_size, self.orig_size, self.orig_size)), (size, size))
             self.angry[x] = pygame.transform.scale(self.tiles.subsurface((self.orig_size * 2, (x + 1) * self.orig_size, self.orig_size, self.orig_size)), (size, size))
             self.exploded[x] = pygame.transform.scale(self.tiles.subsurface((self.orig_size * 3, (x + 1) * self.orig_size, self.orig_size, self.orig_size)), (size, size))
-            tmp = pygame.Surface((self.orig_size, self.orig_size))
-            tmp.blit(self.tiles.subsurface((self.orig_size, 0, self.orig_size, self.orig_size)), (0, 0))
+            #tmp = pygame.Surface((self.orig_size, self.orig_size))
+            #tmp.blit(self.tiles.subsurface((self.orig_size, 0, self.orig_size, self.orig_size)), (0, 0))
+            #tmp = self.tiles.subsurface((self.orig_size, 0, self.orig_size, self.orig_size)).copy()
+            tmp = pygame.transform.scale(self.tiles.subsurface((self.orig_size, 0, self.orig_size, self.orig_size)), (self.orig_size, self.orig_size))
             tmp2 = self.tiles.subsurface((0, (x + 1) * self.orig_size, self.orig_size, self.orig_size))
             # Crappy FX
             tmp2 = pygame.transform.scale(tmp2, (self.orig_size * 7 / 8, self.orig_size * 7 / 8))
@@ -328,7 +330,7 @@ class Game:
             for d in range(2):
                 text = font.render(str(self.done[i + 1]) + '/' + str(self.needed[i + 1]), 2, (d * 255, d * 255, d * 255))
                 background.blit(text, (x + theme.tile_size * 5 / 4 - delta * d, y + screen_height / 64 - delta * d))
-            y += screen_height / 10
+            y += screen_height / 12
 
     def iterate(self):
         ticks = pygame.time.get_ticks()
