@@ -33,8 +33,12 @@ SCREEN_WIDTH = 640
 SCREEN_HEIGHT = 480
 BOARD_WIDTH = 8
 BOARD_HEIGHT = 8
+ITEM_SIZE = 48
 
 ITEMS = 9
+ITEM_NONE = -1
+ITEM_SPECIAL = ITEMS + 1
+ITEM_METAL = ITEMS + 2
 
 STATUS_MENU = 0
 STATUS_NEW = 1
@@ -253,8 +257,6 @@ class Data:
         self.board = pygame.image.load(join(dir, 'graphics', 'board.png')).convert()
         self.logo = pygame.image.load(join(dir, 'graphics', 'logo.png')).convert_alpha()
         self.orig_size = w / 5
-        self.tile_size = min((SCREEN_WIDTH - 20) / BOARD_WIDTH,
-                             (SCREEN_HEIGHT - 20) * 17 / 20 / BOARD_HEIGHT)
         self.normal = [None] * ITEMS
         self.blink = [None] * ITEMS
         self.tiny = [None] * ITEMS
@@ -277,7 +279,7 @@ class Data:
             if not settings.get('music'):
                 pygame.mixer.music.pause()
         # Initialise tiles stuff
-        t = self.tile_size
+        t = ITEM_SIZE
         s = self.orig_size
         scale = self._scale
         tile_at = lambda x, y: self.tiles.subsurface((x * s, y * s, s, s))
@@ -316,11 +318,11 @@ class Data:
 
     def board2screen(self, coord):
         x, y = coord
-        return (x * data.tile_size + 24, y * data.tile_size + 24)
+        return (x * ITEM_SIZE + 24, y * ITEM_SIZE + 24)
 
     def screen2board(self, coord):
         x, y = coord
-        return ((x - 24) / data.tile_size, (y - 24) / data.tile_size)
+        return ((x - 24) / ITEM_SIZE, (y - 24) / ITEM_SIZE)
 
 class System:
     def __init__(self):
@@ -341,8 +343,8 @@ class System:
         self.background.blit(surf, coords)
 
     def blit_board(self, (x1, y1, x2, y2)):
-        x1, y1 = x1 * 48, y1 * 48
-        x2, y2 = x2 * 48 - x1, y2 * 48 - y1
+        x1, y1 = x1 * ITEM_SIZE, y1 * ITEM_SIZE
+        x2, y2 = x2 * ITEM_SIZE - x1, y2 * ITEM_SIZE - y1
         surf = data.board.subsurface((x1, y1, x2, y2))
         self.background.blit(surf, (x1 + 24, y1 + 24))
 
@@ -376,8 +378,8 @@ class System:
             pygame.mixer.music.unpause()
 
 class Fonter:
-    def __init__(self, size = 48):
-        # Keep 48 items in our cache, we need 31 for the high scores
+    def __init__(self, size = 50):
+        # Keep 50 items in our cache, we need 31 for the high scores
         self.cache = []
         self.size = size
 
@@ -410,8 +412,8 @@ class Game:
         self.type = type
         self.difficulty = settings.get('difficulty')
         self.items = settings.get('items')
-        self.needed = [0] * (ITEMS + 1)
-        self.done = [0] * (ITEMS + 1)
+        self.needed = [0] * ITEMS
+        self.done = [0] * ITEMS
         self.bonus_list = []
         self.blink_list = {}
         self.disappear_list = []
@@ -442,8 +444,8 @@ class Game:
 
     def get_random(self, no_special = False):
         if not no_special and randint(0, 500) == 0:
-            return 0
-        return randint(1, self.population)
+            return ITEM_SPECIAL
+        return randint(0, self.population - 1)
 
     def new_board(self):
         self.board = {}
@@ -461,12 +463,13 @@ class Game:
                 for y2 in xrange(y - 1, -1, -1):
                     if self.board.has_key((x, y2)):
                         self.board[(x, y)] = self.board[(x, y2)]
-                        self.extra_offset[x][y] = (0, 48 * (y2 - y))
+                        self.extra_offset[x][y] = (0, ITEM_SIZE * (y2 - y))
                         del self.board[(x, y2)]
                         break
                 else:
                     self.board[(x, y)] = self.get_random()
-                    self.extra_offset[x][y] = ((0, 48 * (-2 - y)))
+                    #self.board[(x, y)] = ITEM_METAL
+                    self.extra_offset[x][y] = ((0, ITEM_SIZE * (-2 - y)))
 
     def get_wins(self):
         wins = []
@@ -474,9 +477,9 @@ class Game:
         for y in range(BOARD_HEIGHT):
             for x in range(BOARD_WIDTH - 2):
                 a = self.board.get((x, y))
-                if a is None or a == 0: continue
+                if a is None or a >= ITEMS: continue
                 b = self.board.get((x - 1, y))
-                if b and a == b: continue
+                if b is not None and a == b: continue
                 len = 1
                 for t in range(1, BOARD_WIDTH - x):
                     b = self.board.get((x + t, y))
@@ -491,9 +494,9 @@ class Game:
         for x in range(BOARD_WIDTH):
             for y in range(BOARD_HEIGHT - 2):
                 a = self.board.get((x, y))
-                if a is None or a == 0: continue
+                if a is None or a >= ITEMS: continue
                 b = self.board.get((x, y - 1))
-                if b and a == b: continue
+                if b is not None and a == b: continue
                 len = 1
                 for t in range(1, BOARD_HEIGHT - y):
                     b = self.board.get((x, y + t))
@@ -515,7 +518,7 @@ class Game:
         for y in range(BOARD_HEIGHT):
             for x in range(BOARD_WIDTH):
                 a = self.board.get((x, y))
-                if a == 0:
+                if a >= ITEMS:
                    continue # We don’t want no special piece
                 for [(a1, b1), (a2, b2)] in checkme:
                     for dx, dy in delta:
@@ -529,8 +532,8 @@ class Game:
             self.level = self.difficulty
             self.population = self.items
             for i in range(self.population):
-                self.done[i + 1] = 0
-                self.needed[i + 1] = 0
+                self.done[i] = 0
+                self.needed[i] = 0
             self.time = 1000000
         elif self.type == GAME_CLASSIC:
             if self.level < 7:
@@ -538,13 +541,13 @@ class Game:
             else:
                 self.population = 8
             for i in range(self.population):
-                self.done[i + 1] = 0
+                self.done[i] = 0
                 if self.level < 10:
-                    self.needed[i + 1] = self.level + 2
+                    self.needed[i] = self.level + 2
                 else:
-                    self.needed[i + 1] = 0 # level 10 is the highest
+                    self.needed[i] = 0 # level 10 is the highest
             self.time = 1000000
-        self.angry_tiles = -1
+        self.angry_items = -1
         self.new_board()
 
     def board_draw(self):
@@ -604,29 +607,31 @@ class Game:
             xoff += global_xoff
             yoff += global_yoff
             # Decide the shape
-            if n == 0:
+            if n == ITEM_SPECIAL:
                 shape = data.special[monsterz.timer % self.population]
+            elif n == ITEM_METAL:
+                shape = data.metal
             elif self.level_timer and self.level_timer < SCROLL_DELAY / 2:
-                shape = data.blink[n - 1]
+                shape = data.blink[n]
             elif c in self.surprised_list \
               or self.board_timer > SCROLL_DELAY / 2 \
               or self.level_timer > SCROLL_DELAY / 2:
-                shape = data.surprise[n - 1]
+                shape = data.surprise[n]
             elif c in self.disappear_list:
-                shape = data.exploded[n - 1]
-            elif n == self.angry_tiles:
-                shape = data.angry[n - 1]
+                shape = data.exploded[n]
+            elif n == self.angry_items:
+                shape = data.angry[n]
             elif self.blink_list.has_key(c):
-                shape = data.blink[n - 1]
+                shape = data.blink[n]
                 self.blink_list[c] -= 1
                 if self.blink_list[c] is 0: del self.blink_list[c]
             else:
-                shape = data.normal[n - 1]
+                shape = data.normal[n]
             # Remember the selector coordinates
             if c == self.select and not self.missed \
             or c == self.switch and self.missed:
                 select_coord = (x, y)
-                shape = data.blink[n - 1] # Not sure if it looks nice
+                shape = data.blink[n] # Not sure if it looks nice
             # Print the shit
             self.piece_draw(shape, (x + xoff, y + yoff))
         # Draw selector if necessary
@@ -634,32 +639,32 @@ class Game:
             system.blit(data.selector, select_coord)
 
     def piece_draw(self, sprite, (x, y)):
-        width = data.tile_size
+        width = ITEM_SIZE
         crop = sprite.subsurface
         # Constrain X
-        if x < 10 - data.tile_size or x > 24 + 8 * data.tile_size + 14:
+        if x < 10 - ITEM_SIZE or x > 24 + 8 * ITEM_SIZE + 14:
             return
         elif x < 10:
             delta = 10 - x
-            sprite = crop((delta, 0, data.tile_size - delta, data.tile_size))
+            sprite = crop((delta, 0, ITEM_SIZE - delta, ITEM_SIZE))
             crop = sprite.subsurface
             x += delta
             width -= delta
-        elif x > 24 + 7 * data.tile_size + 14:
-            delta = x - 24 - 7 * data.tile_size - 14
-            sprite = crop((0, 0, data.tile_size - delta, data.tile_size))
+        elif x > 24 + 7 * ITEM_SIZE + 14:
+            delta = x - 24 - 7 * ITEM_SIZE - 14
+            sprite = crop((0, 0, ITEM_SIZE - delta, ITEM_SIZE))
             crop = sprite.subsurface
             width -= delta
         # Constrain Y
-        if y < 10 - data.tile_size or y > 24 + 8 * data.tile_size + 14:
+        if y < 10 - ITEM_SIZE or y > 24 + 8 * ITEM_SIZE + 14:
             return
         elif y < 10:
             delta = 10 - y
-            sprite = crop((0, delta, width, data.tile_size - delta))
+            sprite = crop((0, delta, width, ITEM_SIZE - delta))
             y += delta
-        elif y > 24 + 7 * data.tile_size + 14:
-            delta = y - 24 - 7 * data.tile_size - 14
-            sprite = crop((0, 0, width, data.tile_size - delta))
+        elif y > 24 + 7 * ITEM_SIZE + 14:
+            delta = y - 24 - 7 * ITEM_SIZE - 14
+            sprite = crop((0, 0, width, ITEM_SIZE - delta))
         system.blit(sprite, (x, y))
 
     psat = [0] * 2
@@ -760,14 +765,14 @@ class Game:
         system.blit(text, (624 - w, 10))
         # Print done/needed
         for i in range(self.population):
-            if self.done[i + 1] >= self.needed[i + 1]:
+            if self.done[i] >= self.needed[i]:
                 surf = data.tiny[i]
             else:
                 surf = data.shaded[i]
             x = 440 + i / 4 * 90
             y = 64 + (i % 4) * 38
             system.blit(surf, (x, y))
-            text = fonter.render(str(self.done[i + 1]), 36)
+            text = fonter.render(str(self.done[i]), 36)
             system.blit(text, (x + 44, y + 2))
         # Print eyes
         for i in range(3):
@@ -797,7 +802,7 @@ class Game:
             msg = 'TRAINING'
         elif self.type == GAME_CLASSIC:
             msg = 'LEVEL ' + str(self.level)
-            if self.needed[1]: msg += ': ' + str(self.needed[1]) + 'x'
+            if self.needed[0]: msg += ': ' + str(self.needed[0]) + 'x'
         text = fonter.render(msg, 40)
         system.blit(text, (444, 216))
 
@@ -807,8 +812,8 @@ class Game:
         self.paused = not self.paused
         system.play('whip')
         if self.paused:
-            i = self.get_random(no_special = True) - 1
-            #self.pause_bitmap = pygame.transform.scale(data.normal[i], (6 * data.tile_size, 6 * data.tile_size))
+            i = self.get_random(no_special = True)
+            #self.pause_bitmap = pygame.transform.scale(data.normal[i], (6 * ITEM_SIZE, 6 * ITEM_SIZE))
             #self.pause_bitmap = pygame.transform.rotozoom(data.normal[i], 0.0, 6.0)
             self.pause_bitmap = data.bigtiles.subsurface((0, i * 288, 288, 288))
         else:
@@ -905,15 +910,15 @@ class Game:
                     if self.board.has_key((x, y)):
                         self.done[self.board[(x, y)]] += 1
                         del self.board[(x, y)]
-                if self.angry_tiles == -1:
+                if self.angry_items == -1:
                     unfinished = 0
                     for i in range(self.population):
-                        if self.done[i + 1] < self.needed[i + 1]:
+                        if self.done[i] < self.needed[i]:
                             unfinished += 1
-                            angry = i + 1
+                            angry = i
                     if unfinished == 1:
                         system.play('grunt')
-                        self.angry_tiles = angry
+                        self.angry_items = angry
                 self.disappear_list = []
                 self.bonus_list = []
             elif self.win_timer is WIN_DELAY * 2 / 5:
@@ -932,10 +937,10 @@ class Game:
                 if self.wins:
                     self.win_timer = WIN_DELAY
                     self.win_iter += 1
-                elif self.needed[1]:
+                elif self.needed[0]:
                     # Check for new level
                     for i in range(self.population):
-                        if self.done[i + 1] < self.needed[i + 1]:
+                        if self.done[i] < self.needed[i]:
                             self.check_moves = True
                             break
                     else:
@@ -973,7 +978,7 @@ class Game:
                     special = None
                     for y in range(BOARD_HEIGHT):
                         for x in range(BOARD_WIDTH):
-                            if self.board[(x, y)] == 0:
+                            if self.board[(x, y)] == ITEM_SPECIAL:
                                 special = (x, y)
                                 break
                         if special:
@@ -981,7 +986,7 @@ class Game:
                     if special:
                         incomplete = 0
                         for i in range(self.population):
-                            if self.done[i + 1] >= self.needed[i + 1]:
+                            if self.done[i] >= self.needed[i]:
                                 incomplete += 1
                                 if incomplete == 2:
                                     break
@@ -1027,13 +1032,17 @@ class Game:
                 self.switch = played
                 self.switch_timer = SWITCH_DELAY
             else:
-                if self.board[played] != 0:
+                if self.board[played] == ITEM_METAL:
+                    return
+                elif self.board[played] == ITEM_SPECIAL:
+                    pass
+                else:
                     system.play('click')
                     self.select = played
                     return
                 # Deal with the special block
                 self.wins = []
-                target = 1 + (monsterz.timer % self.population)
+                target = monsterz.timer % self.population
                 found = 0
                 for y in range(BOARD_HEIGHT):
                     for x in range(BOARD_WIDTH):
@@ -1213,7 +1222,7 @@ class Monsterz:
             c = map(lambda a: 255 - (255 - a) * self.msat[x] / 255, colors[x])
             text = fonter.render(messages[x], 48, c)
             w, h = text.get_rect().size
-            system.blit(text, (24 + 102, 24 + 216 + 48 * x - h / 2))
+            system.blit(text, (24 + 102, 24 + 216 + ITEM_SIZE * x - h / 2))
             if self.msat[x]:
                 self.msat[x] = self.msat[x] * 8 / 10
         # Handle events
@@ -1287,7 +1296,7 @@ class Monsterz:
             c = map(lambda a: 255 - (255 - a) * self.nsat[i] / 255, [127, 0, 255])
             text = fonter.render(messages[i], 48, c)
             w, h = text.get_rect().size
-            system.blit(text, (24 + 48 * 4 - w / 2, 24 + 120 + 48 * i - h / 2))
+            system.blit(text, (24 + ITEM_SIZE * 4 - w / 2, 24 + 120 + ITEM_SIZE * i - h / 2))
             if self.nsat[i]:
                 self.nsat[i] = self.nsat[i] * 8 / 10
         for i in range(4, 8):
@@ -1298,16 +1307,16 @@ class Monsterz:
             else:
                 img = data.led_less
                 x = 88
-            y = 36 + 48 * (6 + (i - 4) / 2)
+            y = 36 + ITEM_SIZE * (6 + (i - 4) / 2)
             system.blit(img, (x, y))
             if self.nsat[i]:
                 self.nsat[i] = self.nsat[i] * 8 / 10
         # Print wanted monsterz
         for i in range(items):
-            system.blit(data.normal[i], (24 + 96 + 48 * 3 * i / (items - 1), 24 + 48 * 6))
+            system.blit(data.normal[i], (24 + 96 + ITEM_SIZE * 3 * i / (items - 1), 24 + ITEM_SIZE * 6))
         text = fonter.render('DIFFICULTY ' + str(difficulty), 36)
         w, h = text.get_rect().size
-        system.blit(text, (24 + 192 - w / 2, 24 + 48 * 7 + 24 - h / 2))
+        system.blit(text, (24 + 192 - w / 2, 24 + ITEM_SIZE * 7 + 24 - h / 2))
         # Handle events
         for event in pygame.event.get():
             if self.generic_event(event):
