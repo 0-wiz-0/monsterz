@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
- alienkeeper: puzzle game
+ Monsterz: cute puzzle game
  $Id$
 
  Copyright: (c) 2005 Sam Hocevar <sam@zoy.org>
@@ -724,7 +724,7 @@ if HAVE_SOUND:
 # Display init
 win = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 bg = pygame.Surface(win.get_size())
-pygame.display.set_caption('Alienkeeper')
+pygame.display.set_caption('Monsterz')
 theme = Theme()
 # Read commandline (haha)
 level = 1
