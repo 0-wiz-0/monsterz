@@ -20,7 +20,7 @@ from os.path import join, isdir, isfile, dirname, expanduser
 from os import write, mkdir
 
 # String constants
-VERSION = '0.5.0'
+VERSION = '0.6.0'
 COPYRIGHT = 'MONSTERZ - COPYRIGHT 2005 SAM HOCEVAR - MONSTERZ IS ' \
             'FREE SOFTWARE, YOU CAN REDISTRIBUTE IT AND/OR MODIFY IT ' \
             'UNDER THE TERMS OF THE DO WHAT THE FUCK YOU WANT TO ' \
@@ -81,7 +81,7 @@ puzzlevels = [
   (6, 2, '3x1', [(3, 2), (4, 3), (5, 4)]),
   (6, 3, '2x1', [(3, 4), (4, 2)]),
   (6, 3, '1x2', [(3, 2), (4, 4)]),
-  (7, 4, '2x2', [(4, 2), (5, 3), (4, 4), (5, 4)]),
+  (7, 4, '2x2', [(3, 2), (4, 3), (3, 4), (4, 4)]),
   (6, 4, '1x3', [(3, 2), (4, 4), (3, 6)]),
   (7, 5, '3x1', [(2, 2), (4, 1), (5, 4)]),
   (7, 5, '2x2', [(3, 0), (5, 0), (2, 7), (4, 7)]),
@@ -492,6 +492,7 @@ class Game:
         self.lucky = -1
         self.show_move = False
         self.level = 1
+        self.speed = 1
         self.new_level()
         self.oldticks = pygame.time.get_ticks()
 
@@ -584,13 +585,13 @@ class Game:
     def new_level(self):
         # Compute level data
         if self.type == GAME_TRAINING:
-            self.level = self.difficulty
             self.population = self.items
             for i in range(self.population):
                 self.done[i] = 0
                 self.needed[i] = 0
             self.lucky = -1
             self.time = 1000000
+            self.speed = self.difficulty
         elif self.type == GAME_CLASSIC:
             if self.level < 7:
                 self.population = 7
@@ -604,6 +605,7 @@ class Game:
                     self.needed[i] = 0 # level 10 is the highest
             self.lucky = self.get_random(no_special = True)
             self.time = 1000000
+            self.speed = self.level
         elif self.type == GAME_PUZZLE:
             self.population = puzzlevels[self.level - 1][0]
             for i in range(self.population):
@@ -611,6 +613,7 @@ class Game:
                 self.needed[i] = 0
             self.lucky = -1
             self.time = 1000000
+            self.speed = puzzlevels[self.level -1][1]
         self.angry_items = -1
         self.new_board()
 
@@ -857,7 +860,7 @@ class Game:
             if self.needed[0]:
                 msg = 'MONSTERS NEEDED: ' + str(self.needed[0])
             elif self.type == GAME_PUZZLE:
-                msg = 'COMPLETE THE PUZZLE'
+                msg = 'PUZZLE LEVEL'
             else:
                 msg = 'UNLIMITED LEVEL'
             text = fonter.render(msg, 40)
@@ -962,7 +965,7 @@ class Game:
 
     def update(self):
         ticks = pygame.time.get_ticks()
-        delta = (ticks - self.oldticks) * 450 / (12 - self.level)
+        delta = (ticks - self.oldticks) * 450 / (12 - self.speed)
         self.oldticks = ticks
         # If paused, do nothing
         if self.paused:
@@ -1425,7 +1428,7 @@ class Monsterz:
         difficulty = settings.get('difficulty')
         self.generic_draw()
         self.copyright_draw()
-        messages = ['CLASSIC', 'QUEST', 'PUZZLE', 'TRAINING']
+        messages = ['CLASSIC', '', 'PUZZLE', 'TRAINING']
         x, y = data.screen2board(pygame.mouse.get_pos())
         if y == 2 and 1 <= x <= 6:
             narea = GAME_CLASSIC
@@ -1787,6 +1790,55 @@ class Monsterz:
             system.blit(text, (x + 24 - w / 2, y + 24 - h / 2))
             x, y = data.board2screen((6, 6))
             system.blit(text, (x + 24 - w / 2, y + 24 - h / 2))
+        elif self.page == 5:
+            # Explanation 1
+            text = fonter.render('IN PUZZLE MODE, PUT TOGETHER THE', 24)
+            w, h = text.get_rect().size
+            system.blit(text, (24 + 6, 24 + 84 - h / 2))
+            text = fonter.render('PUZZLE BY MOVING PIECES AROUND. BE', 24)
+            w, h = text.get_rect().size
+            system.blit(text, (24 + 6, 24 + 108 - h / 2))
+            text = fonter.render('CAREFUL NOT TO GET STUCK!', 24)
+            w, h = text.get_rect().size
+            system.blit(text, (24 + 6, 24 + 132 - h / 2))
+            # Iter 1
+            system.blit_board((0, 3, 2, 8))
+            system.blit(data.normal[2], data.board2screen((0, 3)))
+            system.blit(data.normal[5], data.board2screen((0, 4)))
+            system.blit(data.blink[1], data.board2screen((0, 5)))
+            system.blit(data.puzzle['2x1'][0], data.board2screen((0, 6)))
+            system.blit(data.normal[7], data.board2screen((0, 7)))
+            system.blit(data.puzzle['2x1'][1], data.board2screen((1, 3)))
+            system.blit(data.normal[1], data.board2screen((1, 4)))
+            system.blit(data.normal[4], data.board2screen((1, 5)))
+            system.blit(data.normal[1], data.board2screen((1, 6)))
+            system.blit(data.normal[3], data.board2screen((1, 7)))
+            system.blit(data.selector, data.board2screen((0, 5)))
+            # Iter 2
+            system.blit_board((3, 3, 5, 8))
+            system.blit(data.normal[2], data.board2screen((3, 3)))
+            system.blit(data.normal[5], data.board2screen((3, 4)))
+            system.blit(data.normal[4], data.board2screen((3, 5)))
+            system.blit(data.puzzle['2x1'][0], data.board2screen((3, 6)))
+            system.blit(data.normal[7], data.board2screen((3, 7)))
+            system.blit(data.puzzle['2x1'][1], data.board2screen((4, 3)))
+            system.blit(data.surprise[1], data.board2screen((4, 4)))
+            system.blit(data.surprise[1], data.board2screen((4, 5)))
+            system.blit(data.surprise[1], data.board2screen((4, 6)))
+            system.blit(data.normal[3], data.board2screen((4, 7)))
+            system.blit(data.selector, data.board2screen((4, 5)))
+            # Iter 2
+            system.blit_board((6, 3, 8, 8))
+            system.blit(data.normal[2], data.board2screen((6, 3)))
+            system.blit(data.normal[5], data.board2screen((6, 4)))
+            system.blit(data.normal[4], data.board2screen((6, 5)))
+            system.blit(data.puzzle['2x1'][0], data.board2screen((6, 6)))
+            system.blit(data.normal[7], data.board2screen((6, 7)))
+            system.blit(data.normal[0], data.board2screen((7, 3)))
+            system.blit(data.normal[6], data.board2screen((7, 4)))
+            system.blit(data.normal[0], data.board2screen((7, 5)))
+            system.blit(data.puzzle['2x1'][1], data.board2screen((7, 6)))
+            system.blit(data.normal[3], data.board2screen((7, 7)))
         # Handle events
         for event in pygame.event.get():
             if self.generic_event(event):
@@ -1798,7 +1850,7 @@ class Monsterz:
             elif event.type == MOUSEBUTTONDOWN:
                 system.play('whip')
                 self.page += 1
-                if self.page > 4:
+                if self.page > 5:
                     self.status = STATUS_MENU
                 return
 

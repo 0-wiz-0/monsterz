@@ -6,7 +6,7 @@ pkgdatadir = $(datadir)/games/monsterz
 scoredir = /var/games
 scorefile = $(scoredir)/monsterz
 
-VERSION = 0.5.0
+VERSION = 0.6.0
 DIRECTORY = monsterz-$(VERSION)
 
 BITMAP = graphics/tiles.png graphics/bigtiles.png graphics/background.png \
