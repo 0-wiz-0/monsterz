@@ -85,9 +85,9 @@ class Theme:
 
 # Start all the stuff
 class Game:
-    def __init__(self, size = (8, 8), level = 1):
+    def __init__(self, level = 1):
         # Init values
-        (self.board_width, self.board_height) = size
+        self.board_width, self.board_height = 8, 8
         self.needed = {}
         self.done = {}
         self.bonus_list = []
@@ -319,7 +319,7 @@ class Game:
             self.board_blit(shape, (x + xoff, y + yoff))
         # Draw selector if necessary
         if self.select:
-            background.blit(theme.selector, select_coord)
+            bg.blit(theme.selector, select_coord)
 
     def board_blit(self, sprite, (x, y)):
         width = theme.tile_size
@@ -348,7 +348,7 @@ class Game:
         elif y > 24 + 7 * theme.tile_size + 14:
             delta = y - 24 - 7 * theme.tile_size - 14
             sprite = crop((0, 0, width, theme.tile_size - delta))
-        background.blit(sprite, (x, y))
+        bg.blit(sprite, (x, y))
 
     def toggle_pause(self):
         self.pause = not self.pause
@@ -359,7 +359,7 @@ class Game:
 
     def draw_game(self):
         # Draw background
-        background.blit(theme.board, (0, 0))
+        bg.blit(theme.board, (0, 0))
         # Draw timebar
         x = 16; y = 440; w = 400; h = 24
         w2 = w * self.time / 2000000
@@ -367,31 +367,31 @@ class Game:
             color = (255, 0, 0)
         else:
             color = (255, 240, 0)
-        pygame.draw.rect(background, (0, 0, 0), (x, y, w, h))
+        pygame.draw.rect(bg, (0, 0, 0), (x, y, w, h))
         if w2 > 0:
-            pygame.draw.rect(background, color, (x, y, w * self.time / 2000000, h))
+            pygame.draw.rect(bg, color, (x, y, w * self.time / 2000000, h))
         # Draw pieces
         if self.pause:
-            background.blit(self.pause_bitmap, (24 + theme.tile_size, 24))
+            bg.blit(self.pause_bitmap, (24 + theme.tile_size, 24))
             delta = 5
             for x in range(2):
                 text = theme.font[120].render('PAUSED', 2, (x * 255, x * 255, x * 255))
                 (w, h) = text.get_rect().size
-                background.blit(text, (theme.tile_size * self.board_width / 2 - w / 2 + 24 - delta * x, theme.tile_size * self.board_height * 7 / 8 - h / 2 + 24 - delta * x))
+                bg.blit(text, (theme.tile_size * self.board_width / 2 - w / 2 + 24 - delta * x, theme.tile_size * self.board_height * 7 / 8 - h / 2 + 24 - delta * x))
         elif self.lost_timer >= 0:
             self.draw_board()
         # Print score
         delta = 3
         for x in range(2):
             text = theme.font[60].render(str(self.score), 2, (x * 255, x * 255, x * 255))
-            background.blit(text, (theme.tile_size * self.board_width + theme.tile_size * 3 / 2 - delta * x, 10 - delta * x))
+            bg.blit(text, (theme.tile_size * self.board_width + theme.tile_size * 3 / 2 - delta * x, 10 - delta * x))
         # Print play again message
         if self.lost_timer < 0:
             delta = 2
             for x in range(2):
                 text = theme.font[48].render('CLICK TO PLAY AGAIN', 2, (x * 255, x * 255, x * 255))
                 (w, h) = text.get_rect().size
-                background.blit(text, (theme.tile_size * self.board_width / 2 - w / 2 + 24 - delta * x, theme.tile_size * self.board_height / 2 - h / 2 + 24 - delta * x))
+                bg.blit(text, (theme.tile_size * self.board_width / 2 - w / 2 + 24 - delta * x, theme.tile_size * self.board_height / 2 - h / 2 + 24 - delta * x))
         # Print new level stuff
         if self.level_timer and (self.level > 1 or self.level_timer > SCROLL_DELAY / 2):
             if self.level_timer > SCROLL_DELAY / 2:
@@ -402,31 +402,31 @@ class Game:
             for x in range(2):
                 text = theme.font[120].render(msg, 2, (x * 255, x * 255, x * 255))
                 (w, h) = text.get_rect().size
-                background.blit(text, (theme.tile_size * self.board_width / 2 - w / 2 + 24 - delta * x, theme.tile_size * self.board_height / 2 - h / 2 + 24 - delta * x))
+                bg.blit(text, (theme.tile_size * self.board_width / 2 - w / 2 + 24 - delta * x, theme.tile_size * self.board_height / 2 - h / 2 + 24 - delta * x))
         # Print 'no more moves' stuff
         if self.board_timer > SCROLL_DELAY / 2:
             delta = 2
             for x in range(2):
                 text = theme.font[60].render('NO MORE MOVES!', 2, (x * 255, x * 255, x * 255))
                 (w, h) = text.get_rect().size
-                background.blit(text, (theme.tile_size * self.board_width / 2 - w / 2 + 24 - delta * x, theme.tile_size * self.board_height / 2 - h / 2 + 24 - delta * x))
+                bg.blit(text, (theme.tile_size * self.board_width / 2 - w / 2 + 24 - delta * x, theme.tile_size * self.board_height / 2 - h / 2 + 24 - delta * x))
         # Print bonus
         for b in self.bonus_list:
             for d in range(2):
                 text = theme.font[36].render(str(b[1]), 2, (d * 255, d * 255, d * 255))
                 (x, y) = self.board2screen(b[0])
-                background.blit(text, (x + theme.tile_size / 4 - delta * d, y + theme.tile_size / 4 - delta * d))
+                bg.blit(text, (x + theme.tile_size / 4 - delta * d, y + theme.tile_size / 4 - delta * d))
         # Print done/needed
         delta = 2
         x = theme.tile_size * self.board_width + theme.tile_size * 3 / 2
         y = theme.tile_size / 2 + SCREEN_HEIGHT / 8
         for i in range(self.population):
-            background.blit(theme.tiny[i], (x, y))
+            bg.blit(theme.tiny[i], (x, y))
             for d in range(2):
                 text = theme.font[36].render(str(self.done[i + 1]) + '/' + str(self.needed[i + 1]), 2, (d * 255, d * 255, d * 255))
-                background.blit(text, (x + theme.tile_size * 3 / 4 - delta * d, y - delta * d))
+                bg.blit(text, (x + theme.tile_size * 3 / 4 - delta * d, y - delta * d))
             y += SCREEN_HEIGHT / 16
-        window.blit(background, (0, 0))
+        win.blit(bg, (0, 0))
         pygame.display.flip()
 
     def iterate(self):
@@ -578,6 +578,7 @@ class Game:
         # Update time
         self.time -= delta
         if self.time <= 0:
+            self.select = None
             self.lost_timer = LOST_DELAY
             return
         # Honour pause request
@@ -625,21 +626,25 @@ class Game:
             self.ai_timer -= 1
         # Handle moves from the player or the AI
         if self.clicks:
-            if HAVE_SOUND:
-                theme.click.play()
             played = self.clicks.pop(0)
             if self.select:
                 (x1, y1) = self.select
                 (x2, y2) = played
                 if x1 == x2 and y1 == y2:
+                    if HAVE_SOUND:
+                        theme.click.play()
                     self.select = None
                     return
                 if abs(x1 - x2) + abs(y1 - y2) != 1:
                     return
+                if HAVE_SOUND:
+                    theme.click.play()
                 self.switch = played
                 self.switch_timer = SWITCH_DELAY
             else:
                 if self.board[played] != 0:
+                    if HAVE_SOUND:
+                        theme.click.play()
                     self.select = played
                     return
                 # Deal with the special block
@@ -656,26 +661,24 @@ class Game:
                 self.win_timer = WIN_DELAY
             return
 
-# Init Pygame
+# Pygame init
 pygame.init()
-# Sound test
+# Sound init
 if HAVE_SOUND:
     try:
         HAVE_SOUND = pygame.mixer.get_init()
     except:
         HAVE_SOUND = False
-#sound.play()
-# Init display
-window = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+# Display init
+win = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+bg = pygame.Surface(win.get_size())
 pygame.display.set_caption('Alienkeeper')
-background = pygame.Surface(window.get_size())
+theme = Theme()
 # Read commandline (haha)
 level = 1
-size = (8, 8)
 # Go!
-theme = Theme()
 while True:
-    game = Game(size = size, level = level)
+    game = Game(level = level)
     game.go()
     if game.exit == EXIT_QUIT:
         break
