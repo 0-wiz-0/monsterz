@@ -18,7 +18,7 @@ animals = [
     { 'name': 'lion', 'color': (250, 160, 63) },
     { 'name': 'baboon', 'color': (255, 63, 63) },
     { 'name': 'hippo', 'color': (200, 63, 200) },
-    { 'name': 'baby', 'color': (255, 180, 180) }
+#    { 'name': 'baby', 'color': (255, 180, 180) }
 ]
 
 class AnimalSprite(pygame.sprite.Sprite):
@@ -59,7 +59,51 @@ class SelectSprite(pygame.sprite.Sprite):
             self.rect.center = self.moveTo
             self.moveTo = None
 
-def has_won():
+def fill_board():
+    global board
+    for z in range(board_height):
+        y = board_height - z - 1
+        for x in range(board_width):
+            if board.has_key((x, y)):
+                continue
+            found = None
+            for y2 in range(0, y):
+                if board.has_key((x, y2)):
+                    found = (x, y2)
+            if found:
+                board[(x, y)] = board[found]
+                del board[found]
+            else:
+                board[(x, y)] = animals[randint(0, len(animals) - 1)]
+
+def print_wins(wins):
+    msg = ''
+    for w in wins:
+        msg += str(len(w)) + ' ' + board[w[0]]['name'] + ' '
+    print msg
+
+def reduce_wins(wins):
+    new = []
+    for i in range(len(wins)):
+        unknown = True
+        for j in range(len(new)):
+            hasit = False
+            for x in wins[i]:
+                if x in new[j]:
+                    hasit = True
+                    break
+            if hasit:
+                for x in wins[i]:
+                    if x not in new[j]:
+                        new[j].append(x)
+                unknown = False
+                break
+        if unknown:
+            new.append(wins[i])
+    return new
+
+def get_wins():
+    wins = []
     # Horizontal
     for y in range(board_height):
         for x in range(board_width - 2):
@@ -70,7 +114,7 @@ def has_won():
                 continue
             if a != b or a != c:
                 continue
-            return True
+            wins.append([(x, y), (x + 1, y), (x + 2, y)])
     # Horizontal
     for x in range(board_width):
         for y in range(board_height - 2):
@@ -81,8 +125,12 @@ def has_won():
                 continue
             if a != b or a != c:
                 continue
-            return True
-    return False
+            wins.append([(x, y), (x, y + 1), (x, y + 2)])
+    old = None
+    while wins != old:
+        old = wins
+        wins = reduce_wins(old)
+    return wins
 
 def draw_sprites():
     backSprites.empty()
@@ -113,7 +161,7 @@ for y in range(board_height):
     while True:
         for x in range(board_width):
             board[(x, y)] = animals[randint(0, len(animals) - 1)]
-        if not has_won():
+        if not get_wins():
             break
 
 # Init values
@@ -159,10 +207,19 @@ def main():
                 tmp = board[(x1, y1)]
                 board[(x1, y1)] = board[(x2, y2)]
                 board[(x2, y2)] = tmp
-                if not has_won():
+                wins = get_wins()
+                print_wins(wins)
+                if not wins:
                     tmp = board[(x1, y1)]
                     board[(x1, y1)] = board[(x2, y2)]
                     board[(x2, y2)] = tmp
+                else:
+                    while wins:
+                        for w in wins:
+                            for p in w:
+                                del board[p]
+                        fill_board()
+                        wins = get_wins()
                 select = (-1, -1)
                 draw_sprites()
             #elif event.type == MOUSEMOTION:
