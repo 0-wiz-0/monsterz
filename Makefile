@@ -1,8 +1,8 @@
 
 prefix = /usr/local
-bindir = ${prefix}/bin
+gamesdir = ${prefix}/games
 datadir = ${prefix}/share
-pkgdatadir = $(datadir)/monsterz
+pkgdatadir = $(datadir)/games/monsterz
 scoredir = /var/games
 scorefile = $(scoredir)/monsterz
 
@@ -22,10 +22,10 @@ monsterz: monsterz.c
 	$(CC) -Wall monsterz.c -DDATADIR=\"$(pkgdatadir)\" -DSCOREFILE=\"$(scorefile)\" -o monsterz
 
 install: all
-	mkdir -p $(DESTDIR)$(bindir)
-	cp monsterz $(DESTDIR)$(bindir)/
-	chown root:games $(DESTDIR)$(bindir)/monsterz
-	chmod g+s $(DESTDIR)$(bindir)/monsterz
+	mkdir -p $(DESTDIR)$(gamesdir)
+	cp monsterz $(DESTDIR)$(gamesdir)/
+	chown root:games $(DESTDIR)$(gamesdir)/monsterz
+	chmod g+s $(DESTDIR)$(gamesdir)/monsterz
 	mkdir -p $(DESTDIR)$(pkgdatadir)
 	cp monsterz.py $(DATA) $(DESTDIR)$(pkgdatadir)/
 	mkdir -p $(DESTDIR)$(scoredir)
@@ -34,9 +34,9 @@ install: all
 	chmod g+w $(DESTDIR)$(scorefile)
 
 uninstall:
-	rm -f $(DESTDIR)$(bindir)/monsterz
+	rm -f $(DESTDIR)$(gamesdir)/monsterz
 	rm -Rf $(DESTDIR)$(pkgdatadir)/
-	rm -f $(DESTDIR)$(scorefile)
+	#rm -f $(DESTDIR)$(scorefile)
 
 dist:
 	rm -Rf $(DIRECTORY)
