@@ -635,7 +635,7 @@ class Game:
                 x = -32 + (x1 * delta + x2 * (32 - delta)) / 32
                 y = 32 + (y1 * delta + y2 * (32 - delta)) / 32
                 system.blit(data.arrow, (x, y))
-                #break # Only show one move
+                break # Only show one move
         # Print score
         text = fonter.render(str(self.score), 60)
         w, h = text.get_rect().size
@@ -654,13 +654,12 @@ class Game:
             text = fonter.render(str(self.done[i + 1]), 36)
             system.blit(text, (x + 44, y + 2))
         # Print eyes
-        x, y = 440, 252
-        if(self.eyes):
-            system.blit(data.eye, (x, y))
-        else:
-            system.blit(data.shadeye, (x, y))
-        text = fonter.render(str(self.eyes), 36)
-        system.blit(text, (x + 44, y + 2))
+        for i in range(3):
+            x, y = 440 + 36 * i, 252
+            if(i < self.eyes):
+                system.blit(data.eye, (x, y))
+            else:
+                system.blit(data.shadeye, (x, y))
         # Print pause and abort buttons
         if self.lost_timer >= 0:
             r = (255, 127, 127)
@@ -930,6 +929,7 @@ class Monsterz:
                 self.game = Game()
                 iterator = self.iterate_game
             elif self.status == STATUS_HELP:
+                self.page = 1
                 iterator = self.iterate_help
             elif self.status == STATUS_SCORES:
                 iterator = self.iterate_scores
@@ -1156,7 +1156,7 @@ class Monsterz:
                 if self.game.lost_timer < 0:
                     self.status = STATUS_MENU
                     return
-                if 440 < x < 440 + 36 and 252 < y < 252 + 36:
+                if 440 < x < 440 + 36 * 3 and 252 < y < 252 + 36:
                     if self.game.eyes >= 1 and not self.game.show_move:
                         self.game.clicks.append((99, 99))
                     return
@@ -1166,75 +1166,151 @@ class Monsterz:
                 self.game.clicks.append((x, y))
         self.game.update()
 
+    page = 1
     def iterate_help(self):
         self.generic_draw()
         self.copyright_draw()
         # Title
-        text = fonter.render('INSTRUCTIONS', 60)
+        text = fonter.render('INSTRUCTIONS (' + str(self.page) + ')', 60)
         w, h = text.get_rect().size
         system.blit(text, (24 + 192 - w / 2, 24 + 24 - h / 2))
-        # Explanation 1
-        text = fonter.render('SWAP ADJACENT MONSTERS TO CREATE', 24)
-        w, h = text.get_rect().size
-        system.blit(text, (24 + 6, 24 + 60 - h / 2))
-        text = fonter.render('ALIGNMENTS OF THREE OR MORE.', 24)
-        w, h = text.get_rect().size
-        system.blit(text, (24 + 6, 24 + 84 - h / 2))
-        # Iter 1
-        system.blit(data.blink[0], data.board2screen((0, 2)))
-        system.blit(data.normal[3], data.board2screen((0, 3)))
-        system.blit(data.normal[2], data.board2screen((0, 4)))
-        system.blit(data.normal[4], data.board2screen((1, 2)))
-        system.blit(data.normal[0], data.board2screen((1, 3)))
-        system.blit(data.normal[0], data.board2screen((1, 4)))
-        system.blit(data.selector, data.board2screen((0, 2)))
-        # Iter 2
-        system.blit(data.normal[4], data.board2screen((3, 2)))
-        system.blit(data.normal[3], data.board2screen((3, 3)))
-        system.blit(data.normal[2], data.board2screen((3, 4)))
-        system.blit(data.surprise[0], data.board2screen((4, 2)))
-        system.blit(data.surprise[0], data.board2screen((4, 3)))
-        system.blit(data.surprise[0], data.board2screen((4, 4)))
-        system.blit(data.selector, data.board2screen((4, 2)))
-        # Iter 2
-        system.blit(data.normal[4], data.board2screen((6, 2)))
-        system.blit(data.normal[3], data.board2screen((6, 3)))
-        system.blit(data.normal[2], data.board2screen((6, 4)))
-        system.blit(data.exploded[0], data.board2screen((7, 2)))
-        system.blit(data.exploded[0], data.board2screen((7, 3)))
-        system.blit(data.exploded[0], data.board2screen((7, 4)))
-        # Explanation 2
-        text = fonter.render('CLICK ON THE BONUS TO REMOVE ALL', 24)
-        w, h = text.get_rect().size
-        system.blit(text, (24 + 6, 24 + 252 - h / 2))
-        text = fonter.render('MONSTERS OF A RANDOM KIND.', 24)
-        w, h = text.get_rect().size
-        system.blit(text, (24 + 6, 24 + 276 - h / 2))
-        shape = data.special[self.timer % 7]
-        # Iter 1
-        system.blit(data.normal[1], data.board2screen((0, 6)))
-        system.blit(data.normal[2], data.board2screen((0, 7)))
-        system.blit(shape, data.board2screen((1, 6)))
-        system.blit(data.normal[5], data.board2screen((1, 7)))
-        system.blit(data.normal[2], data.board2screen((2, 6)))
-        system.blit(data.normal[4], data.board2screen((2, 7)))
-        # Iter 2
-        system.blit(data.normal[1], data.board2screen((4, 6)))
-        system.blit(data.exploded[2], data.board2screen((4, 7)))
-        system.blit(data.normal[5], data.board2screen((5, 7)))
-        system.blit(data.exploded[2], data.board2screen((6, 6)))
-        system.blit(data.normal[4], data.board2screen((6, 7)))
-        # Print bonus
-        text = fonter.render('10', 36)
-        w, h = text.get_rect().size
-        x, y = data.board2screen((7, 3))
-        system.blit(text, (x + 24 - w / 2, y + 24 - h / 2))
-        x, y = data.board2screen((4, 7))
-        system.blit(text, (x + 24 - w / 2, y + 24 - h / 2))
-        x, y = data.board2screen((5, 6))
-        system.blit(text, (x + 24 - w / 2, y + 24 - h / 2))
-        x, y = data.board2screen((6, 6))
-        system.blit(text, (x + 24 - w / 2, y + 24 - h / 2))
+        if self.page == 1:
+            # Explanation 1
+            text = fonter.render('SWAP ADJACENT MONSTERS TO CREATE', 24)
+            w, h = text.get_rect().size
+            system.blit(text, (24 + 6, 24 + 84 - h / 2))
+            text = fonter.render('ALIGNMENTS OF THREE OR MORE. NEW', 24)
+            w, h = text.get_rect().size
+            system.blit(text, (24 + 6, 24 + 108 - h / 2))
+            text = fonter.render('MONSTERS WILL FILL THE HOLES.', 24)
+            w, h = text.get_rect().size
+            system.blit(text, (24 + 6, 24 + 132 - h / 2))
+            # Iter 1
+            system.blit(data.blink[0], data.board2screen((0, 3)))
+            system.blit(data.normal[5], data.board2screen((0, 4)))
+            system.blit(data.normal[2], data.board2screen((0, 5)))
+            system.blit(data.normal[3], data.board2screen((0, 6)))
+            system.blit(data.normal[4], data.board2screen((1, 3)))
+            system.blit(data.normal[0], data.board2screen((1, 4)))
+            system.blit(data.normal[0], data.board2screen((1, 5)))
+            system.blit(data.normal[6], data.board2screen((1, 6)))
+            system.blit(data.selector, data.board2screen((0, 3)))
+            # Iter 2
+            system.blit(data.normal[4], data.board2screen((3, 3)))
+            system.blit(data.normal[5], data.board2screen((3, 4)))
+            system.blit(data.normal[2], data.board2screen((3, 5)))
+            system.blit(data.normal[3], data.board2screen((3, 6)))
+            system.blit(data.surprise[0], data.board2screen((4, 3)))
+            system.blit(data.surprise[0], data.board2screen((4, 4)))
+            system.blit(data.surprise[0], data.board2screen((4, 5)))
+            system.blit(data.normal[6], data.board2screen((4, 6)))
+            system.blit(data.selector, data.board2screen((4, 3)))
+            # Iter 2
+            system.blit(data.normal[4], data.board2screen((6, 3)))
+            system.blit(data.normal[5], data.board2screen((6, 4)))
+            system.blit(data.normal[2], data.board2screen((6, 5)))
+            system.blit(data.normal[3], data.board2screen((6, 6)))
+            system.blit(data.exploded[0], data.board2screen((7, 3)))
+            system.blit(data.exploded[0], data.board2screen((7, 4)))
+            system.blit(data.exploded[0], data.board2screen((7, 5)))
+            system.blit(data.normal[6], data.board2screen((7, 6)))
+            # Bonus
+            text = fonter.render('10', 36)
+            w, h = text.get_rect().size
+            x, y = data.board2screen((7, 4))
+            system.blit(text, (x + 24 - w / 2, y + 24 - h / 2))
+            # Explanation 2
+            text = fonter.render('CREATE CHAIN REACTIONS TO GET TWICE', 24)
+            w, h = text.get_rect().size
+            system.blit(text, (24 + 6, 24 + 348 - h / 2))
+            text = fonter.render('AS MANY POINTS, THEN 4x, 8x ETC.', 24)
+            w, h = text.get_rect().size
+            system.blit(text, (24 + 6, 24 + 372 - h / 2))
+        elif self.page == 2:
+            # Explanation 1
+            text = fonter.render('YOU CAN ALWAYS PERFORM A VALID MOVE.', 24)
+            w, h = text.get_rect().size
+            system.blit(text, (24 + 6, 24 + 84 - h / 2))
+            text = fonter.render('WHEN NO MORE MOVES ARE POSSIBLE, YOU', 24)
+            w, h = text.get_rect().size
+            system.blit(text, (24 + 6, 24 + 108 - h / 2))
+            text = fonter.render('GET A COMPLETE NEW BOARD.', 24)
+            w, h = text.get_rect().size
+            system.blit(text, (24 + 6, 24 + 132 - h / 2))
+            # Surprised
+            for x in range(8):
+                system.blit(data.surprise[(x * 3 + 2) % 8], data.board2screen((x, 3)))
+                system.blit(data.surprise[(x * 7) % 8], data.board2screen((x, 4)))
+            text = fonter.render('NO MORE MOVES!', 60)
+            w, h = text.get_rect().size
+            system.blit(text, (24 + 192 - w / 2, 24 + 192 - h / 2))
+            # Explanation 2
+            text = fonter.render('USE THE EYE TO FIND WHERE TO PLAY.', 24)
+            w, h = text.get_rect().size
+            system.blit(text, (24 + 6 + 48, 24 + 300 - h / 2))
+            text = fonter.render('EACH 10,000 POINTS YOU GET A NEW', 24)
+            w, h = text.get_rect().size
+            system.blit(text, (24 + 6 + 48, 24 + 324 - h / 2))
+            text = fonter.render('EYE. YOU CAN\'T HAVE MORE THAN 3.', 24)
+            w, h = text.get_rect().size
+            system.blit(text, (24 + 6 + 48, 24 + 348 - h / 2))
+            system.blit(data.eye, (24 + 6, 24 + 306))
+        elif self.page == 3:
+            # Explanation 1
+            text = fonter.render('WHEN ONLY ONE KIND OF MONSTER IS', 24)
+            w, h = text.get_rect().size
+            system.blit(text, (24 + 6, 24 + 84 - h / 2))
+            text = fonter.render('NEEDED TO FINISH THE LEVEL, MONSTERS', 24)
+            w, h = text.get_rect().size
+            system.blit(text, (24 + 6, 24 + 108 - h / 2))
+            text = fonter.render('OF THAT KIND GET AN ANGRY FACE.', 24)
+            w, h = text.get_rect().size
+            system.blit(text, (24 + 6, 24 + 132 - h / 2))
+            # Print done/needed
+            for i in range(4):
+                if i > 0:
+                    surf = data.tiny[i + 4]
+                    big = data.normal[i + 4]
+                else:
+                    surf = data.shaded[i + 4]
+                    big = data.angry[i + 4]
+                system.blit(big, data.board2screen((i, 3 + (i % 2))))
+                system.blit(big, data.board2screen(((i + 2) % 4, 3 + ((i + 1) % 2))))
+                x = 24 + 240 + 4 + i / 2 * 70
+                y = 172 + (i % 2) * 38
+                system.blit(surf, (x, y))
+                text = fonter.render(str(i * 3), 36)
+                system.blit(text, (x + 44, y + 2))
+            # Explanation 2
+            text = fonter.render('CLICK ON THE BONUS TO REMOVE ALL', 24)
+            w, h = text.get_rect().size
+            system.blit(text, (24 + 6, 24 + 252 - h / 2))
+            text = fonter.render('MONSTERS OF A RANDOM KIND.', 24)
+            w, h = text.get_rect().size
+            system.blit(text, (24 + 6, 24 + 276 - h / 2))
+            shape = data.special[self.timer % 7]
+            # Iter 1
+            system.blit(data.normal[1], data.board2screen((0, 6)))
+            system.blit(data.normal[2], data.board2screen((0, 7)))
+            system.blit(shape, data.board2screen((1, 6)))
+            system.blit(data.normal[5], data.board2screen((1, 7)))
+            system.blit(data.normal[2], data.board2screen((2, 6)))
+            system.blit(data.normal[0], data.board2screen((2, 7)))
+            # Iter 2
+            system.blit(data.normal[1], data.board2screen((4, 6)))
+            system.blit(data.exploded[2], data.board2screen((4, 7)))
+            system.blit(data.normal[5], data.board2screen((5, 7)))
+            system.blit(data.exploded[2], data.board2screen((6, 6)))
+            system.blit(data.normal[0], data.board2screen((6, 7)))
+            # Print bonus
+            text = fonter.render('10', 36)
+            w, h = text.get_rect().size
+            x, y = data.board2screen((4, 7))
+            system.blit(text, (x + 24 - w / 2, y + 24 - h / 2))
+            x, y = data.board2screen((5, 6))
+            system.blit(text, (x + 24 - w / 2, y + 24 - h / 2))
+            x, y = data.board2screen((6, 6))
+            system.blit(text, (x + 24 - w / 2, y + 24 - h / 2))
         # Handle events
         for event in pygame.event.get():
             if self.generic_event(event):
@@ -1245,7 +1321,9 @@ class Monsterz:
                 return
             elif event.type == MOUSEBUTTONDOWN:
                 system.play('whip')
-                self.status = STATUS_MENU
+                self.page += 1
+                if self.page >= 4:
+                    self.status = STATUS_MENU
                 return
 
     def iterate_scores(self):
