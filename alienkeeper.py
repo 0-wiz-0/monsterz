@@ -30,13 +30,13 @@ SWITCH_DELAY = 5
 class Theme:
     def __init__(self, file):
         # Load stuff
-        self.tiles = pygame.image.load(file)
-        (w, h) = self.tiles.get_rect().size
+        tiles = pygame.image.load(file)
+        (w, h) = tiles.get_rect().size
         if w * 9 != h * 4:
             raise 'error: ' + file + ' has wrong image size'
-        self.tiles = self.tiles.convert_alpha()
+        self.tiles = tiles.convert_alpha()
         self.orig_size = w / 4
-        self.tile_size = 0
+        self.tile_size = None
         self.normal = {}
         self.tiny = {}
         self.surprised = {}
@@ -45,29 +45,27 @@ class Theme:
         self.special = {}
         self.selector = None
 
-    def make_sprites(self, size):
-        self.tile_size = size
+    def make_sprites(self, t):
+        self.tile_size = t
+        s = self.orig_size
+        scale = pygame.transform.scale
+        crop = self.tiles.subsurface
         # Create sprites
         for x in range(8):
-            self.normal[x] = pygame.transform.scale(self.tiles.subsurface((0, (x + 1) * self.orig_size, self.orig_size, self.orig_size)), (size, size))
-            self.tiny[x] = pygame.transform.scale(self.tiles.subsurface((0, (x + 1) * self.orig_size, self.orig_size, self.orig_size)), (size * 3 / 4, size * 3 / 4))
-            self.surprised[x] = pygame.transform.scale(self.tiles.subsurface((self.orig_size, (x + 1) * self.orig_size, self.orig_size, self.orig_size)), (size, size))
-            self.angry[x] = pygame.transform.scale(self.tiles.subsurface((self.orig_size * 2, (x + 1) * self.orig_size, self.orig_size, self.orig_size)), (size, size))
-            self.exploded[x] = pygame.transform.scale(self.tiles.subsurface((self.orig_size * 3, (x + 1) * self.orig_size, self.orig_size, self.orig_size)), (size, size))
-            #tmp = pygame.Surface((self.orig_size, self.orig_size))
-            #tmp.blit(self.tiles.subsurface((self.orig_size, 0, self.orig_size, self.orig_size)), (0, 0))
-            #tmp = self.tiles.subsurface((self.orig_size, 0, self.orig_size, self.orig_size)).copy()
-            tmp = pygame.transform.scale(self.tiles.subsurface((self.orig_size, 0, self.orig_size, self.orig_size)), (self.orig_size, self.orig_size))
-            tmp2 = self.tiles.subsurface((0, (x + 1) * self.orig_size, self.orig_size, self.orig_size))
+            self.normal[x] = scale(crop((0, (x+1) * s, s, s)), (t, t))
+            self.tiny[x] = scale(crop((0, (x+1) * s, s, s)), (t * 3 / 4, t * 3 / 4))
+            self.surprised[x] = scale(crop((s, (x+1) * s, s, s)), (t, t))
+            self.angry[x] = scale(crop((s * 2, (x+1) * s, s, s)), (t, t))
+            self.exploded[x] = scale(crop((s * 3, (x+1) * s, s, s)), (t, t))
+            #tmp = crop((s, 0, s, s)).copy() # marche pas !
+            spcial = scale(crop((s, 0, s, s)), (s, s))
+            mini = crop((0, (x+1) * s, s, s))
             # Crappy FX
-            tmp2 = pygame.transform.scale(tmp2, (self.orig_size * 7 / 8, self.orig_size * 7 / 8))
-            tmp.blit(tmp2, (self.orig_size / 16, self.orig_size / 16))
-            #tmp2 = pygame.transform.scale(tmp2, (self.orig_size / 4, self.orig_size / 4))
-            #tmp2 = pygame.transform.scale(tmp2, (self.orig_size, self.orig_size))
-            #tmp.blit(tmp2, (0, 0))
-            self.special[x] = pygame.transform.scale(tmp, (size, size))
+            mini = scale(mini, (s * 7 / 8, s * 7 / 8))
+            spcial.blit(mini, (s / 16, s / 16))
+            self.special[x] = scale(spcial, (t, t))
         # Create selector sprite
-        self.selector = pygame.transform.scale(self.tiles.subsurface((0, 0, self.orig_size, self.orig_size)), (size, size))
+        self.selector = scale(crop((0, 0, s, s)), (t, t))
 
 # Start all the stuff
 class Game:
@@ -236,8 +234,9 @@ class Game:
         return ((x - 10) / theme.tile_size, (y - 10) / theme.tile_size)
 
     def draw_scene(self):
+        # Draw background
         background.fill((210, 200, 150))
-        # Print timebar:
+        # Draw timebar
         x = theme.tile_size / 2
         y = SCREEN_HEIGHT * 18 / 20
         w = (self.board_width - 1) * theme.tile_size
@@ -313,29 +312,33 @@ class Game:
             text = font.render(str(self.score), 2, (x * 255, x * 255, x * 255))
             background.blit(text, (theme.tile_size * self.board_width + theme.tile_size / 2 - delta * x, 10 - delta * x))
         # Print new level stuff
-        if self.level_timer and self.level_timer < SCROLL_DELAY / 2:
+        if self.level_timer and (self.level > 1 or self.level_timer > SCROLL_DELAY / 2):
+            if self.level_timer > SCROLL_DELAY / 2:
+                msg = 'LEVEL UP'
+            else:
+                msg = 'LEVEL ' + str(self.level)
             font = pygame.font.Font(None, SCREEN_HEIGHT / 4)
             delta = 1 + SCREEN_HEIGHT / 100
             for x in range(2):
-                text = font.render('level ' + str(self.level), 2, (x * 255, x * 255, x * 255))
+                text = font.render(msg, 2, (x * 255, x * 255, x * 255))
                 (w, h) = text.get_rect().size
-                background.blit(text, (theme.tile_size * self.board_width / 2 - w / 2 - delta * x, theme.tile_size * self.board_height / 2 - h / 2 - delta * x))
-        # Print no more moves stuff
+                background.blit(text, (theme.tile_size * self.board_width / 2 - w / 2 + 10 - delta * x, theme.tile_size * self.board_height / 2 - h / 2 + 10 - delta * x))
+        # Print 'no more moves' stuff
         if self.board_timer > SCROLL_DELAY / 2:
-            font = pygame.font.Font(None, SCREEN_HEIGHT / 6)
-            delta = 1 + SCREEN_HEIGHT / 150
+            font = pygame.font.Font(None, SCREEN_HEIGHT / 8)
+            delta = 1 + SCREEN_HEIGHT / 300
             for x in range(2):
-                text = font.render('no more moves!', 2, (x * 255, x * 255, x * 255))
+                text = font.render('NO MORE MOVES!', 2, (x * 255, x * 255, x * 255))
                 (w, h) = text.get_rect().size
-                background.blit(text, (theme.tile_size * self.board_width / 2 - w / 2 - delta * x, theme.tile_size * self.board_height / 2 - h / 2 - delta * x))
-        # Print bonus:
+                background.blit(text, (theme.tile_size * self.board_width / 2 - w / 2 + 10 - delta * x, theme.tile_size * self.board_height / 2 - h / 2 + 10 - delta * x))
+        # Print bonus
         font = pygame.font.Font(None, theme.tile_size * 3 / 4)
         for b in self.bonus_list:
             for d in range(2):
                 text = font.render(str(b[1]), 2, (d * 255, d * 255, d * 255))
                 (x, y) = self.board2screen(b[0])
                 background.blit(text, (x + theme.tile_size / 4 - delta * d, y + theme.tile_size / 4 - delta * d))
-        # Print done/needed:
+        # Print done/needed
         delta = 1 + SCREEN_HEIGHT / 300
         x = theme.tile_size * self.board_width + theme.tile_size / 2
         y = theme.tile_size / 2 + SCREEN_HEIGHT / 8
