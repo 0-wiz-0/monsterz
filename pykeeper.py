@@ -15,28 +15,22 @@ board_width = 8
 board_height = 8
 
 animals = [
-    { 'name': 'special', 'color': (127, 127, 127), 'img': None },
-    { 'name': 'elephants', 'color': (127, 200, 255), 'img': None },
-    { 'name': 'pandas', 'color': (230, 230, 230), 'img': None },
-    { 'name': 'girafes', 'color': (255, 255, 63), 'img': None },
-    { 'name': 'crocodiles', 'color': (63, 200, 63), 'img': None },
-    { 'name': 'lions', 'color': (250, 160, 63), 'img': None },
-    { 'name': 'baboons', 'color': (255, 63, 63), 'img': None },
-    { 'name': 'hippos', 'color': (200, 63, 200), 'img': None },
-    { 'name': 'bunnies', 'color': (255, 180, 180), 'img': None }
+    { 'color': (127, 127, 127) },
+    { 'color': (127, 200, 255) },
+    { 'color': (230, 230, 230) },
+    { 'color': (255, 255, 63) },
+    { 'color': (63, 200, 63) },
+    { 'color': (250, 160, 63) },
+    { 'color': (255, 63, 63) },
+    { 'color': (200, 63, 200) },
+    { 'color': (255, 180, 180) }
 ]
 
 class AnimalSprite(pygame.sprite.Sprite):
     def __init__(self, type, group=None):
         pygame.sprite.Sprite.__init__(self, group)
-        self.image = type['img']
-        self.rect  = tmp.get_rect()
-        self.moveTo = None
-
-    def update(self):
-        if self.moveTo:
-            self.rect.center = self.moveTo
-            self.moveTo = None
+        self.image = animals[type]['img']
+        self.rect = tmp.get_rect()
 
 class SelectSprite(pygame.sprite.Sprite):
     def __init__(self, group=None):
@@ -50,12 +44,6 @@ class SelectSprite(pygame.sprite.Sprite):
         pygame.draw.rect(tmp, (0, 0, 0), (sprite_size / 4, 0, sprite_size * 2 / 4, sprite_size), sprite_size / 8)
         self.image = tmp
         self.rect  = tmp.get_rect()
-        self.moveTo = None
-
-    def update(self):
-        if self.moveTo:
-            self.rect.center = self.moveTo
-            self.moveTo = None
 
 def do_move(a, b):
     global board
@@ -103,7 +91,7 @@ def get_wins(board):
     for y in range(board_height):
         for x in range(board_width - 2):
             a = board.get((x, y))
-            if not a or a['name'] == 'special':
+            if not a or a == 0:
                 continue
             b = board.get((x - 1, y))
             if b and a == b:
@@ -124,7 +112,7 @@ def get_wins(board):
     for x in range(board_width):
         for y in range(board_height - 2):
             a = board.get((x, y))
-            if not a or a['name'] == 'special':
+            if not a or a == 0:
                 continue
             b = board.get((x, y - 1))
             if b and a == b:
@@ -155,14 +143,14 @@ def draw_sprites():
         (x, y) = coord
         x *= sprite_size
         y *= sprite_size
-        tmp.moveTo = (x + sprite_size / 2, y + sprite_size / 2)
+        tmp.rect.center = (x + sprite_size / 2, y + sprite_size / 2)
     # Draw selector
     if select:
         tmp = SelectSprite(backSprites)
         (x, y) = select
         x *= sprite_size
         y *= sprite_size
-        tmp.moveTo = (x + sprite_size / 2, y + sprite_size / 2)
+        tmp.rect.center = (x + sprite_size / 2, y + sprite_size / 2)
     # Print score
     font = pygame.font.Font(None, screen_height / 8)
     delta = 1 + screen_height / 200
@@ -176,10 +164,9 @@ def draw_sprites():
     y = sprite_size / 2 + screen_height / 8
     for i in range(population):
         a = animals[i + 1]
-        n = a['name']
         background.blit(a['img'], (x, y))
         for d in range(2):
-            text = font.render(str(done[n]) + '/' + str(needed[n]), 2, (d * 255, d * 255, d * 255))
+            text = font.render(str(done[i + 1]) + '/' + str(needed[i + 1]), 2, (d * 255, d * 255, d * 255))
             background.blit(text, (x + sprite_size * 5 / 4 - delta * d, y + screen_height / 64 - delta * d))
         y += screen_height / 10
     # Print bonus:
@@ -213,8 +200,8 @@ def new_board():
 
 def random_animal(no_special = False):
     if not no_special and randint(0, 1000) == 0:
-        return animals[0]
-    return animals[randint(1, population)]
+        return 0
+    return randint(1, population)
 
 # Init values
 board = {}
@@ -281,12 +268,12 @@ def main():
             else:
                 population = 7
             for i in range(population):
-                x = animals[i + 1]['name']
-                done[x] = 0
-                if x == 'bunnies' and level < 8:
-                    needed[x] = 0
+                x = animals[i + 1]
+                done[i + 1] = 0
+                if i + 1 == 8 and level < 8:
+                    needed[i + 1] = 0
                 else:
-                    needed[x] = level + 2
+                    needed[i + 1] = level + 2
             new_board()
             time = TIME_MAX / 2
             need_update = True
@@ -331,7 +318,7 @@ def main():
                         x += x2
                         y += y2
                         if board.has_key((x2, y2)):
-                            done[board[(x2, y2)]['name']] += 1
+                            done[board[(x2, y2)]] += 1
                             del board[(x2, y2)]
                     bonus.append([x / len(w), y / len(w), points])
                 need_refresh = True
@@ -355,7 +342,7 @@ def main():
                     # Check for new level
                     new_level = True
                     for i in range(population):
-                        n = animals[i + 1]['name']
+                        n = i + 1
                         if done[n] < needed[n]:
                             new_level = False
                             break
@@ -407,7 +394,7 @@ def main():
         # Handle plays
         if played:
             if not select:
-                if board[played]['name'] != 'special':
+                if board[played] != 0:
                     select = played
                     need_refresh = True
                     continue
@@ -417,7 +404,7 @@ def main():
                 found = 0
                 for y in range(board_height):
                     for x in range(board_width):
-                        if board[(x, y)]['name'] == target['name']:
+                        if board[(x, y)] == target:
                             wins.append([(x, y)])
                 board[played] = target
                 wins.append([played])
