@@ -52,16 +52,18 @@ GAME_CLASSIC = 0
 GAME_QUEST = 1
 GAME_PUZZLE = 2
 GAME_TRAINING = 3
-GAME_MOREMONSTERZ = 10
-GAME_LESSMONSTERZ = 11
-GAME_MORELEVEL = 12
-GAME_LESSLEVEL = 13
+ACTION_MOREMONSTERZ = 10
+ACTION_LESSMONSTERZ = 11
+ACTION_MORELEVEL = 12
+ACTION_LESSLEVEL = 13
 
 LOST_DELAY = 40
 SCROLL_DELAY = 40
 WIN_DELAY = 12
 SWITCH_DELAY = 4
 WARNING_DELAY = 12
+
+rainbow = [ (255, 127, 127), (255, 255, 0), (127, 255, 127), (0, 255, 255), (127, 127, 255), (255, 0, 255) ]
 
 def compare_scores(x, y):
     if y[1] > x[1]:
@@ -110,15 +112,19 @@ def semi_transp(surf):
         surf.fill((0, 0, 0, 0))
         return
 
+def username():
+    if platform == 'win32':
+        return os.environ.get('USER') or os.environ.get('USERNAME') or 'You'
+    from pwd import getpwuid
+    from os import geteuid
+    return getpwuid(geteuid())[0]
+
 class Settings:
     def __init__(self, scorefile, outfd):
         # Get username
+        self.name = username()
+        # Get home directory
         if platform == 'win32':
-            try:
-                from win32api import GetUserName
-                self.name = GetUserName().upper()
-            except:
-                self.name = 'YOU'
             try:
                 from shell import SHGetFolderPath
                 from shellcon import CSIDL_APPDATA
@@ -126,9 +132,6 @@ class Settings:
             except:
                 configdir = join(dirname(argv[0]), 'settings')
         else:
-            from pwd import getpwuid
-            from os import geteuid
-            self.name = getpwuid(geteuid())[0].upper()
             configdir = join(expanduser('~'), '.monsterz')
         # Make sure our directory exists
         if isdir(configdir):
@@ -436,9 +439,11 @@ class Game:
         self.check_moves = False
         self.will_play = None
         self.paused = False
+        self.splash = True
         self.pause_bitmap = None
         self.play_again = False
         self.eyes = 3
+        self.lucky = -1
         self.show_move = False
         self.level = 1
         self.new_level()
@@ -536,6 +541,7 @@ class Game:
             for i in range(self.population):
                 self.done[i] = 0
                 self.needed[i] = 0
+            self.lucky = -1
             self.time = 1000000
         elif self.type == GAME_CLASSIC:
             if self.level < 7:
@@ -548,6 +554,7 @@ class Game:
                     self.needed[i] = self.level + 2
                 else:
                     self.needed[i] = 0 # level 10 is the highest
+            self.lucky = self.get_random(no_special = True)
             self.time = 1000000
         self.angry_items = -1
         self.new_board()
@@ -731,6 +738,26 @@ class Game:
             text = fonter.render('PAUSED', 120)
             w, h = text.get_rect().size
             system.blit(text, (24 + 192 - w / 2, 24 + 336 - h / 2))
+        elif self.splash:
+            if self.type == GAME_TRAINING:
+                msg = 'TRAINING'
+            elif self.type == GAME_CLASSIC:
+                msg = 'LEVEL ' + str(self.level)
+            text = fonter.render(msg, 60)
+            w, h = text.get_rect().size
+            system.blit(text, (24 + 192 - w / 2, 24 + 144 - h / 2))
+            if self.needed[0]:
+                msg = 'MONSTERS NEEDED: ' + str(self.needed[0])
+            else:
+                msg = 'UNLIMITED LEVEL'
+            text = fonter.render(msg, 40)
+            w, h = text.get_rect().size
+            system.blit(text, (24 + 192 - w / 2, 24 + 240 - h / 2))
+            if self.lucky != -1:
+                text = fonter.render('LUCKY MONSTER:', 40)
+                w, h = text.get_rect().size
+                system.blit(text, (192 - w / 2 - 8, 24 + 288 - h / 2))
+                system.blit(data.normal[self.lucky], (192 + w / 2, 288))
         elif self.lost_timer != -1:
             # Draw pieces
             self.board_draw()
@@ -746,7 +773,10 @@ class Game:
                 system.blit(text, (24 + 192 - w / 2, 24 + 192 - h / 2))
             # Print bonus
             for b in self.bonus_list:
-                text = fonter.render(str(b[1]), 36)
+                if b[2]:
+                    text = fonter.render(str(b[1]), 48, rainbow[monsterz.timer % 6])
+                else:
+                    text = fonter.render(str(b[1]), 36)
                 w, h = text.get_rect().size
                 x, y = data.board2screen(b[0])
                 system.blit(text, (x + 24 - w / 2, y + 24 - h / 2))
@@ -767,14 +797,17 @@ class Game:
         system.blit(text, (624 - w, 10))
         # Print done/needed
         for i in range(self.population):
+            x = 440 + i / 4 * 90
+            y = 64 + (i % 4) * 38
             if self.done[i] >= self.needed[i]:
                 surf = data.tiny[i]
             else:
                 surf = data.shaded[i]
-            x = 440 + i / 4 * 90
-            y = 64 + (i % 4) * 38
             system.blit(surf, (x, y))
-            text = fonter.render(str(self.done[i]), 36)
+            if i == self.lucky:
+                text = fonter.render(str(self.done[i]), 36, rainbow[monsterz.timer % 6])
+            else:
+                text = fonter.render(str(self.done[i]), 36)
             system.blit(text, (x + 44, y + 2))
         # Print eyes
         for i in range(3):
@@ -799,14 +832,6 @@ class Game:
             for x in range(2):
                 if self.psat[x]:
                     self.psat[x] = self.psat[x] * 8 / 10
-        # Print level
-        if self.type == GAME_TRAINING:
-            msg = 'TRAINING'
-        elif self.type == GAME_CLASSIC:
-            msg = 'LEVEL ' + str(self.level)
-            if self.needed[0]: msg += ': ' + str(self.needed[0]) + 'x'
-        text = fonter.render(msg, 40)
-        system.blit(text, (444, 216))
 
     def pause(self):
         # TODO: prevent cheating by not allowing less than 1 second
@@ -828,6 +853,8 @@ class Game:
         self.oldticks = ticks
         # If paused, do nothing
         if self.paused:
+            return
+        if self.splash:
             return
         # Resolve winning moves and chain reactions
         if self.board_timer:
@@ -877,6 +904,7 @@ class Game:
             if self.level_timer is SCROLL_DELAY / 2:
                 self.level += 1
                 self.new_level()
+                self.splash = True
             elif self.level_timer is 0:
                 system.play('boing')
                 self.blink_list = {}
@@ -894,17 +922,23 @@ class Game:
                 self.scorebonus = 0
                 self.timebonus = 0
                 for w in self.wins:
-                    if len(w) is 1:
-                        points = 10 * self.level
+                    if self.board[w[0]] == self.lucky:
+                        mul = 20
+                        lucky = True
                     else:
-                        points = (10 * self.level) * (2 ** (self.win_iter + len(w) - 3))
+                        mul = 10
+                        lucky = False
+                    if len(w) is 1:
+                        points = mul * self.level
+                    else:
+                        points = (mul * self.level) * (2 ** (self.win_iter + len(w) - 3))
                     self.scorebonus += points
                     self.timebonus += 45000 * len(w)
                     x2, y2 = 0.0, 0.0
                     for x, y in w:
                         x2 += x
                         y2 += y
-                    self.bonus_list.append([(x2 / len(w), y2 / len(w)), points])
+                    self.bonus_list.append([(x2 / len(w), y2 / len(w)), points, lucky])
                 self.disappear_list = self.surprised_list
                 self.surprised_list = []
             elif self.win_timer is WIN_DELAY * 3 / 5:
@@ -1033,28 +1067,23 @@ class Game:
                 system.play('whip')
                 self.switch = played
                 self.switch_timer = SWITCH_DELAY
-            else:
-                if self.board[played] == ITEM_METAL:
-                    return
-                elif self.board[played] == ITEM_SPECIAL:
-                    pass
-                else:
-                    system.play('click')
-                    self.select = played
-                    return
+            elif self.board[played] == ITEM_METAL:
+                pass
+            elif self.board[played] == ITEM_SPECIAL:
                 # Deal with the special block
                 self.wins = []
                 target = monsterz.timer % self.population
-                found = 0
+                self.board[played] = target
                 for y in range(BOARD_HEIGHT):
                     for x in range(BOARD_WIDTH):
                         if self.board[(x, y)] == target:
                             self.wins.append([(x, y)])
-                self.board[played] = target
-                self.wins.append([played])
                 self.win_iter = 0
                 self.win_timer = WIN_DELAY
-            return
+            else:
+                system.play('click')
+                self.select = played
+        return
 
 class Monsterz:
     def __init__(self):
@@ -1274,16 +1303,16 @@ class Monsterz:
             narea = GAME_TRAINING
             self.nsat[3] = 255
         elif (x, y) == (1, 6):
-            narea = GAME_LESSMONSTERZ
+            narea = ACTION_LESSMONSTERZ
             self.nsat[4] = 255
         elif (x, y) == (6, 6):
-            narea = GAME_MOREMONSTERZ
+            narea = ACTION_MOREMONSTERZ
             self.nsat[5] = 255
         elif (x, y) == (1, 7):
-            narea = GAME_LESSLEVEL
+            narea = ACTION_LESSLEVEL
             self.nsat[6] = 255
         elif (x, y) == (6, 7):
-            narea = GAME_MORELEVEL
+            narea = ACTION_MORELEVEL
             self.nsat[7] = 255
         else:
             narea = None
@@ -1329,16 +1358,16 @@ class Monsterz:
                 return
             elif event.type == MOUSEBUTTONDOWN and narea >= 10:
                 system.play('whip')
-                if narea == GAME_MOREMONSTERZ:
+                if narea == ACTION_MOREMONSTERZ:
                     if items < 8:
                         settings.set('items', items + 1)
-                elif narea == GAME_LESSMONSTERZ:
+                elif narea == ACTION_LESSMONSTERZ:
                     if items > 4:
                         settings.set('items', items - 1)
-                if narea == GAME_MORELEVEL:
+                if narea == ACTION_MORELEVEL:
                     if difficulty < 10:
                         settings.set('difficulty', difficulty + 1)
-                elif narea == GAME_LESSLEVEL:
+                elif narea == ACTION_LESSLEVEL:
                     if difficulty > 1:
                         settings.set('difficulty', difficulty - 1)
                 return
@@ -1396,7 +1425,12 @@ class Monsterz:
                         system.play('whip')
                         self.game.lost_timer = -1
                         return
+                if self.game.splash:
+                    system.play('whip')
+                    self.game.splash = False
+                    return
                 if self.game.lost_timer == -1:
+                    system.play('whip')
                     self.status = STATUS_MENU
                     return
                 if 440 < x < 440 + 36 * 3 and 252 < y < 252 + 36:
@@ -1474,6 +1508,58 @@ class Monsterz:
             system.blit(text, (24 + 6, 24 + 372 - h / 2))
         elif self.page == 2:
             # Explanation 1
+            text = fonter.render('THE LUCKY MONSTER EARNS YOU TWICE', 24)
+            w, h = text.get_rect().size
+            system.blit(text, (24 + 6, 24 + 108 - h / 2))
+            text = fonter.render('AS MANY POINTS AS OTHER MONSTERS.', 24)
+            w, h = text.get_rect().size
+            system.blit(text, (24 + 6, 24 + 132 - h / 2))
+            shape = data.special[self.timer % 7]
+            # Print done/needed
+            system.blit_board((0, 3, 4, 5))
+            system.blit(data.normal[3], data.board2screen((0, 3)))
+            system.blit(data.surprise[1], data.board2screen((1, 3)))
+            system.blit(data.surprise[1], data.board2screen((2, 3)))
+            system.blit(data.surprise[1], data.board2screen((3, 3)))
+            system.blit(data.surprise[2], data.board2screen((0, 4)))
+            system.blit(data.surprise[2], data.board2screen((1, 4)))
+            system.blit(data.surprise[2], data.board2screen((2, 4)))
+            system.blit(data.normal[4], data.board2screen((3, 4)))
+            system.blit_board((0, 6, 4, 8))
+            system.blit(data.normal[3], data.board2screen((0, 6)))
+            system.blit(data.exploded[1], data.board2screen((1, 6)))
+            system.blit(data.exploded[1], data.board2screen((2, 6)))
+            system.blit(data.exploded[1], data.board2screen((3, 6)))
+            system.blit(data.exploded[2], data.board2screen((0, 7)))
+            system.blit(data.exploded[2], data.board2screen((1, 7)))
+            system.blit(data.exploded[2], data.board2screen((2, 7)))
+            system.blit(data.normal[4], data.board2screen((3, 7)))
+            text = fonter.render('140', 48, rainbow[monsterz.timer % 6])
+            w, h = text.get_rect().size
+            x, y = data.board2screen((2, 6))
+            system.blit(text, (x + 24 - w / 2, y + 24 - h / 2))
+            text = fonter.render('70', 36)
+            w, h = text.get_rect().size
+            x, y = data.board2screen((1, 7))
+            system.blit(text, (x + 24 - w / 2, y + 24 - h / 2))
+            for i in range(4):
+                surf = data.tiny[i + 1]
+                count = 3 + i * 2
+                x = 24 + 240 + 4 + i / 2 * 70
+                y = 172 + (i % 2) * 38
+                for dummy in range(2):
+                    system.blit(surf, (x, y))
+                    text = fonter.render(str(count), 36)
+                    if i == 0:
+                        text = fonter.render(str(count), 36, rainbow[monsterz.timer % 6])
+                    else:
+                        text = fonter.render(str(count), 36)
+                    system.blit(text, (x + 44, y + 2))
+                    y = 316 + (i % 2) * 38
+                    if i < 2:
+                        count += 3
+        elif self.page == 3:
+            # Explanation 1
             text = fonter.render('YOU CAN ALWAYS PERFORM A VALID MOVE.', 24)
             w, h = text.get_rect().size
             system.blit(text, (24 + 6, 24 + 84 - h / 2))
@@ -1502,7 +1588,7 @@ class Monsterz:
             w, h = text.get_rect().size
             system.blit(text, (24 + 6 + 48, 24 + 348 - h / 2))
             system.blit(data.eye, (24 + 6, 24 + 306))
-        elif self.page == 3:
+        elif self.page == 4:
             # Explanation 1
             text = fonter.render('WHEN ONLY ONE KIND OF MONSTER IS', 24)
             w, h = text.get_rect().size
@@ -1572,7 +1658,7 @@ class Monsterz:
             elif event.type == MOUSEBUTTONDOWN:
                 system.play('whip')
                 self.page += 1
-                if self.page >= 4:
+                if self.page > 4:
                     self.status = STATUS_MENU
                 return
 
@@ -1582,12 +1668,10 @@ class Monsterz:
         text = fonter.render('HIGH SCORES', 60)
         w, h = text.get_rect().size
         system.blit(text, (24 + 192 - w / 2, 24 + 24 - h / 2))
-        # Dummy scores list
-        scores = [['UNIMPLEMENTED', 100 - x * 10, 1] for x in range(10)]
         # Print our list
         for x in range(10):
             name, score, level = settings.scores['CLASSIC'][x]
-            text = fonter.render(str(x + 1) + '. ' + name, 32)
+            text = fonter.render(str(x + 1) + '. ' + name.upper(), 32)
             w, h = text.get_rect().size
             system.blit(text, (24 + 24, 24 + 72 + 32 * x - h / 2))
             text = fonter.render(str(score), 32)
