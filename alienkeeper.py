@@ -6,19 +6,12 @@ from random import randint
 
 # constants
 AI = False
-screen_width = 800
-screen_height = 600
+screen_width = 640
+screen_height = 480
 
 # Start all the stuff
 class Game:
     def __init__(self, size = (8, 8), level = 1):
-        pygame.init()
-        # Init display
-        self.window = pygame.display.set_mode((screen_width, screen_height))
-        pygame.display.set_caption('Alienkeeper')
-        self.background = pygame.Surface(self.window.get_size())
-        # Load stuff
-        self.tiles = pygame.image.load('tiles.png').convert_alpha()
         # Init values
         (self.board_width, self.board_height) = size
         self.needed = {}
@@ -33,30 +26,32 @@ class Game:
         self.exploded = {}
         self.special = {}
         # Compute stuff
-        self.tile_size = screen_width / self.board_width
-        tmp = screen_height * 17 / 20 / self.board_height
+        self.tile_size = (screen_width - 20) / self.board_width
+        tmp = (screen_height - 20) * 17 / 20 / self.board_height
         if tmp < self.tile_size:
             self.tile_size = tmp
         # Create sprites
         for x in range(8):
-            self.happy[x] = pygame.transform.scale(self.tiles.subsurface((0, (x + 1) * 128, 128, 128)), (self.tile_size, self.tile_size))
-            self.surprised[x] = pygame.transform.scale(self.tiles.subsurface((128, (x + 1) * 128, 128, 128)), (self.tile_size, self.tile_size))
-            self.angry[x] = pygame.transform.scale(self.tiles.subsurface((256, (x + 1) * 128, 128, 128)), (self.tile_size, self.tile_size))
-            self.exploded[x] = pygame.transform.scale(self.tiles.subsurface((384, (x + 1) * 128, 128, 128)), (self.tile_size, self.tile_size))
+            self.happy[x] = pygame.transform.scale(tiles.subsurface((0, (x + 1) * 128, 128, 128)), (self.tile_size, self.tile_size))
+            self.surprised[x] = pygame.transform.scale(tiles.subsurface((128, (x + 1) * 128, 128, 128)), (self.tile_size, self.tile_size))
+            self.angry[x] = pygame.transform.scale(tiles.subsurface((256, (x + 1) * 128, 128, 128)), (self.tile_size, self.tile_size))
+            self.exploded[x] = pygame.transform.scale(tiles.subsurface((384, (x + 1) * 128, 128, 128)), (self.tile_size, self.tile_size))
             tmp = pygame.Surface((128, 128))
-            tmp.blit(self.tiles.subsurface((128, 0, 128, 128)), (0, 0))
-            tmp2 = self.tiles.subsurface((0, (x + 1) * 128, 128, 128))
+            tmp.blit(tiles.subsurface((128, 0, 128, 128)), (0, 0))
+            tmp2 = tiles.subsurface((0, (x + 1) * 128, 128, 128))
             # Crappy FX
-            #tmp2 = pygame.transform.scale(tmp2, (24, 24))
+            #tmp2 = pygame.transform.scale(tmp2, (32, 32))
             #tmp2 = pygame.transform.scale(tmp2, (128, 128))
             tmp.blit(tmp2, (0, 0))
             self.special[x] = pygame.transform.scale(tmp, (self.tile_size, self.tile_size))
         # Create selector sprite
-        self.selector = pygame.transform.scale(self.tiles.subsurface((0, 0, 128, 128)), (self.tile_size, self.tile_size))
+        self.selector = pygame.transform.scale(tiles.subsurface((0, 0, 128, 128)), (self.tile_size, self.tile_size))
         # Other initialisation stuff
         self.score = 0
         self.timer = 0
-        self.resolve_wins = False
+        self.win_timer = 0
+        self.level_timer = 25
+        self.board_timer = 0
         self.need_update = True
         self.will_play = None
         self.clock = pygame.time.Clock()
@@ -188,55 +183,19 @@ class Game:
         self.time = 1000000
         self.need_update = True
 
+    def board2screen(self, coord):
+        (x, y) = coord
+        return (x * self.tile_size + 10, y * self.tile_size + 10)
+
+    def screen2board(self, coord):
+        (x, y) = coord
+        return ((x - 10) / self.tile_size, (y - 10) / self.tile_size)
+
     def draw_scene(self):
         if self.time > 0:
-            self.background.fill((210, 200, 150))
+            background.fill((210, 200, 150))
         else:
-            self.background.fill((255, 20, 15))
-        # Draw board
-        for (coord, n) in self.board.items():
-            if n == 0:
-                tmp = self.special[self.timer % self.population]
-            elif coord in self.surprised_list:
-                tmp = self.surprised[n - 1]
-            elif coord in self.disappear_list:
-                tmp = self.exploded[n - 1]
-            elif n == self.angry_tiles:
-                tmp = self.angry[n - 1]
-            else:
-                tmp = self.happy[n - 1]
-            (x, y) = coord
-            x *= self.tile_size
-            y *= self.tile_size
-            self.background.blit(tmp, (x, y))
-        # Draw selector
-        if self.select:
-            (x, y) = self.select
-            x *= self.tile_size
-            y *= self.tile_size
-            self.background.blit(self.selector, (x, y))
-        # Print score
-        font = pygame.font.Font(None, screen_height / 8)
-        delta = 1 + screen_height / 200
-        for x in range(2):
-            text = font.render(str(self.score), 2, (x * 255, x * 255, x * 255))
-            self.background.blit(text, (self.tile_size * self.board_width + self.tile_size / 2 - delta * x, - delta * x))
-        # Print done/needed:
-        font = pygame.font.Font(None, screen_height / 12)
-        delta = 1 + screen_height / 300
-        x = self.tile_size * self.board_width + self.tile_size / 2
-        y = self.tile_size / 2 + screen_height / 8
-        for i in range(self.population):
-            self.background.blit(self.happy[i], (x, y))
-            for d in range(2):
-                text = font.render(str(self.done[i + 1]) + '/' + str(self.needed[i + 1]), 2, (d * 255, d * 255, d * 255))
-                self.background.blit(text, (x + self.tile_size * 5 / 4 - delta * d, y + screen_height / 64 - delta * d))
-            y += screen_height / 10
-        # Print bonus:
-        for x in self.bonus_list:
-            for d in range(2):
-                text = font.render(str(x[2]), 2, (d * 255, d * 255, d * 255))
-                self.background.blit(text, (x[0] * self.tile_size + self.tile_size / 4 - delta * d, x[1] * self.tile_size + self.tile_size / 4 - delta * d))
+            background.fill((255, 20, 15))
         # Print timebar:
         x = self.tile_size / 2
         y = screen_height * 18 / 20
@@ -247,9 +206,63 @@ class Game:
             color = (255, 0, 0)
         else:
             color = (255, 240, 0)
-        pygame.draw.rect(self.background, (0, 0, 0), (x, y, w, h))
+        pygame.draw.rect(background, (0, 0, 0), (x, y, w, h))
         if w2 > 0:
-            pygame.draw.rect(self.background, color, (x, y, w * self.time / 2000000, h))
+            pygame.draw.rect(background, color, (x, y, w * self.time / 2000000, h))
+        # Draw pieces
+        if self.level_timer:
+            timer = self.level_timer
+        elif self.board_timer:
+            timer = self.board_timer
+        else:
+            timer = 0
+        if timer > 25:
+            offset = 50 - timer
+            offset = offset * offset
+        elif timer > 0:
+            offset = timer
+            offset = - offset * offset
+        else:
+            offset = 0
+        for (coord, n) in self.board.items():
+            if n == 0:
+                tmp = self.special[self.timer % self.population]
+            elif coord in self.surprised_list or offset > 0:
+                tmp = self.surprised[n - 1]
+            elif coord in self.disappear_list:
+                tmp = self.exploded[n - 1]
+            elif n == self.angry_tiles:
+                tmp = self.angry[n - 1]
+            else:
+                tmp = self.happy[n - 1]
+            (x, y) = self.board2screen(coord)
+            background.blit(tmp, (x, y + offset))
+        # Draw selector
+        if self.select:
+            background.blit(self.selector, self.board2screen(self.select))
+        # Print score
+        font = pygame.font.Font(None, screen_height / 8)
+        delta = 1 + screen_height / 200
+        for x in range(2):
+            text = font.render(str(self.score), 2, (x * 255, x * 255, x * 255))
+            background.blit(text, (self.tile_size * self.board_width + self.tile_size / 2 - delta * x, - delta * x))
+        # Print bonus:
+        for b in self.bonus_list:
+            for d in range(2):
+                text = font.render(str(b[1]), 2, (d * 255, d * 255, d * 255))
+                (x, y) = self.board2screen(b[0])
+                background.blit(text, (x + self.tile_size / 4 - delta * d, y + self.tile_size / 4 - delta * d))
+        # Print done/needed:
+        font = pygame.font.Font(None, screen_height / 12)
+        delta = 1 + screen_height / 300
+        x = self.tile_size * self.board_width + self.tile_size / 2
+        y = self.tile_size / 2 + screen_height / 8
+        for i in range(self.population):
+            background.blit(self.happy[i], (x, y))
+            for d in range(2):
+                text = font.render(str(self.done[i + 1]) + '/' + str(self.needed[i + 1]), 2, (d * 255, d * 255, d * 255))
+                background.blit(text, (x + self.tile_size * 5 / 4 - delta * d, y + screen_height / 64 - delta * d))
+            y += screen_height / 10
 
     def iterate(self):
         ticks = pygame.time.get_ticks()
@@ -265,14 +278,26 @@ class Game:
             self.need_update = False
             if not can_play:
                 print 'no more moves!'
-                self.new_board()
-                self.need_update = True # Need to check again
+                self.board_timer = 50
         self.draw_scene()
-        self.window.blit(self.background, (0, 0))
+        window.blit(background, (0, 0))
         # Draw stuff here
         pygame.display.flip()
         # Resolve winning moves and chain reactions
-        if self.resolve_wins:
+        if self.board_timer:
+            self.board_timer -= 1
+            if self.board_timer is 25:
+                self.new_board()
+            elif self.board_timer is 0:
+                self.need_update = True # Need to check again
+            return
+        if self.level_timer:
+            self.level_timer -= 1
+            if self.level_timer is 25:
+                self.level += 1
+                self.new_level()
+            return
+        if self.win_timer:
             self.win_timer -= 1
             if self.win_timer is 10:
                 for w in self.wins:
@@ -292,7 +317,7 @@ class Game:
                     for (x, y) in w:
                         x2 += x
                         y2 += y
-                    self.bonus_list.append([x2 / len(w), y2 / len(w), points])
+                    self.bonus_list.append([(x2 / len(w), y2 / len(w)), points])
                 self.disappear_list = self.surprised_list
                 self.surprised_list = []
             elif self.win_timer is 4:
@@ -322,7 +347,6 @@ class Game:
                     self.win_timer = 12
                     self.win_iter += 1
                 else:
-                    self.resolve_wins = False
                     # Check for new level
                     finished = True
                     for i in range(self.population):
@@ -331,8 +355,8 @@ class Game:
                             finished = False
                             break
                     if finished:
-                        self.level += 1
-                        self.new_level()
+                        self.select = None
+                        self.level_timer = 50
                 self.need_update = True
             if self.win_timer:
                 return
@@ -349,9 +373,7 @@ class Game:
                 pygame.display.toggle_fullscreen()
                 return
             elif event.type == MOUSEBUTTONDOWN:
-                (x2, y2) = event.pos
-                x2 /= self.tile_size
-                y2 /= self.tile_size
+                (x2, y2) = self.screen2board(event.pos)
                 if x2 < 0 or x2 >= self.board_width or y2 < 0 or y2 >= self.board_height:
                     continue
                 played = (x2, y2)
@@ -417,7 +439,6 @@ class Game:
                 self.wins.append([played])
                 self.win_iter = 0
                 self.win_timer = 12
-                self.resolve_wins = True
                 return
             (x1, y1) = self.select
             (x2, y2) = played
@@ -437,10 +458,23 @@ class Game:
             self.select = None
             self.win_iter = 0
             self.win_timer = 12
-            self.resolve_wins = True
 
+# Init Pygame
+pygame.init()
+# Load stuff
+tiles = pygame.image.load('tiles.png')
+(w, h) = tiles.get_rect().size
+if w * 9 != h * 4:
+    raise 'error: tiles.png has wrong size'
+# Init display
+window = pygame.display.set_mode((screen_width, screen_height))
+pygame.display.set_caption('Alienkeeper')
+background = pygame.Surface(window.get_size())
+tiles = tiles.convert_alpha()
+# Read commandline (haha)
 level = 1
 size = (8, 8)
+# Go!
 game = Game(size = size, level = level)
 game.go()
 
