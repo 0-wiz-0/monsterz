@@ -145,7 +145,11 @@ class Fonter:
             self.cache.pop(0)
         return text
 
-# Start all the stuff
+class Game:
+    # Nothing here yet
+    def __init__(self):
+        pass
+
 class Monsterz:
     def __init__(self):
         self.board_width, self.board_height = 8, 8
@@ -511,45 +515,45 @@ class Monsterz:
         return False
 
     def iterate_menu(self):
+        self.generic_draw()
         x, y = self.screen2board(pygame.mouse.get_pos())
         colors = [(255, 255, 255)] * 4
         if y == 4 and x >= 1 and x <= 6:
             area = STATUS_PLAY
             colors[0] = (0, 255, 0)
+            bg.blit(data.normal[2], self.board2screen((1, 4)))
         elif y == 5 and x >= 1 and x <= 4:
             area = STATUS_HELP
             colors[1] = (255, 0, 255)
+            bg.blit(data.surprise[3], self.board2screen((1, 5)))
         elif y == 6 and x >= 1 and x <= 5:
             area = STATUS_SCORES
             colors[2] = (255, 255, 0)
+            bg.blit(data.blink[4], self.board2screen((1, 6)))
         elif y == 7 and x >= 1 and x <= 4:
             area = STATUS_QUIT
             colors[3] = (255, 0, 0)
+            bg.blit(data.angry[0], self.board2screen((1, 7)))
         else:
             area = None
-        self.generic_draw()
         w, h = data.logo.get_size()
         bg.blit(data.logo, (24 + 192 - w / 2, 24 + 96 - h / 2))
         # PLAY
         text = fonter.render('NEW GAME', 48, colors[0])
         w, h = text.get_rect().size
         bg.blit(text, (24 + 102, 24 + 216 - h / 2))
-        bg.blit(data.normal[2], self.board2screen((1, 4)))
         # HELP
         text = fonter.render('HELP', 48, colors[1])
         w, h = text.get_rect().size
         bg.blit(text, (24 + 102, 24 + 264 - h / 2))
-        bg.blit(data.surprise[3], self.board2screen((1, 5)))
         # SCORES
         text = fonter.render('SCORES', 48, colors[2])
         w, h = text.get_rect().size
         bg.blit(text, (24 + 102, 24 + 312 - h / 2))
-        bg.blit(data.blink[4], self.board2screen((1, 6)))
         # QUIT
         text = fonter.render('QUIT', 48, colors[3])
         w, h = text.get_rect().size
         bg.blit(text, (24 + 102, 24 + 360 - h / 2))
-        bg.blit(data.angry[0], self.board2screen((1, 7)))
         # Handle events
         for event in pygame.event.get():
             if self.generic_event(event):
