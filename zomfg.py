@@ -53,25 +53,22 @@ class Theme:
         self.exploded = {}
         self.special = {}
         self.selector = None
+        self.wav = {}
         if HAVE_SOUND:
             pygame.mixer.music.load(join(dir, 'music.s3m'))
             pygame.mixer.music.set_volume(0.9)
             pygame.mixer.music.play(-1, 0.0)
-            self.click = pygame.mixer.Sound(join(dir, 'click.wav'))
-            self.grunt = pygame.mixer.Sound(join(dir, 'grunt.wav'))
-            self.ding = pygame.mixer.Sound(join(dir, 'ding.wav'))
-            self.whip = pygame.mixer.Sound(join(dir, 'whip.wav'))
-            self.pop = pygame.mixer.Sound(join(dir, 'pop.wav'))
-            self.duh = pygame.mixer.Sound(join(dir, 'duh.wav'))
-            self.boing = pygame.mixer.Sound(join(dir, 'boing.wav'))
-            self.applause = pygame.mixer.Sound(join(dir, 'applause.wav'))
-            self.laugh = pygame.mixer.Sound(join(dir, 'laugh.wav'))
-            self.warning = pygame.mixer.Sound(join(dir, 'warning.wav'))
+            for s in ['click', 'grunt', 'ding', 'whip', 'pop', 'duh', \
+                      'boing', 'applause', 'laugh', 'warning']:
+                self.wav[s] = pygame.mixer.Sound(join(dir, s + '.wav'))
         self.font = {}
         for x in [36, 48, 60, 120]:
             self.font[x] = pygame.font.Font(None, x)
 
-    def scale(self, surf, size):
+    def play(self, sound):
+        if HAVE_SOUND: self.wav[sound].play()
+
+    def _scale(self, surf, size):
         w, h = surf.get_size()
         if (w, h) == size:
             return pygame.transform.scale(surf, size)
@@ -80,18 +77,18 @@ class Theme:
     def make_sprites(self, t):
         self.tile_size = t
         s = self.orig_size
-        scale = self.scale
+        scale = self._scale
         crop = self.tiles.subsurface
         # Create sprites
         for x in range(8):
             self.normal[x] = scale(crop((0, (x+1) * s, s, s)), (t, t))
-            self.tiny[x] = scale(crop((0, (x+1) * s, s, s)), (t * 3 / 4, t * 3 / 4))
-            self.gray[x] = scale(crop((0, (x+1) * s, s, s)), (t * 3 / 4, t * 3 / 4))
+            self.tiny[x] = scale(self.normal[x], (t * 3 / 4, t * 3 / 4))
+            self.gray[x] = scale(self.normal[x], (t * 3 / 4, t * 3 / 4))
             pixels = pygame.surfarray.pixels3d(self.gray[x])
             for line in pixels:
                 for p in line:
                     r, g, b = p
-                    val = (6 * r + 7 * g + 3 * b) / 16
+                    val = (r + g + b + 2 * max(r, g, b)) / 5
                     p[:] = val, val, val
             del pixels
             self.blink[x] = scale(crop((s, (x+1) * s, s, s)), (t, t))
@@ -122,9 +119,8 @@ class Game:
         self.select = None
         self.switch = None
         # Compute stuff
-        tile_size = (SCREEN_WIDTH - 20) / self.board_width
-        tmp = (SCREEN_HEIGHT - 20) * 17 / 20 / self.board_height
-        if tmp < tile_size: tile_size = tmp
+        tile_size = min((SCREEN_WIDTH - 20) / self.board_width,
+                        (SCREEN_HEIGHT - 20) * 17 / 20 / self.board_height)
         theme.make_sprites(tile_size)
         # Other initialisation stuff
         self.score = 0
@@ -191,19 +187,15 @@ class Game:
         for y in range(self.board_height):
             for x in range(self.board_width - 2):
                 a = self.board.get((x, y))
-                if not a or a == 0:
-                    continue
+                if not a or a == 0: continue
                 b = self.board.get((x - 1, y))
-                if b and a == b:
-                    continue
+                if b and a == b: continue
                 len = 1
                 for t in range(1, self.board_width - x):
                     b = self.board.get((x + t, y))
-                    if a != b:
-                        break
+                    if a != b: break
                     len += 1
-                if len < 3:
-                    continue
+                if len < 3: continue
                 win = []
                 for t in range(len):
                     win.append((x + t, y))
@@ -212,29 +204,20 @@ class Game:
         for x in range(self.board_width):
             for y in range(self.board_height - 2):
                 a = self.board.get((x, y))
-                if not a or a == 0:
-                    continue
+                if not a or a == 0: continue
                 b = self.board.get((x, y - 1))
-                if b and a == b:
-                    continue
+                if b and a == b: continue
                 len = 1
                 for t in range(1, self.board_height - y):
                     b = self.board.get((x, y + t))
-                    if a != b:
-                        break
+                    if a != b: break
                     len += 1
-                if len < 3:
-                    continue
+                if len < 3: continue
                 win = []
                 for t in range(len):
                     win.append((x, y + t))
                 wins.append(win)
         return wins
-
-    def do_move(self, a, b):
-        tmp = self.board[a]
-        self.board[a] = self.board[b]
-        self.board[b] = tmp
 
     def list_moves(self):
         checkme = [[(+2,  0), (+3,  0)],
@@ -465,7 +448,7 @@ class Game:
             for move in self.list_moves():
                 break
             else:
-                if HAVE_SOUND: theme.ding.play()
+                theme.play('ding')
                 self.board_timer = SCROLL_DELAY
             self.check_moves = False
             self.clicks = []
@@ -500,7 +483,7 @@ class Game:
             if self.board_timer is SCROLL_DELAY / 2:
                 self.new_board()
             elif self.board_timer is 0:
-                if HAVE_SOUND: theme.boing.play()
+                theme.play('boing')
                 self.check_moves = True # Need to check again
             return
         if self.lost_timer:
@@ -513,14 +496,15 @@ class Game:
         if self.switch_timer:
             self.switch_timer -= 1
             if self.switch_timer is 0:
-                self.do_move(self.select, self.switch)
+                self.board[self.select], self.board[self.switch] = \
+                    self.board[self.switch], self.board[self.select]
                 if self.missed:
                     self.clicks = []
                     self.missed = False
                 else:
                     self.wins = self.get_wins()
                     if not self.wins:
-                        if HAVE_SOUND: theme.whip.play()
+                        theme.play('whip')
                         self.missed = True
                         self.switch_timer = SWITCH_DELAY
                         return
@@ -535,19 +519,19 @@ class Game:
                 self.level += 1
                 self.new_level()
             elif self.level_timer is 0:
-                if HAVE_SOUND: theme.boing.play()
+                theme.play('boing')
                 self.blink_list = {}
                 self.check_moves = True
             return
         if self.win_timer:
             self.win_timer -= 1
             if self.win_timer is WIN_DELAY - 1:
-                if HAVE_SOUND: theme.duh.play()
+                theme.play('duh')
                 for w in self.wins:
                     for (x, y) in w:
                         self.surprised_list.append((x, y))
             elif self.win_timer is WIN_DELAY * 3 / 6:
-                if HAVE_SOUND: theme.pop.play()
+                theme.play('pop')
                 self.scorebonus = 0
                 self.timebonus = 0
                 for w in self.wins:
@@ -577,7 +561,7 @@ class Game:
                             unfinished += 1
                             angry = i + 1
                     if unfinished == 1:
-                        if HAVE_SOUND: theme.grunt.play()
+                        theme.play('grunt')
                         self.angry_tiles = angry
                 self.disappear_list = []
             elif self.win_timer is WIN_DELAY / 6:
@@ -586,7 +570,7 @@ class Game:
                     self.time = 2000000
                 self.score += self.scorebonus
                 self.fill_board()
-                if HAVE_SOUND: theme.boing.play()
+                theme.play('boing')
             elif self.win_timer is 0:
                 self.wins = self.get_wins()
                 if self.wins:
@@ -601,7 +585,7 @@ class Game:
                             finished = False
                             break
                     if finished:
-                        if HAVE_SOUND: theme.applause.play()
+                        theme.play('applause')
                         self.select = None
                         self.level_timer = SCROLL_DELAY
                     else:
@@ -610,12 +594,12 @@ class Game:
         if self.warning_timer:
             self.warning_timer -= 1
         elif self.time <= 200000:
-            if HAVE_SOUND: theme.warning.play()
+            theme.play('warning')
             self.warning_timer = WARNING_DELAY
         # Update time
         self.time -= delta
         if self.time <= 0:
-            if HAVE_SOUND: theme.laugh.play()
+            theme.play('laugh')
             self.select = None
             self.lost_timer = LOST_DELAY
             return
@@ -669,17 +653,17 @@ class Game:
                 (x1, y1) = self.select
                 (x2, y2) = played
                 if x1 == x2 and y1 == y2:
-                    if HAVE_SOUND: theme.click.play()
+                    theme.play('click')
                     self.select = None
                     return
                 if abs(x1 - x2) + abs(y1 - y2) != 1:
                     return
-                if HAVE_SOUND: theme.whip.play()
+                theme.play('whip')
                 self.switch = played
                 self.switch_timer = SWITCH_DELAY
             else:
                 if self.board[played] != 0:
-                    if HAVE_SOUND: theme.click.play()
+                    theme.play('click')
                     self.select = played
                     return
                 # Deal with the special block
