@@ -635,7 +635,7 @@ class Game:
                 x = -32 + (x1 * delta + x2 * (32 - delta)) / 32
                 y = 32 + (y1 * delta + y2 * (32 - delta)) / 32
                 system.blit(data.arrow, (x, y))
-                break # Only show one move
+                #break # Only show one move
         # Print score
         text = fonter.render(str(self.score), 60)
         w, h = text.get_rect().size
@@ -697,7 +697,7 @@ class Game:
 
     def update(self):
         ticks = pygame.time.get_ticks()
-        delta = (ticks - self.oldticks) * 400 / (11 - self.level)
+        delta = (ticks - self.oldticks) * 450 / (12 - self.level)
         self.oldticks = ticks
         # If paused, do nothing
         if self.paused:
@@ -793,8 +793,9 @@ class Game:
                 self.time += self.timebonus
                 if self.time > 2000000:
                     self.time = 2000000
-                # Get a new eye each 5000 points
-                if (self.score % 5000) + self.scorebonus >= 5000:
+                # Get a new eye each 5000 points, but no more than 3
+                if (self.score % 5000) + self.scorebonus >= 5000 \
+                  and self.eyes < 3:
                     self.eyes += 1
                 self.score += self.scorebonus
                 self.fill_board()
