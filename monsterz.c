@@ -28,10 +28,15 @@ int main(int argc, char **argv)
     gid = getgid();
     pipe(fd);
 
-    /* Spawn a child, drop privileges and run our script */
+    /* Spawn a child, drop privileges and run our script in the father */
     switch(fork())
     {
         case 0: /* child */
+            close(fd[1]);
+            break;
+        case -1: /* error */
+            return -1;
+        default: /* father */
             close(fd[0]);
             dup2(fd[1], atoi(outfd));
             /* drop privileges */
@@ -53,11 +58,6 @@ int main(int argc, char **argv)
             execv(script, newargv);
             fprintf(stderr, "%s: could not find `%s'.\n", argv[0], script);
             return -1;
-        case -1: /* error */
-            return -1;
-        default: /* father */
-            close(fd[1]);
-            break;
     }
 
     /* Handle our child’s messages */
