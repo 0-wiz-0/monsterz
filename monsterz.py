@@ -175,14 +175,14 @@ class Hiscores:
 class Data:
     def __init__(self, dir):
         # Load stuff
-        tiles = pygame.image.load(join(dir, 'tiles.png')).convert_alpha()
+        tiles = pygame.image.load(join(dir, 'graphics', 'tiles.png')).convert_alpha()
         w, h = tiles.get_rect().size
         self.tiles = tiles
-        icon = pygame.image.load(join(dir, 'icon.png')).convert_alpha()
+        icon = pygame.image.load(join(dir, 'graphics', 'icon.png')).convert_alpha()
         pygame.display.set_icon(icon)
-        self.background = pygame.image.load(join(dir, 'background.png')).convert()
-        self.board = pygame.image.load(join(dir, 'board.png')).convert()
-        self.logo = pygame.image.load(join(dir, 'logo.png')).convert_alpha()
+        self.background = pygame.image.load(join(dir, 'graphics', 'background.png')).convert()
+        self.board = pygame.image.load(join(dir, 'graphics', 'board.png')).convert()
+        self.logo = pygame.image.load(join(dir, 'graphics', 'logo.png')).convert_alpha()
         self.orig_size = w / 5
         self.tile_size = min((SCREEN_WIDTH - 20) / BOARD_WIDTH,
                              (SCREEN_HEIGHT - 20) * 17 / 20 / BOARD_HEIGHT)
@@ -200,8 +200,8 @@ class Data:
             self.wav = {}
             for s in ['click', 'grunt', 'ding', 'whip', 'pop', 'duh', \
                       'boing', 'applause', 'laugh', 'warning']:
-                self.wav[s] = pygame.mixer.Sound(join(dir, s + '.wav'))
-            pygame.mixer.music.load(join(dir, 'music.s3m'))
+                self.wav[s] = pygame.mixer.Sound(join(dir, 'sound', s + '.wav'))
+            pygame.mixer.music.load(join(dir, 'sound', 'music.s3m'))
             pygame.mixer.music.set_volume(0.9)
             # Play immediately
             pygame.mixer.music.play(-1, 0.0)
@@ -1552,7 +1552,7 @@ def main():
     global system, data, hiscores, fonter, monsterz
     global FLAG_FULLSCREEN, FLAG_MUSIC, FLAG_SFX
     sharedir = dirname(argv[0])
-    scorefile = join(sharedir, "scores")
+    scorefile = join(sharedir, 'scores')
     outfd = None
     try:
         long = ['help', 'version', 'music', 'sound', 'fullscreen',

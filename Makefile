@@ -10,10 +10,12 @@ VERSION = 0.4.2
 DIRECTORY = monsterz-$(VERSION)
 
 DATA = $(BITMAP) $(SOUND) $(MUSIC)
-BITMAP = tiles.png background.png board.png logo.png icon.png
-SOUND = grunt.wav click.wav pop.wav boing.wav whip.wav \
-        applause.wav laugh.wav warning.wav duh.wav ding.wav
-MUSIC = music.s3m
+BITMAP = graphics/tiles.png graphics/background.png graphics/board.png \
+         graphics/logo.png graphics/icon.png
+SOUND = sound/grunt.wav sound/click.wav sound/pop.wav sound/boing.wav sound/whip.wav \
+        sound/applause.wav sound/laugh.wav sound/warning.wav sound/duh.wav \
+        sound/ding.wav
+MUSIC = sound/music.s3m
 TEXT = README TODO COPYING AUTHORS INSTALL
 
 all: monsterz $(BITMAP)
@@ -21,16 +23,16 @@ all: monsterz $(BITMAP)
 monsterz: monsterz.c
 	$(CC) -Wall monsterz.c -DDATADIR=\"$(pkgdatadir)\" -DSCOREFILE=\"$(scorefile)\" -o monsterz
 
-icon.png: tiles.svg
-	inkscape tiles.svg -z -a 800:240:860:300 -w64 -h64 -e icon.png
-tiles.png: tiles.svg
-	inkscape tiles.svg -z -a 800:0:1100:600 -d 72 -e tiles.png
-background.png: tiles.svg pattern.png
-	inkscape tiles.svg -z -a 0:0:800:600 -d 72 -e background.png
-board.png: tiles.svg pattern.png
-	inkscape tiles.svg -z -a 30:690:510:1170 -d 72 -e board.png
-logo.png: tiles.svg
-	inkscape tiles.svg -z -a 810:618:1220:835 -w380 -h180 -e logo.png
+graphics/icon.png: graphics/graphics.svg
+	inkscape graphics/graphics.svg -z -a 800:240:860:300 -w64 -h64 -e graphics/icon.png
+graphics/tiles.png: graphics/graphics.svg
+	inkscape graphics/graphics.svg -z -a 800:0:1100:600 -d 72 -e graphics/tiles.png
+graphics/background.png: graphics/graphics.svg graphics/pattern.png
+	inkscape graphics/graphics.svg -z -a 0:0:800:600 -d 72 -e graphics/background.png
+graphics/board.png: graphics/graphics.svg graphics/pattern.png
+	inkscape graphics/graphics.svg -z -a 30:690:510:1170 -d 72 -e graphics/board.png
+graphics/logo.png: graphics/graphics.svg
+	inkscape graphics/graphics.svg -z -a 810:618:1220:835 -w380 -h180 -e graphics/logo.png
 
 install: all
 	mkdir -p $(DESTDIR)$(gamesdir)
@@ -52,9 +54,13 @@ uninstall:
 dist:
 	rm -Rf $(DIRECTORY)-src
 	mkdir $(DIRECTORY)-src
+	mkdir $(DIRECTORY)-src/graphics
+	mkdir $(DIRECTORY)-src/sound
 	# Copy everything we need
 	cp monsterz.py monsterz.c Makefile $(DIRECTORY)-src/
-	cp pattern.png tiles.svg $(SOUND) $(MUSIC) $(TEXT) $(DIRECTORY)-src/
+	cp $(TEXT) $(DIRECTORY)-src/
+	cp graphics/pattern.png graphics/graphics.svg $(DIRECTORY)-src/graphics
+	cp $(SOUND) $(MUSIC) $(DIRECTORY)-src/sound
 	# Build archive
 	tar cvzf $(DIRECTORY)-src.tar.gz $(DIRECTORY)-src/
 	rm -Rf $(DIRECTORY)-src
@@ -62,7 +68,11 @@ dist:
 binary: all
 	rm -Rf $(DIRECTORY)
 	mkdir $(DIRECTORY)
-	cp monsterz.py $(BITMAP) $(SOUND) $(MUSIC) $(TEXT) $(DIRECTORY)/
+	mkdir $(DIRECTORY)/graphics
+	mkdir $(DIRECTORY)/sound
+	cp monsterz.py $(TEXT) $(DIRECTORY)/
+	cp $(BITMAP) $(DIRECTORY)/graphics
+	cp $(SOUND) $(MUSIC) $(DIRECTORY)/sound
 	tar cvzf $(DIRECTORY).tar.gz $(DIRECTORY)/
 	zip -r $(DIRECTORY).zip $(DIRECTORY)
 	rm -Rf $(DIRECTORY)
