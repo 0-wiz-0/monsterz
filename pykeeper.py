@@ -43,7 +43,6 @@ class Game:
         self.frontsprites = pygame.sprite.RenderUpdates()
         # Init values
         (self.board_width, self.board_height) = size
-        self.board = {}
         self.needed = {}
         self.done = {}
         self.bonus_list = []
@@ -103,12 +102,18 @@ class Game:
 
     def new_board(self):
         print 'new board'
+        self.board = {}
         for y in range(self.board_height):
             while True:
                 for x in range(self.board_width):
                     self.board[(x, y)] = self.get_random()
                 if not self.get_wins():
                     break
+                msg = ''
+                for x in range(self.board_width):
+                    msg += str(self.board[(x, y)])
+                print 'argh, starting again for y =', y, msg
+        print 'done.'
 
     def fill_board(self):
         for z in range(self.board_height):
@@ -178,35 +183,29 @@ class Game:
         self.board[b] = tmp
 
     def list_moves(self):
-        moves = []
+        checkme = [[(+2,  0), (+3,  0)],
+                   [(+1, -1), (+1, -2)],
+                   [(+1, -1), (+1, +1)],
+                   [(+1, +1), (+1, +2)]]
+        delta = [(1, 0), (-1, 0), (0, 1), (0, -1)]
         for y in range(self.board_height):
             for x in range(self.board_width):
                 a = self.board.get((x, y))
-                if x > 0 and ( \
-                   a == self.board.get((x - 2, y)) and a == self.board.get((x - 3, y)) or \
-                   a == self.board.get((x - 1, y - 1)) and a == self.board.get((x - 1, y - 2)) or \
-                   a == self.board.get((x - 1, y - 1)) and a == self.board.get((x - 1, y + 1)) or \
-                   a == self.board.get((x - 1, y + 1)) and a == self.board.get((x - 1, y + 2)) ):
-                    moves.append([(x, y), (x - 1, y)])
-                if x < self.board_width - 1 and ( \
-                   a == self.board.get((x + 2, y)) and a == self.board.get((x + 3, y)) or \
-                   a == self.board.get((x + 1, y - 1)) and a == self.board.get((x + 1, y - 2)) or \
-                   a == self.board.get((x + 1, y - 1)) and a == self.board.get((x + 1, y + 1)) or \
-                   a == self.board.get((x + 1, y + 1)) and a == self.board.get((x + 1, y + 2)) ):
-                    moves.append([(x, y), (x + 1, y)])
-                if y > 0 and ( \
-                   a == self.board.get((x, y - 2)) and a == self.board.get((x, y - 3)) or \
-                   a == self.board.get((x - 1, y - 1)) and a == self.board.get((x - 2, y - 1)) or \
-                   a == self.board.get((x - 1, y - 1)) and a == self.board.get((x + 1, y - 1)) or \
-                   a == self.board.get((x + 1, y - 1)) and a == self.board.get((x + 2, y - 1)) ):
-                    moves.append([(x, y), (x, y - 1)])
-                if y < self.board_height - 1 and ( \
-                   a == self.board.get((x, y + 2)) and a == self.board.get((x, y + 3)) or \
-                   a == self.board.get((x - 1, y + 1)) and a == self.board.get((x - 2, y + 1)) or \
-                   a == self.board.get((x - 1, y + 1)) and a == self.board.get((x + 1, y + 1)) or \
-                   a == self.board.get((x + 1, y + 1)) and a == self.board.get((x + 2, y + 1)) ):
-                    moves.append([(x, y), (x, y + 1)])
-        return moves
+                if a == 0:
+                   continue # We don't want no special piece
+                for [(a1, b1), (a2, b2)] in checkme:
+                    if a == self.board.get((x + a1, y + b1)) and \
+                       a == self.board.get((x + a2, y + b2)):
+                        yield [(x, y), (x + 1, y + 0)]
+                    if a == self.board.get((x - a1, y + b1)) and \
+                       a == self.board.get((x - a2, y + b2)):
+                        yield [(x, y), (x - 1, y + 0)]
+                    if a == self.board.get((x + b1, y + a1)) and \
+                       a == self.board.get((x + b2, y + a2)):
+                        yield [(x, y), (x + 0, y + 1)]
+                    if a == self.board.get((x + b1, y - a1)) and \
+                       a == self.board.get((x + b2, y - a2)):
+                        yield [(x, y), (x + 0, y - 1)]
 
     def new_level(self):
         # Compute level data
@@ -289,11 +288,16 @@ class Game:
         self.oldticks = ticks
         # Draw screen
         if self.need_update:
-            while not self.list_moves():
-                print 'no more moves!'
-                self.new_board()
+            can_play = False
+            for move in self.list_moves():
+                can_play = True
+                break
             self.need_refresh = True
             self.need_update = False
+            if not can_play:
+                print 'no more moves!'
+                self.new_board()
+                self.need_update = True # Need to check again
         if self.need_refresh:
             self.draw_sprites()
             self.need_refresh = False
@@ -343,9 +347,11 @@ class Game:
             elif self.win_timer is 0:
                 self.wins = self.get_wins()
                 if self.wins:
+                    print '  cascade wins!'
                     self.win_timer = 20
                     self.win_iter += 1
                 else:
+                    print '  no more wins'
                     self.resolve_wins = False
                     # Check for new level
                     finished = True
@@ -390,16 +396,36 @@ class Game:
         self.time -= delta
         if AI:
             if not self.will_play:
-                moves = self.list_moves()
                 self.will_play = None
-                if moves:
+                # Special piece?
+                if randint(0, 3) == 0:
+                    special = None
+                    for y in range(self.board_height):
+                        for x in range(self.board_width):
+                            if self.board[(x, y)] == 0:
+                                special = (x, y)
+                                break
+                        if special:
+                            break
+                    if special:
+                        incomplete = 0
+                        for i in range(self.population):
+                            if self.done[i + 1] >= self.needed[i + 1]:
+                                incomplete += 1
+                                if incomplete == 2:
+                                    break
+                        if incomplete == 2 or randint(0, 3) == 0:
+                            self.will_play = [None, special]
+                # Normal piece
+                if not self.will_play:
                     min = 0
-                    for move in moves:
+                    for move in self.list_moves():
                         color = self.board.get(move[0])
-                        if self.done[color] >= min:
+                        if self.done[color] >= min or \
+                           self.done[color] >= self.needed[color]:
                             self.will_play = move
                             min = self.done[color]
-                    self.ai_timer = 15 - self.level
+                self.ai_timer = 15 - self.level
             if self.ai_timer is (15 - self.level) / 2:
                 played = self.will_play[0]
             elif self.ai_timer is 0:
@@ -447,10 +473,12 @@ class Game:
             self.select = None
             self.win_iter = 0
             self.win_timer = 20
+            print 'winning!'
             self.resolve_wins = True
             self.need_refresh = True
 
 level = 1
-game = Game(size = (8, 8), level = level)
+size = (8, 8)
+game = Game(size = size, level = level)
 game.go()
 
