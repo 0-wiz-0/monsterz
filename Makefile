@@ -25,7 +25,7 @@ monsterz: monsterz.c
 graphics/icon.png: graphics/graphics.svg
 	inkscape graphics/graphics.svg -z -a 800:480:860:540 -w64 -h64 -e graphics/icon.png
 graphics/tiles.png: graphics/graphics.svg
-	inkscape graphics/graphics.svg -z -a 800:0:1100:660 -d 72 -e graphics/tiles.png
+	inkscape graphics/graphics.svg -z -a 800:0:1100:840 -d 72 -e graphics/tiles.png
 graphics/bigtiles.png: graphics/graphics.svg
 	inkscape graphics/graphics.svg -z -a 800:0:860:540 -d 432 -e graphics/bigtiles.png
 graphics/background.png: graphics/graphics.svg graphics/pattern.png
@@ -33,7 +33,7 @@ graphics/background.png: graphics/graphics.svg graphics/pattern.png
 graphics/board.png: graphics/graphics.svg graphics/pattern.png
 	inkscape graphics/graphics.svg -z -a 30:690:510:1170 -d 72 -e graphics/board.png
 graphics/logo.png: graphics/graphics.svg
-	inkscape graphics/graphics.svg -z -a 810:678:1220:895 -w380 -h180 -e graphics/logo.png
+	inkscape graphics/graphics.svg -z -a 810:858:1220:1075 -w380 -h180 -e graphics/logo.png
 
 install: all
 	mkdir -p $(DESTDIR)$(gamesdir)

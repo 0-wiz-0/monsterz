@@ -292,17 +292,17 @@ class Data:
         tile_at = lambda x, y: self.tiles.subsurface((x * s, y * s, s, s))
         # Create sprites
         for i in range(ITEMS):
-            self.normal[i] = scale(tile_at(0, i + 2), (t, t))
-            self.tiny[i] = scale(tile_at(0, i + 2), (t * 3 / 4, t * 3 / 4))
-            self.shaded[i] = scale(tile_at(3, i + 2), (t * 3 / 4, t * 3 / 4))
+            self.normal[i] = scale(tile_at(0, i + 5), (t, t))
+            self.tiny[i] = scale(tile_at(0, i + 5), (t * 3 / 4, t * 3 / 4))
+            self.shaded[i] = scale(tile_at(3, i + 5), (t * 3 / 4, t * 3 / 4))
             semi_grayscale(self.shaded[i])
-            self.blink[i] = scale(tile_at(1, i + 2), (t, t))
-            self.surprise[i] = scale(tile_at(2, i + 2), (t, t))
-            self.angry[i] = scale(tile_at(3, i + 2), (t, t))
-            self.exploded[i] = scale(tile_at(4, i + 2), (t, t))
+            self.blink[i] = scale(tile_at(1, i + 5), (t, t))
+            self.surprise[i] = scale(tile_at(2, i + 5), (t, t))
+            self.angry[i] = scale(tile_at(3, i + 5), (t, t))
+            self.exploded[i] = scale(tile_at(4, i + 5), (t, t))
             #tmp = tile_at(1, 0).copy() # marche pas !
             tmp = scale(tile_at(1, 0), (t, t)) # marche...
-            mini = tile_at(0, i + 2)
+            mini = tile_at(0, i + 5)
             mini = scale(mini, (t * 7 / 8 - 1, t * 7 / 8 - 1))
             tmp.blit(mini, (s / 16, s / 16))
             self.special[i] = scale(tmp, (t, t))
