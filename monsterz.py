@@ -306,6 +306,7 @@ class Data:
         semi_transp(self.shadeye)
         self.arrow = tile_at(4, 0)
         self.selector = scale(tile_at(0, 0), (t, t))
+        self.metal = scale(tile_at(0, 1), (t, t))
 
     def _scale(self, surf, size):
         w, h = surf.get_size()
@@ -1275,7 +1276,7 @@ class Monsterz:
             self.nsat[7] = 255
         else:
             narea = None
-        if narea and narea != self.narea:
+        if narea is not None and narea != self.narea:
             system.play('click')
         self.narea = narea
         # Print menu
