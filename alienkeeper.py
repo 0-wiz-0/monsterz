@@ -309,10 +309,39 @@ class Game:
                 select_coord = (x, y)
                 shape = theme.blink[n - 1] # Not sure if it looks nice
             # Print the shit
-            background.blit(shape, (x + xoff, y + yoff))
+            self.board_blit(shape, (x + xoff, y + yoff))
         # Draw selector if necessary
         if self.select:
             background.blit(theme.selector, select_coord)
+
+    def board_blit(self, sprite, (x, y)):
+        width = theme.tile_size
+        crop = sprite.subsurface
+        # Constrain X
+        if x < 10 - theme.tile_size or x > 24 + 8 * theme.tile_size + 14:
+            return
+        elif x < 10:
+            delta = 10 - x
+            sprite = crop((delta, 0, theme.tile_size - delta, theme.tile_size))
+            crop = sprite.subsurface
+            x += delta
+            width -= delta
+        elif x > 24 + 7 * theme.tile_size + 14:
+            delta = x - 24 - 7 * theme.tile_size - 14
+            sprite = crop((0, 0, theme.tile_size - delta, theme.tile_size))
+            crop = sprite.subsurface
+            width -= delta
+        # Constrain Y
+        if y < 10 - theme.tile_size or y > 24 + 8 * theme.tile_size + 14:
+            return
+        elif y < 10:
+            delta = 10 - y
+            sprite = crop((0, delta, width, theme.tile_size - delta))
+            y += delta
+        elif y > 24 + 7 * theme.tile_size + 14:
+            delta = y - 24 - 7 * theme.tile_size - 14
+            sprite = crop((0, 0, width, theme.tile_size - delta))
+        background.blit(sprite, (x, y))
 
     def toggle_pause(self):
         self.pause = not self.pause
