@@ -55,8 +55,8 @@ class Theme:
             pygame.mixer.music.load(join(dir, 'music.s3m'))
             pygame.mixer.music.set_volume(0.8)
             pygame.mixer.music.play(-1, 0.0)
-            self.click = pygame.mixer.Sound('click.wav')
-            self.grunt = pygame.mixer.Sound('grunt.wav')
+            self.click = pygame.mixer.Sound(join(dir, 'click.wav'))
+            self.grunt = pygame.mixer.Sound(join(dir, 'grunt.wav'))
         self.font = {}
         for x in [36, 48, 60, 120]:
             self.font[x] = pygame.font.Font(None, x)
