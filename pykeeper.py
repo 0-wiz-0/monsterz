@@ -195,6 +195,7 @@ class Game:
                 self.needed[i + 1] = 0
             else:
                 self.needed[i + 1] = self.level + 2
+        self.angry_tiles = -1
         self.new_board()
         self.time = 1000000
         self.need_update = True
@@ -213,6 +214,8 @@ class Game:
                 tmp = MySprite(self.surprised[n - 1], self.backsprites)
             elif coord in self.disappear_list:
                 tmp = MySprite(self.exploded[n - 1], self.backsprites)
+            elif n == self.angry_tiles:
+                tmp = MySprite(self.angry[n - 1], self.backsprites)
             else:
                 tmp = MySprite(self.happy[n - 1], self.backsprites)
             (x, y) = coord
@@ -322,6 +325,14 @@ class Game:
                     if self.board.has_key((x, y)):
                         self.done[self.board[(x, y)]] += 1
                         del self.board[(x, y)]
+                if self.angry_tiles == -1:
+                    unfinished = 0
+                    for i in range(self.population):
+                        if self.done[i + 1] < self.needed[i + 1]:
+                            unfinished += 1
+                            angry = i + 1
+                    if unfinished == 1:
+                        self.angry_tiles = angry
                 self.disappear_list = []
             elif self.win_timer is 2:
                 self.time += self.timebonus
