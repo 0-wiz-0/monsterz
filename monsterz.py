@@ -570,11 +570,11 @@ class Game:
             text = fonter.render('GAME OVER', 80)
             w, h = text.get_rect().size
             system.blit(text, (24 + 192 - w / 2, 24 + 192 - h / 2))
-            if score < 5000:
+            if self.score < 5000:
                 msg = 'YUO = TEH L0SER'
-            elif score < 15000:
+            elif self.score < 15000:
                 msg = 'WELL, AT LEAST YOU TRIED'
-            elif score < 30000:
+            elif self.score < 30000:
                 msg = 'W00T! YUO IS TEH R0X0R'
             else:
                 msg = 'ZOMFG!!!111!!! YUO PWND!!!%$#@%@#'
