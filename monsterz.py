@@ -214,17 +214,17 @@ class Data:
         tile_at = lambda x, y: self.tiles.subsurface((x * s, y * s, s, s))
         # Create sprites
         for i in range(ITEMS):
-            self.normal[i] = scale(tile_at(0, i + 1), (t, t))
-            self.tiny[i] = scale(tile_at(0, i + 1), (t * 3 / 4, t * 3 / 4))
-            self.shaded[i] = scale(tile_at(3, i + 1), (t * 3 / 4, t * 3 / 4))
+            self.normal[i] = scale(tile_at(0, i + 2), (t, t))
+            self.tiny[i] = scale(tile_at(0, i + 2), (t * 3 / 4, t * 3 / 4))
+            self.shaded[i] = scale(tile_at(3, i + 2), (t * 3 / 4, t * 3 / 4))
             semi_grayscale(self.shaded[i])
-            self.blink[i] = scale(tile_at(1, i + 1), (t, t))
-            self.surprise[i] = scale(tile_at(2, i + 1), (t, t))
-            self.angry[i] = scale(tile_at(3, i + 1), (t, t))
-            self.exploded[i] = scale(tile_at(4, i + 1), (t, t))
+            self.blink[i] = scale(tile_at(1, i + 2), (t, t))
+            self.surprise[i] = scale(tile_at(2, i + 2), (t, t))
+            self.angry[i] = scale(tile_at(3, i + 2), (t, t))
+            self.exploded[i] = scale(tile_at(4, i + 2), (t, t))
             #tmp = tile_at(1, 0).copy() # marche pas !
             tmp = scale(tile_at(1, 0), (t, t)) # marche...
-            mini = tile_at(0, i + 1)
+            mini = tile_at(0, i + 2)
             mini = scale(mini, (t * 7 / 8 - 1, t * 7 / 8 - 1))
             tmp.blit(mini, (s / 16, s / 16))
             self.special[i] = scale(tmp, (t, t))
@@ -629,8 +629,8 @@ class Game:
         except:
             pass
         system.blit(timebar, (13, 436))
-        # Print play again message
         if self.lost_timer == -1:
+            # Print play again message
             text = fonter.render('GAME OVER', 80)
             w, h = text.get_rect().size
             system.blit(text, (24 + 192 - w / 2, 24 + 192 - h / 2))
@@ -645,42 +645,42 @@ class Game:
             text = fonter.render(msg, 24)
             w, h = text.get_rect().size
             system.blit(text, (24 + 192 - w / 2, 24 + 240 - h / 2))
-        # Draw pause message
         elif self.paused:
+            # Draw pause message
             system.blit(self.pause_bitmap, (72, 24))
             text = fonter.render('PAUSED', 120)
             w, h = text.get_rect().size
             system.blit(text, (24 + 192 - w / 2, 24 + 336 - h / 2))
-        # Draw pieces
         elif self.lost_timer != -1:
+            # Draw pieces
             self.board_draw()
-        # Print new level stuff
-        if self.level_timer > SCROLL_DELAY / 2:
-            text = fonter.render('LEVEL UP!', 80)
-            w, h = text.get_rect().size
-            system.blit(text, (24 + 192 - w / 2, 24 + 192 - h / 2))
-        # When no more moves are possible
-        if self.board_timer > SCROLL_DELAY / 2:
-            text = fonter.render('NO MORE MOVES!', 60)
-            w, h = text.get_rect().size
-            system.blit(text, (24 + 192 - w / 2, 24 + 192 - h / 2))
-        # Print bonus
-        for b in self.bonus_list:
-            text = fonter.render(str(b[1]), 36)
-            w, h = text.get_rect().size
-            x, y = data.board2screen(b[0])
-            system.blit(text, (x + 24 - w / 2, y + 24 - h / 2))
-        # Print hint arrow
-        if self.show_move:
-            lookup = [0, 1, 5, 16, 27, 31, 32, 31, 27, 16, 5, 1]
-            for (src, dst) in self.list_moves():
-                x1, y1 = data.board2screen(src)
-                x2, y2 = data.board2screen(dst)
-                delta = lookup[monsterz.timer % 12]
-                x = -32 + (x1 * delta + x2 * (32 - delta)) / 32
-                y = 32 + (y1 * delta + y2 * (32 - delta)) / 32
-                system.blit(data.arrow, (x, y))
-                break # Only show one move
+            # Print new level stuff
+            if self.level_timer > SCROLL_DELAY / 2:
+                text = fonter.render('LEVEL UP!', 80)
+                w, h = text.get_rect().size
+                system.blit(text, (24 + 192 - w / 2, 24 + 192 - h / 2))
+            # When no more moves are possible
+            if self.board_timer > SCROLL_DELAY / 2:
+                text = fonter.render('NO MORE MOVES!', 60)
+                w, h = text.get_rect().size
+                system.blit(text, (24 + 192 - w / 2, 24 + 192 - h / 2))
+            # Print bonus
+            for b in self.bonus_list:
+                text = fonter.render(str(b[1]), 36)
+                w, h = text.get_rect().size
+                x, y = data.board2screen(b[0])
+                system.blit(text, (x + 24 - w / 2, y + 24 - h / 2))
+            # Print hint arrow
+            if self.show_move:
+                lookup = [0, 1, 5, 16, 27, 31, 32, 31, 27, 16, 5, 1]
+                for (src, dst) in self.list_moves():
+                    x1, y1 = data.board2screen(src)
+                    x2, y2 = data.board2screen(dst)
+                    delta = lookup[monsterz.timer % 12]
+                    x = -32 + (x1 * delta + x2 * (32 - delta)) / 32
+                    y = 32 + (y1 * delta + y2 * (32 - delta)) / 32
+                    system.blit(data.arrow, (x, y))
+                    break # Only show one move
         # Print score
         text = fonter.render(str(self.score), 60)
         w, h = text.get_rect().size
