@@ -15,12 +15,13 @@
 import pygame
 from pygame.locals import *
 from random import randint
-from sys import argv, exit
+from sys import argv, exit, platform
 from getopt import getopt, GetoptError
 from os.path import join, dirname
+from os import write, geteuid
 
 # String constants
-VERSION = '0.2'
+VERSION = '0.3'
 COPYRIGHT = 'MONSTERZ -- COPYRIGHT 2005 SAM HOCEVAR -- MONSTERZ IS ' \
             'FREE SOFTWARE, YOU CAN REDISTRIBUTE IT AND/OR MODIFY IT ' \
             'UNDER THE TERMS OF THE DO WHAT THE FUCK YOU WANT TO ' \
@@ -51,10 +52,65 @@ WARNING_DELAY = 12
 FLAG_FULLSCREEN = False
 FLAG_MUSIC = True
 FLAG_SFX = True
-FLAG_OUTPUT = False
+
+class Hiscores:
+    def __init__(self, scorefile, outfd):
+        self.scorefile = scorefile
+        self.outfd = outfd
+        self.scores = {}
+        # Get username
+        if platform == 'win32':
+            try:
+                from win32api import GetUserName
+                self.name = GetUserName().upper()
+            except:
+                self.name = 'YOU'
+        else:
+            from pwd import getpwuid
+            self.name = getpwuid(geteuid())[0].upper()
+        # Load current score file
+        try:
+            file = open(self.scorefile, 'r')
+            lines = file.readlines()
+            file.close()
+            for l in [line.split(':') for line in lines]:
+                if len(l) == 4:
+                    self._addscore(l[0], l[1], int(l[2]), int(l[3]))
+        except:
+            pass
+        # Add dummy scores to make sure our score list is full
+        for game in ['CLASSIC']:
+            if not self.scores.has_key(game):
+                self.scores[game] = []
+            for x in range(20): self._addscore(game, 'NOBODY', 0, 1)
+
+    def _addscore(self, game, name, score, level):
+        if not self.scores.has_key(game):
+            self.scores[game] = []
+        self.scores[game].append((name, score, level))
+        self.scores[game].sort(lambda x, y: y[1] - x[1])
+        self.scores[game] = self.scores[game][0:19]
+
+    def add(self, game, score, level):
+        self._addscore(game, self.name, score, level)
+        # Immediately save
+        msg = ''
+        for type, list in self.scores.items():
+            for name, score, level in list:
+                msg += type + ':' + name + ':' + str(score) + ':' + str(level)
+                msg += '\n'
+        if self.outfd is not None:
+            write(self.outfd, msg + '\n')
+        else:
+            try:
+                file = open(self.scorefile, 'w')
+                file.write(msg)
+                file.close()
+            except:
+                pass # Cannot save scores, do nothing...
 
 class Data:
-    def __init__(self, dir = dirname(argv[0])):
+    def __init__(self, dir):
         # Load stuff
         tiles = pygame.image.load(join(dir, 'tiles.png')).convert_alpha()
         w, h = tiles.get_rect().size
@@ -567,7 +623,7 @@ class Game:
         if self.lost_timer:
             self.lost_timer -= 1
             if self.lost_timer is 0:
-                print str(self.level) + ':' + str(self.score)
+                hiscores.add('CLASSIC', self.score, self.level)
                 self.lost = True
                 self.lost_timer = -1 # Continue forever
             return
@@ -926,6 +982,7 @@ class Monsterz:
             if self.generic_event(event):
                 return
             elif event.type == KEYDOWN and event.key == K_ESCAPE:
+                # FIXME: remove board nicely, add score to hiscore list
                 system.play('whip')
                 self.status = STATUS_MENU
                 return
@@ -1041,14 +1098,15 @@ class Monsterz:
         # Dummy scores list
         scores = [['UNIMPLEMENTED', 100 - x * 10, 1] for x in range(10)]
         # Print our list
-        for x, p in enumerate(scores):
-            text = fonter.render(str(x + 1) + '. ' + p[0], 32)
+        for x in range(10):
+            name, score, level = hiscores.scores['CLASSIC'][x]
+            text = fonter.render(str(x + 1) + '. ' + name, 32)
             w, h = text.get_rect().size
             system.blit(text, (24 + 24, 24 + 72 + 32 * x - h / 2))
-            text = fonter.render(str(p[1]), 32)
+            text = fonter.render(str(score), 32)
             w, h = text.get_rect().size
             system.blit(text, (24 + 324 - w, 24 + 72 + 32 * x - h / 2))
-            text = fonter.render(str(p[2]), 32)
+            text = fonter.render(str(level), 32)
             w, h = text.get_rect().size
             system.blit(text, (24 + 360 - w, 24 + 72 + 32 * x - h / 2))
         # Handle events
@@ -1086,42 +1144,61 @@ def usage():
     print ' -f, --fullscreen   start in full screen mode'
     print ' -m, --nomusic      disable music'
     print ' -s, --nosfx        disable sound effects'
-    print ' -o, --output       output scores to standard output'
+    print '     --outfd <fd>   output scores to file descriptor <fd>'
+    print '     --data <dir>   set alternate data directory to <dir>'
+    print '     --score <file> set score file to <file>'
     print
     print 'Report bugs or suggestions to <sam@zoy.org>.'
 
 def main():
-    global system, data, fonter, monsterz
-    global FLAG_FULLSCREEN, FLAG_MUSIC, FLAG_SFX, FLAG_OUTPUT
+    global system, data, hiscores, fonter, monsterz
+    global FLAG_FULLSCREEN, FLAG_MUSIC, FLAG_SFX
+    sharedir = dirname(argv[0])
+    scorefile = join(sharedir, "scores")
+    outfd = None
     try:
-        long = ["help", "version", "music", "sound", "fullscreen", "output"]
-        opts = getopt(argv[1:], "hvmsfo", long)[0]
+        long = ['help', 'version', 'music', 'sound', 'fullscreen',
+                'outfd=', 'data=', 'score=']
+        opts = getopt(argv[1:], 'hvmsf', long)[0]
     except GetoptError:
         usage()
         exit(2)
     for opt, arg in opts:
-        if opt in ("-h", "--help"):
+        if opt in ('-h', '--help'):
             usage()
             exit()
-        elif opt in ("-v", "--version"):
+        elif opt in ('-v', '--version'):
             version()
             exit()
-        elif opt in ("-m", "--nomusic"):
+        elif opt in ('-m', '--nomusic'):
             FLAG_MUSIC = False
-        elif opt in ("-s", "--nosfx"):
+        elif opt in ('-s', '--nosfx'):
             FLAG_SFX = False
-        elif opt in ("-f", "--fullscreen"):
+        elif opt in ('-f', '--fullscreen'):
             FLAG_FULLSCREEN = True
-        elif opt in ("-o", "--output"):
-            FLAG_OUTPUT = True
+        elif opt in ('--outfd'):
+            try:
+                outfd = int(arg)
+                write(outfd, '\n')
+            except:
+                outfd = None
+        elif opt in ('--data'):
+            sharedir = arg
+        elif opt in ('--score'):
+            scorefile = arg
     # Init everything and launch the game
     system = System()
-    data = Data()
+    try:
+        data = Data(sharedir)
+    except:
+        print argv[0] + ': could not open data from `' + sharedir + "'."
+        exit(1)
+    hiscores = Hiscores(scorefile, outfd)
     fonter = Fonter()
     monsterz = Monsterz()
     monsterz.go()
     exit()
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
 

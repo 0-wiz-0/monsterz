@@ -1,0 +1,16 @@
+$Id$
+
+Build and installation instructions.
+
+- Prerequisites
+  - Python (http://www.python.org/download/)
+  - PyGame (http://www.pygame.org/download.shtml)
+
+- Unix / Linux:
+  - You can run monsterz.py from its directory
+  - If you want a system-wide installation that shares the score file,
+    run "make", then (as root) "make install".
+
+- Windows / Mac OS X:
+  - Just run the monsterz.py file
+
