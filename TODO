@@ -1,7 +1,8 @@
-$Id foo $
+$Id$
 
 To make the game more complete:
  * sliding animation when filling holes
+ * waste time when doing an erroneous click
 
 Future plans:
  * survival mode

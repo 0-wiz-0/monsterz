@@ -18,7 +18,9 @@ from sys import argv
 from os.path import join, dirname
 
 # constants
-AI = False
+HAVE_SOUND = True
+HAVE_AI = False # broken
+
 SCREEN_WIDTH = 640
 SCREEN_HEIGHT = 480
 
@@ -49,8 +51,12 @@ class Theme:
         self.exploded = {}
         self.special = {}
         self.selector = None
-        pygame.mixer.music.load(join(dir, 'music.s3m'))
-        pygame.mixer.music.play(-1, 0.0)
+        if HAVE_SOUND:
+            pygame.mixer.music.load(join(dir, 'music.s3m'))
+            pygame.mixer.music.set_volume(0.8)
+            pygame.mixer.music.play(-1, 0.0)
+            self.click = pygame.mixer.Sound('click.wav')
+            self.grunt = pygame.mixer.Sound('grunt.wav')
 
     def make_sprites(self, t):
         self.tile_size = t
@@ -450,7 +456,7 @@ class Game:
             elif event.type == KEYDOWN and event.key == K_f:
                 pygame.display.toggle_fullscreen()
                 return
-            elif event.type == KEYDOWN and event.key == K_p:
+            elif event.type == KEYDOWN and (event.key == K_p or event.key == K_SPACE):
                 ask_pause = True
             elif event.type == MOUSEBUTTONDOWN:
                 if self.lost_timer < 0:
@@ -541,6 +547,8 @@ class Game:
                             unfinished += 1
                             angry = i + 1
                     if unfinished == 1:
+                        if HAVE_SOUND:
+                            theme.grunt.play()
                         self.angry_tiles = angry
                 self.disappear_list = []
             elif self.win_timer is WIN_DELAY / 6:
@@ -578,7 +586,7 @@ class Game:
             self.toggle_pause()
             return
         # Handle moves from the AI:
-        if AI:
+        if HAVE_AI:
             if not self.will_play:
                 self.will_play = None
                 # Special piece?
@@ -618,6 +626,8 @@ class Game:
             self.ai_timer -= 1
         # Handle moves from the player or the AI
         if self.clicks:
+            if HAVE_SOUND:
+                theme.click.play()
             played = self.clicks.pop(0)
             if self.select:
                 (x1, y1) = self.select
@@ -650,8 +660,11 @@ class Game:
 # Init Pygame
 pygame.init()
 # Sound test
-#pygame.mixer.get_init()
-#sound = pygame.mixer.Sound('foo.wav')
+if HAVE_SOUND:
+    try:
+        HAVE_SOUND = pygame.mixer.get_init()
+    except:
+        HAVE_SOUND = False
 #sound.play()
 # Init display
 window = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))

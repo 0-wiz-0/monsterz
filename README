@@ -1,7 +1,12 @@
-$Id foo $
+$Id$
 
 Alienkeeper is a clone of the popular Zookeper/Bejeweled games. Swap
 two adjacent aliens to create horizontal or vertical lines. Enjoy!
+
+Music and sound creators:
+- music.s3m: MenTaLgrOOvE by MenTaLguY, public domain
+- grunt.wav, click.wav: Castles Music Productions, license is CC-by
+  http://castlesmusic.com/castlesmusicdown.html
 
 Zookeper/Bejeweled vendor sites:
 - Bejeweled Deluxe: http://www.bejeweled.info/
