@@ -502,6 +502,9 @@ class Game:
             x2, y2 = data.board2screen(self.switch)
             t = self.switch_timer * 1.0 / SWITCH_DELAY
         for c, n in self.board.items():
+            # Don’t print pieces for last frame
+            if self.lost_timer == 1:
+                break
             # Decide the coordinates
             if c == self.switch and self.switch_timer:
                 x, y = x2 * t + x1 * (1 - t), y2 * t + y1 * (1 - t)
@@ -513,8 +516,12 @@ class Game:
             xoff, yoff = self.extra_offset[i][j]
             if self.lost_timer:
                 d = LOST_DELAY - self.lost_timer
-                xoff += (randint(0, d) - randint(0, d)) * randint(0, d) / 4
-                yoff += (randint(0, d) - randint(0, d)) * randint(0, d) / 4
+                xoff += (i * 2 - 7) * 4 * d / LOST_DELAY
+                yoff += (j * 2 - 7) * 4 * d / LOST_DELAY
+                xoff += (j * 2 - 7) * 4 * d / LOST_DELAY
+                yoff += (-i * 2 + 7) * 4 * d / LOST_DELAY
+                xoff += (randint(0, d) - randint(0, d))
+                yoff += (randint(0, d) - randint(0, d))
                 self.extra_offset[i][j] = xoff, yoff
             elif yoff and self.win_timer:
                 yoff = yoff * (self.win_timer - 1) / (WIN_DELAY * 2 / 3)
