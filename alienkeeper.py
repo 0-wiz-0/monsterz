@@ -41,7 +41,6 @@ class Theme:
         self.selector = None
 
     def make_sprites(self, size):
-        print 'sprite size is', size
         self.tile_size = size
         # Create sprites
         for x in range(8):
@@ -86,12 +85,17 @@ class Game:
         # Other initialisation stuff
         self.score = 0
         self.special_timer = 0
+        self.lost_timer = 0
+        self.lost_offset = {}
+        for y in range(self.board_height):
+            for x in range(self.board_width):
+                self.lost_offset[(x, y)] = (0, 0)
         self.win_timer = 0
         self.switch_timer = 0
         self.level_timer = 25
         self.board_timer = 0
         self.missed = False
-        self.need_update = True
+        self.check_moves = False
         self.will_play = None
         self.clock = pygame.time.Clock()
         self.oldticks = pygame.time.get_ticks()
@@ -217,7 +221,6 @@ class Game:
         self.angry_tiles = -1
         self.new_board()
         self.time = 1000000
-        self.need_update = True
 
     def board2screen(self, coord):
         (x, y) = coord
@@ -228,10 +231,7 @@ class Game:
         return ((x - 10) / theme.tile_size, (y - 10) / theme.tile_size)
 
     def draw_scene(self):
-        if self.time > 0:
-            background.fill((210, 200, 150))
-        else:
-            background.fill((255, 20, 15))
+        background.fill((210, 200, 150))
         # Print timebar:
         x = theme.tile_size / 2
         y = screen_height * 18 / 20
@@ -253,13 +253,14 @@ class Game:
         else:
             timer = 0
         if timer > 25:
-            offset = 50 - timer
-            offset = offset * offset
+            xoff = 0
+            yoff = (50 - timer) * (50 - timer)
         elif timer > 0:
-            offset = timer
-            offset = - offset * offset
+            xoff = 0
+            yoff = - timer * timer
         else:
-            offset = 0
+            xoff = 0
+            yoff = 0
         if self.switch_timer:
             (x1, y1) = self.board2screen(self.select)
             (x2, y2) = self.board2screen(self.switch)
@@ -268,7 +269,7 @@ class Game:
             # Decide the shape
             if n == 0:
                 shape = theme.special[self.special_timer]
-            elif c in self.surprised_list or offset > 0:
+            elif c in self.surprised_list or self.board_timer > 25 or self.level_timer > 25:
                 shape = theme.surprised[n - 1]
             elif c in self.disappear_list:
                 shape = theme.exploded[n - 1]
@@ -283,8 +284,13 @@ class Game:
                 (x, y) = (x1 * t + x2 * (1 - t), y1 * t + y2 * (1 - t))
             else:
                 (x, y) = self.board2screen(c)
+            if self.lost_timer:
+                (xoff, yoff) = self.lost_offset[c]
+                xoff += randint(0, 100 - self.lost_timer) - randint(0, 100 - self.lost_timer)
+                yoff += randint(0, 100 - self.lost_timer) - randint(0, 100 - self.lost_timer)
+                self.lost_offset[c] = (xoff, yoff)
             # Print the shit
-            background.blit(shape, (x, y + offset))
+            background.blit(shape, (x + xoff, y + yoff))
             # Remember the selector coordinates
             if c == self.select and not self.missed \
             or c == self.switch and self.missed:
@@ -338,14 +344,13 @@ class Game:
         self.oldticks = ticks
         self.special_timer = (self.special_timer + 1) % self.population
         # Draw screen
-        if self.need_update:
+        if self.check_moves:
             can_play = False
             for move in self.list_moves():
                 can_play = True
                 break
-            self.need_update = False
+            self.check_moves = False
             if not can_play:
-                print 'no more moves!'
                 self.board_timer = 50
         self.draw_scene()
         window.blit(background, (0, 0))
@@ -357,7 +362,12 @@ class Game:
             if self.board_timer is 25:
                 self.new_board()
             elif self.board_timer is 0:
-                self.need_update = True # Need to check again
+                self.check_moves = True # Need to check again
+            return
+        if self.lost_timer:
+            self.lost_timer -= 1
+            if self.lost_timer is 0:
+                self.die = True
             return
         if self.switch_timer:
             self.switch_timer -= 1
@@ -381,6 +391,8 @@ class Game:
             if self.level_timer is 25:
                 self.level += 1
                 self.new_level()
+            elif self.level_timer is 0:
+                self.check_moves = True
             return
         if self.win_timer:
             self.win_timer -= 1
@@ -442,9 +454,9 @@ class Game:
                     if finished:
                         self.select = None
                         self.level_timer = 50
-                self.need_update = True
-            if self.win_timer:
-                return
+                    else:
+                        self.check_moves = True
+            return
         # Handle events
         played = None
         for event in pygame.event.get():
@@ -464,7 +476,7 @@ class Game:
                 played = (x2, y2)
                 break
         if self.time <= 0:
-            #self.die = True
+            self.lost_timer = 100
             return
         # Update time
         self.time -= delta
