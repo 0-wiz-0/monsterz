@@ -37,7 +37,7 @@ class Theme:
     def __init__(self, dir = dirname(argv[0])):
         # Load stuff
         tiles = pygame.image.load(join(dir, 'tiles.png')).convert_alpha()
-        (w, h) = tiles.get_rect().size
+        w, h = tiles.get_rect().size
         if w * 9 != h * 5:
             raise 'error: ' + file + ' has wrong image size'
         self.tiles = tiles
@@ -58,6 +58,7 @@ class Theme:
             pygame.mixer.music.play(-1, 0.0)
             self.click = pygame.mixer.Sound(join(dir, 'click.wav'))
             self.grunt = pygame.mixer.Sound(join(dir, 'grunt.wav'))
+            self.ding = pygame.mixer.Sound(join(dir, 'ding.wav'))
             self.whip = pygame.mixer.Sound(join(dir, 'whip.wav'))
             self.pop = pygame.mixer.Sound(join(dir, 'pop.wav'))
             self.duh = pygame.mixer.Sound(join(dir, 'duh.wav'))
@@ -362,9 +363,22 @@ class Game:
     def toggle_pause(self):
         self.pause = not self.pause
         if self.pause:
-            self.pause_bitmap = pygame.transform.scale(theme.normal[self.get_random(no_special = True)], (6 * theme.tile_size, 6 * theme.tile_size))
+            self.pause_bitmap = pygame.transform.scale(theme.normal[self.get_random(no_special = True) - 1], (6 * theme.tile_size, 6 * theme.tile_size))
         else:
             del self.pause_bitmap
+
+    def outline_render(self, msg, size):
+        delta = 1 + size / 30
+        black = theme.font[size].render(msg, 2, (0, 0, 0))
+        w, h = black.get_size()
+        text = pygame.Surface((w + delta, h + delta)).convert_alpha()
+        text.fill(black.get_at((0, 0)))
+        for x, y in [(0, 0), (0, 1), (0, 2), (1, 2), (2, 2), (2, 1), (2, 0), (1, 0)]:
+            text.blit(black, (x * delta / 2, y * delta / 2))
+#        text = pygame.transform.scale(black, (w + delta, h + delta))
+        white = theme.font[size].render(msg, 2, (255, 255, 255))
+        text.blit(white, ((delta + 1) / 2, (delta + 1) / 2))
+        return text
 
     def draw_game(self):
         # Draw background
@@ -384,11 +398,9 @@ class Game:
         # Draw pieces
         if self.pause:
             bg.blit(self.pause_bitmap, (24 + theme.tile_size, 24))
-            delta = 5
-            for x in range(2):
-                text = theme.font[120].render('PAUSED', 2, (x * 255, x * 255, x * 255))
-                (w, h) = text.get_rect().size
-                bg.blit(text, (theme.tile_size * self.board_width / 2 - w / 2 + 24 - delta * x, theme.tile_size * self.board_height * 7 / 8 - h / 2 + 24 - delta * x))
+            text = self.outline_render('PAUSED', 120)
+            w, h = text.get_rect().size
+            bg.blit(text, (theme.tile_size * self.board_width / 2 - w / 2 + 24, theme.tile_size * self.board_height * 7 / 8 - h / 2 + 24))
         elif self.lost_timer >= 0:
             self.draw_board()
         # Print score
@@ -401,7 +413,7 @@ class Game:
             delta = 2
             for x in range(2):
                 text = theme.font[48].render('CLICK TO PLAY AGAIN', 2, (x * 255, x * 255, x * 255))
-                (w, h) = text.get_rect().size
+                w, h = text.get_rect().size
                 bg.blit(text, (theme.tile_size * self.board_width / 2 - w / 2 + 24 - delta * x, theme.tile_size * self.board_height / 2 - h / 2 + 24 - delta * x))
         # Print new level stuff
         if self.level_timer and (self.level > 1 or self.level_timer > SCROLL_DELAY / 2):
@@ -412,14 +424,14 @@ class Game:
             delta = 5
             for x in range(2):
                 text = theme.font[120].render(msg, 2, (x * 255, x * 255, x * 255))
-                (w, h) = text.get_rect().size
+                w, h = text.get_rect().size
                 bg.blit(text, (theme.tile_size * self.board_width / 2 - w / 2 + 24 - delta * x, theme.tile_size * self.board_height / 2 - h / 2 + 24 - delta * x))
         # Print 'no more moves' stuff
         if self.board_timer > SCROLL_DELAY / 2:
             delta = 2
             for x in range(2):
                 text = theme.font[60].render('NO MORE MOVES!', 2, (x * 255, x * 255, x * 255))
-                (w, h) = text.get_rect().size
+                w, h = text.get_rect().size
                 bg.blit(text, (theme.tile_size * self.board_width / 2 - w / 2 + 24 - delta * x, theme.tile_size * self.board_height / 2 - h / 2 + 24 - delta * x))
         # Print bonus
         for b in self.bonus_list:
@@ -451,6 +463,7 @@ class Game:
             for move in self.list_moves():
                 break
             else:
+                if HAVE_SOUND: theme.ding.play()
                 self.board_timer = SCROLL_DELAY
             self.check_moves = False
             self.clicks = []
@@ -485,6 +498,7 @@ class Game:
             if self.board_timer is SCROLL_DELAY / 2:
                 self.new_board()
             elif self.board_timer is 0:
+                if HAVE_SOUND: theme.boing.play()
                 self.check_moves = True # Need to check again
             return
         if self.lost_timer:
