@@ -6,7 +6,7 @@ pkgdatadir = $(datadir)/games/monsterz
 scoredir = /var/games
 scorefile = $(scoredir)/monsterz
 
-VERSION = 0.4
+VERSION = 0.4.1
 DIRECTORY = monsterz-$(VERSION)
 
 DATA = $(BITMAP) $(SOUND) $(MUSIC)
@@ -48,13 +48,21 @@ uninstall:
 	#rm -f $(DESTDIR)$(scorefile)
 
 dist:
+	rm -Rf $(DIRECTORY)-src
+	mkdir $(DIRECTORY)-src
+	# Copy everything we need
+	cp monsterz.py monsterz.c Makefile $(DIRECTORY)-src/
+	cp pattern.png tiles.svg $(SOUND) $(MUSIC) $(TEXT) $(DIRECTORY)-src/
+	# Build archive
+	tar cvzf $(DIRECTORY)-src.tar.gz $(DIRECTORY)-src/
+	rm -Rf $(DIRECTORY)-src
+
+binary: all
 	rm -Rf $(DIRECTORY)
 	mkdir $(DIRECTORY)
-	# Copy everything we need
-	cp monsterz.py monsterz.c Makefile $(DIRECTORY)/
-	cp pattern.png tiles.svg $(SOUND) $(MUSIC) $(TEXT) $(DIRECTORY)/
-	# Build archive
+	cp monsterz.py $(BITMAP) $(SOUND) $(MUSIC) $(TEXT) $(DIRECTORY)/
 	tar cvzf $(DIRECTORY).tar.gz $(DIRECTORY)/
+	zip -r $(DIRECTORY).zip $(DIRECTORY)
 	rm -Rf $(DIRECTORY)
 
 distclean: clean
