@@ -11,14 +11,14 @@ board_width = 8
 board_height = 8
 
 animals = [
-    { 'name': 'elephant', 'color': (127, 200, 255) },
-    { 'name': 'panda', 'color': (255, 255, 255) },
-    { 'name': 'girafe', 'color': (255, 255, 63) },
-    { 'name': 'crocodile', 'color': (63, 200, 63) },
-    { 'name': 'lion', 'color': (250, 160, 63) },
-    { 'name': 'baboon', 'color': (255, 63, 63) },
-    { 'name': 'hippo', 'color': (200, 63, 200) },
-#    { 'name': 'baby', 'color': (255, 180, 180) }
+    { 'name': 'elephants', 'color': (127, 200, 255) },
+    { 'name': 'pandas', 'color': (255, 255, 255) },
+    { 'name': 'girafes', 'color': (255, 255, 63) },
+    { 'name': 'crocodiles', 'color': (63, 200, 63) },
+    { 'name': 'lions', 'color': (250, 160, 63) },
+    { 'name': 'baboons', 'color': (255, 63, 63) },
+    { 'name': 'hippos', 'color': (200, 63, 200) },
+    { 'name': 'rabbits', 'color': (255, 180, 180) }
 ]
 
 class AnimalSprite(pygame.sprite.Sprite):
@@ -59,6 +59,26 @@ class SelectSprite(pygame.sprite.Sprite):
             self.rect.center = self.moveTo
             self.moveTo = None
 
+def do_move(a, b):
+    global board
+    tmp = board[a]
+    board[a] = board[b]
+    board[b] = tmp
+
+def list_moves(board):
+    moves = []
+    for y in range(board_height - 1):
+        for x in range(board_width - 1):
+            do_move((x, y), (x, y + 1))
+            if get_wins(board):
+                moves.append([(x, y), (x, y + 1)])
+            do_move((x, y), (x, y + 1))
+            do_move((x, y), (x + 1, y))
+            if get_wins(board):
+                moves.append([(x, y), (x + 1, y)])
+            do_move((x, y), (x + 1, y))
+    return moves
+
 def fill_board():
     global board
     for z in range(board_height):
@@ -76,11 +96,11 @@ def fill_board():
             else:
                 board[(x, y)] = animals[randint(0, len(animals) - 1)]
 
-def print_wins(wins):
+def enum_wins(wins):
     msg = ''
     for w in wins:
         msg += str(len(w)) + ' ' + board[w[0]]['name'] + ' '
-    print msg
+    return msg
 
 def reduce_wins(wins):
     new = []
@@ -102,7 +122,7 @@ def reduce_wins(wins):
             new.append(wins[i])
     return new
 
-def get_wins():
+def get_wins(board):
     wins = []
     # Horizontal
     for y in range(board_height):
@@ -149,22 +169,23 @@ def draw_sprites():
         y *= sprite_size
         tmp.moveTo = (x + sprite_size / 2, y + sprite_size / 2)
 
+def new_game():
+    global board
+    for y in range(board_height):
+        while True:
+            for x in range(board_width):
+                board[(x, y)] = animals[randint(0, len(animals) - 1)]
+            if not get_wins(board):
+                break
+
 # Compute sprite size
 sprite_size = screen_width / board_width
 tmp = screen_height / board_height
 if tmp < sprite_size:
     sprite_size = tmp
 
-# Fill board with random animals
-board = {}
-for y in range(board_height):
-    while True:
-        for x in range(board_width):
-            board[(x, y)] = animals[randint(0, len(animals) - 1)]
-        if not get_wins():
-            break
-
 # Init values
+board = {}
 select = (-1, -1)
 
 # Start all the stuff
@@ -177,13 +198,21 @@ background.fill((210,200,150))
 backSprites = pygame.sprite.RenderUpdates()
 frontSprites = pygame.sprite.RenderUpdates()
 
+new_game()
 draw_sprites()
 
 def main():
     global select
+    need_update = True
     clock = pygame.time.Clock()
     pygame.time.get_ticks()
     while True:
+        if need_update:
+            while not list_moves(board):
+                print 'no more moves!'
+                new_game()
+            draw_sprites()
+            need_update = False
         for event in pygame.event.get():
             if event.type == QUIT:
                 return
@@ -207,27 +236,25 @@ def main():
                 tmp = board[(x1, y1)]
                 board[(x1, y1)] = board[(x2, y2)]
                 board[(x2, y2)] = tmp
-                wins = get_wins()
-                print_wins(wins)
+                wins = get_wins(board)
                 if not wins:
                     tmp = board[(x1, y1)]
                     board[(x1, y1)] = board[(x2, y2)]
                     board[(x2, y2)] = tmp
                 else:
+                    msg = ''
                     while wins:
+                        msg += enum_wins(wins)
                         for w in wins:
                             for p in w:
                                 del board[p]
                         fill_board()
-                        wins = get_wins()
+                        wins = get_wins(board)
+                        if wins:
+                            msg += '+ '
+                    print msg
                 select = (-1, -1)
-                draw_sprites()
-            #elif event.type == MOUSEMOTION:
-            #    (x, y) = event.pos
-            #    x /= sprite_size
-            #    y /= sprite_size
-            #    if x < 0 or x >= board_width or y < 0 or y >= board_height:
-            #        continue
+                need_update = True
         clock.tick(30)
         window.blit(background, (0, 0))
         # Draw stuff here
