@@ -299,6 +299,8 @@ class Data:
             self.special[i] = scale(tmp, (t, t))
         self.led_off = scale(self.tiles.subsurface((3 * s, 0, s / 2, s / 2)), (t / 2, t / 2))
         self.led_on = scale(self.tiles.subsurface((3 * s + s / 2, 0, s / 2, s / 2)), (t / 2, t / 2))
+        self.led_more = scale(self.tiles.subsurface((3 * s, s / 2, s / 2, s / 2)), (t / 2, t / 2))
+        self.led_less = scale(self.tiles.subsurface((3 * s + s / 2, s / 2, s / 2, s / 2)), (t / 2, t / 2))
         self.eye = scale(tile_at(2, 0), (t * 3 / 4, t * 3 / 4))
         self.shadeye = scale(tile_at(2, 0), (t * 3 / 4, t * 3 / 4))
         semi_transp(self.shadeye)
@@ -1245,7 +1247,7 @@ class Monsterz:
         difficulty = settings.get('difficulty')
         self.generic_draw()
         self.copyright_draw()
-        messages = ['CLASSIC', 'QUEST', 'PUZZLE', 'TRAINING', '-', '+', '-', '+']
+        messages = ['CLASSIC', 'QUEST', 'PUZZLE', 'TRAINING']
         x, y = data.screen2board(pygame.mouse.get_pos())
         if y == 2 and 1 <= x <= 6:
             narea = GAME_CLASSIC
@@ -1289,14 +1291,14 @@ class Monsterz:
                 self.nsat[i] = self.nsat[i] * 8 / 10
         for i in range(4, 8):
             c = map(lambda a: 255 - (255 - a) * self.nsat[i] / 255, [127, 0, 255])
-            text = fonter.render(messages[i], 48, c)
-            w, h = text.get_rect().size
-            if i & 1:
-                x = 24 + 48 * 6 + 4
+            if i % 2:
+                img = data.led_more
+                x = 320
             else:
-                x = 24 + 96 - w - 8
-            y = 24 + 48 * (6 + (i - 4) / 2) + 24 - h / 2
-            system.blit(text, (x, y))
+                img = data.led_less
+                x = 88
+            y = 36 + 48 * (6 + (i - 4) / 2)
+            system.blit(img, (x, y))
             if self.nsat[i]:
                 self.nsat[i] = self.nsat[i] * 8 / 10
         # Print wanted monsterz
