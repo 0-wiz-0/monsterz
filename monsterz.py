@@ -333,8 +333,10 @@ class Fonter:
 
 class Game:
     # Nothing here yet
-    def __init__(self, type = GAME_CLASSIC, level = 1, items = 7):
+    def __init__(self, type = GAME_CLASSIC, difficulty = 1, items = 7):
         self.type = type
+        self.difficulty = difficulty
+        self.items = items
         self.needed = [0] * (ITEMS + 1)
         self.done = [0] * (ITEMS + 1)
         self.bonus_list = []
@@ -359,10 +361,9 @@ class Game:
         self.paused = False
         self.pause_bitmap = None
         self.play_again = False
-        self.items = items
         self.eyes = 3
         self.show_move = False
-        self.level = level
+        self.level = 1
         self.new_level()
         self.oldticks = pygame.time.get_ticks()
 
@@ -452,6 +453,7 @@ class Game:
     def new_level(self):
         # Compute level data
         if self.type == GAME_TRAINING:
+            self.level = self.difficulty
             self.population = self.items
             for i in range(self.population):
                 self.done[i + 1] = 0
@@ -1252,7 +1254,7 @@ class Monsterz:
                 return
             elif event.type == MOUSEBUTTONDOWN and narea is not None:
                 system.play('whip')
-                self.game = Game(type = narea, level = self.wanted_level, items = self.wanted_items)
+                self.game = Game(type = narea, difficulty = self.wanted_level, items = self.wanted_items)
                 self.status = STATUS_GAME
                 return
 
