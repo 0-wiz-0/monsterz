@@ -44,7 +44,7 @@ STATUS_QUIT = -1
 
 LOST_DELAY = 40
 SCROLL_DELAY = 40
-WIN_DELAY = 10
+WIN_DELAY = 15
 SWITCH_DELAY = 4
 WARNING_DELAY = 12
 
@@ -52,6 +52,14 @@ WARNING_DELAY = 12
 FLAG_FULLSCREEN = False
 FLAG_MUSIC = True
 FLAG_SFX = True
+
+def compare_scores(x, y):
+    if y[1] > x[1]:
+        return 1
+    elif y[1] < x[1]:
+        return -1
+    else:
+        return y[2] - x[2]
 
 class Hiscores:
     def __init__(self, scorefile, outfd):
@@ -88,7 +96,7 @@ class Hiscores:
         if not self.scores.has_key(game):
             self.scores[game] = []
         self.scores[game].append((name, score, level))
-        self.scores[game].sort(lambda x, y: y[1] - x[1])
+        self.scores[game].sort(compare_scores)
         self.scores[game] = self.scores[game][0:19]
 
     def add(self, game, score, level):
@@ -286,10 +294,7 @@ class Game:
         self.switch = None
         self.score = 0
         self.lost_timer = 0
-        self.lost_offset = {}
-        for y in range(BOARD_HEIGHT):
-            for x in range(BOARD_WIDTH):
-                self.lost_offset[(x, y)] = (0, 0)
+        self.extra_offset = [[(0, 0)] * BOARD_WIDTH for x in range(BOARD_HEIGHT)]
         self.win_timer = 0
         self.warning_timer = 0
         self.switch_timer = 0
@@ -319,20 +324,19 @@ class Game:
                 if not self.get_wins(): break
 
     def fill_board(self):
-        for z in range(BOARD_HEIGHT):
-            y = BOARD_HEIGHT - z - 1
-            for x in range(BOARD_WIDTH):
+        for y in xrange(BOARD_HEIGHT - 1, -1, -1):
+            for x in xrange(BOARD_WIDTH - 1, -1, -1):
                 if self.board.has_key((x, y)):
                     continue
-                found = None
-                for y2 in range(0, y):
+                for y2 in xrange(y - 1, -1, -1):
                     if self.board.has_key((x, y2)):
-                        found = (x, y2)
-                if found:
-                    self.board[(x, y)] = self.board[found]
-                    del self.board[found]
+                        self.board[(x, y)] = self.board[(x, y2)]
+                        self.extra_offset[x][y] = (0, 48 * (y2 - y))
+                        del self.board[(x, y2)]
+                        break
                 else:
                     self.board[(x, y)] = self.get_random()
+                    self.extra_offset[x][y] = ((0, 48 * (-1 - y)))
 
     def get_wins(self):
         wins = []
@@ -340,7 +344,7 @@ class Game:
         for y in range(BOARD_HEIGHT):
             for x in range(BOARD_WIDTH - 2):
                 a = self.board.get((x, y))
-                if not a or a == 0: continue
+                if a is None or a == 0: continue
                 b = self.board.get((x - 1, y))
                 if b and a == b: continue
                 len = 1
@@ -357,7 +361,7 @@ class Game:
         for x in range(BOARD_WIDTH):
             for y in range(BOARD_HEIGHT - 2):
                 a = self.board.get((x, y))
-                if not a or a == 0: continue
+                if a is None or a == 0: continue
                 b = self.board.get((x, y - 1))
                 if b and a == b: continue
                 len = 1
@@ -418,16 +422,16 @@ class Game:
         else:
             timer = 0
         if timer > SCROLL_DELAY / 2:
-            xoff = 0
+            global_xoff = 0
             yoff = (SCROLL_DELAY - timer) * (SCROLL_DELAY - timer)
-            yoff = yoff * 50 * 50 / SCROLL_DELAY / SCROLL_DELAY
+            global_yoff = yoff * 50 * 50 / SCROLL_DELAY / SCROLL_DELAY
         elif timer > 0:
-            xoff = 0
+            global_xoff = 0
             yoff = - timer * timer
-            yoff = yoff * 50 * 50 / SCROLL_DELAY / SCROLL_DELAY
+            global_yoff = yoff * 50 * 50 / SCROLL_DELAY / SCROLL_DELAY
         else:
-            xoff = 0
-            yoff = 0
+            global_xoff = 0
+            global_yoff = 0
         if self.switch_timer:
             x1, y1 = data.board2screen(self.select)
             x2, y2 = data.board2screen(self.switch)
@@ -440,12 +444,18 @@ class Game:
                 x, y = x1 * t + x2 * (1 - t), y1 * t + y2 * (1 - t)
             else:
                 x, y = data.board2screen(c)
+            i, j = c
+            xoff, yoff = self.extra_offset[i][j]
             if self.lost_timer:
-                xoff, yoff = self.lost_offset[c]
                 d = LOST_DELAY - self.lost_timer
                 xoff += (randint(0, d) - randint(0, d)) * randint(0, d) / 4
                 yoff += (randint(0, d) - randint(0, d)) * randint(0, d) / 4
-                self.lost_offset[c] = (xoff, yoff)
+                self.extra_offset[i][j] = xoff, yoff
+            elif yoff and self.win_timer:
+                yoff = yoff * (self.win_timer - 1) / (WIN_DELAY / 2)
+                self.extra_offset[i][j] = xoff, yoff
+            xoff += global_xoff
+            yoff += global_yoff
             # Decide the shape
             if n == 0:
                 shape = data.special[monsterz.timer % self.population]
@@ -509,26 +519,41 @@ class Game:
     parea = None
     def game_draw(self):
         # Draw timebar
-        timebar = pygame.Surface((400, 24)).convert_alpha()
-        timebar.fill((0, 0, 0, 127))
-        w = 400 * self.time / 2000000
+        timebar = pygame.Surface((406, 32)).convert_alpha()
+        timebar.fill((0, 0, 0, 155))
+        w = 406 * self.time / 2000000
         if w > 0:
             if self.warning_timer:
                 ratio = 1.0 * abs(2 * self.warning_timer - WARNING_DELAY) \
                             / WARNING_DELAY
-                c = (200 * ratio, 0, 0, 127)
+                c = (200 * ratio, 0, 0, 155)
             elif self.time <= 350000:
-                c = (200, 0, 0, 127)
+                c = (200, 0, 0, 155)
             elif self.time <= 700000:
                 ratio = 1.0 * (self.time - 350000) / 350000
-                c = (200, 180 * ratio, 0, 127)
+                c = (200, 180 * ratio, 0, 155)
             elif self.time <= 1000000:
                 ratio = 1.0 * (1000000 - self.time) / 300000
-                c = (200 * ratio, 200 - 20 * ratio, 0, 127)
+                c = (200 * ratio, 200 - 20 * ratio, 0, 155)
             else:
-                c = (0, 200, 0, 127)
-            pygame.draw.rect(timebar, c, (0, 0, w, 24))
-        system.blit(timebar, (16, 440))
+                c = (0, 200, 0, 155)
+            pygame.draw.rect(timebar, c, (0, 0, w, 32))
+        try:
+            alpha = pygame.surfarray.pixels_alpha(timebar)
+            for x in range(4):
+                for y, p in enumerate(alpha[x]):
+                    alpha[x][y] = p * x / 4
+                for y, p in enumerate(alpha[406 - x - 1]):
+                    alpha[406 - x - 1][y] = p * x / 4
+            for col in alpha:
+                l = len(col)
+                for y in range(4):
+                    col[y] = col[y] * y / 4
+                    col[l - y - 1] = col[l - y - 1] * y / 4
+            del alpha
+        except:
+            pass
+        system.blit(timebar, (13, 436))
         # Draw pieces
         if self.paused:
             system.blit(self.pause_bitmap, (72, 24))
@@ -579,7 +604,7 @@ class Game:
             text = fonter.render(str(self.done[i + 1]), 36)
             system.blit(text, (x + 44, y + 2))
         # Print pause and abort buttons
-        r = (127, 255, 127)
+        r = (255, 127, 127)
         if self.paused:
             led, color = data.led_on, (255, 255, 255)
         else:
@@ -595,9 +620,9 @@ class Game:
                 self.psat[x] = self.psat[x] * 8 / 10
         # Print level
         msg = 'LEVEL ' + str(self.level)
-        if self.needed[1]: msg += ' - ' + str(self.needed[1])
-        text = fonter.render(msg, 36)
-        system.blit(text, (444, 216))
+        if self.needed[1]: msg += ': ' + str(self.needed[1]) + 'x'
+        text = fonter.render(msg, 40)
+        system.blit(text, (444, 230))
 
     def pause(self):
         # TODO: prevent cheating by not allowing less than 1 second
@@ -671,7 +696,7 @@ class Game:
                 for w in self.wins:
                     for x, y in w:
                         self.surprised_list.append((x, y))
-            elif self.win_timer is WIN_DELAY * 3 / 6:
+            elif self.win_timer is WIN_DELAY * 4 / 6:
                 system.play('pop')
                 self.scorebonus = 0
                 self.timebonus = 0
@@ -689,8 +714,7 @@ class Game:
                     self.bonus_list.append([(x2 / len(w), y2 / len(w)), points])
                 self.disappear_list = self.surprised_list
                 self.surprised_list = []
-            elif self.win_timer is WIN_DELAY * 2 / 6:
-                self.bonus_list = []
+            elif self.win_timer is WIN_DELAY * 3 / 6:
                 for x, y in self.disappear_list:
                     if self.board.has_key((x, y)):
                         self.done[self.board[(x, y)]] += 1
@@ -704,15 +728,16 @@ class Game:
                     if unfinished == 1:
                         system.play('grunt')
                         self.angry_tiles = angry
+                self.fill_board()
                 self.disappear_list = []
-            elif self.win_timer is WIN_DELAY / 6:
+            elif self.win_timer is WIN_DELAY * 3 / 6 - 2:
+                self.bonus_list = []
                 self.time += self.timebonus
                 if self.time > 2000000:
                     self.time = 2000000
                 self.score += self.scorebonus
-                self.fill_board()
-                system.play('boing')
             elif self.win_timer is 0:
+                system.play('boing')
                 self.wins = self.get_wins()
                 if self.wins:
                     self.win_timer = WIN_DELAY
@@ -783,12 +808,12 @@ class Game:
         if self.clicks:
             played = self.clicks.pop(0)
             if self.select:
-                x1, y1 = self.select
-                x2, y2 = played
-                if x1 == x2 and y1 == y2:
+                if self.select == played:
                     system.play('click')
                     self.select = None
                     return
+                x1, y1 = self.select
+                x2, y2 = played
                 if abs(x1 - x2) + abs(y1 - y2) != 1:
                     return
                 system.play('whip')
@@ -870,13 +895,13 @@ class Monsterz:
         x, y = pygame.mouse.get_pos()
         garea = None
         if system.have_sound:
-            if x > 440 and y > 378 and x < 440 + 180 and y < 378 + 24:
+            if 440 < x < 440 + 180 and 378 < y < 378 + 24:
                 garea = 1
                 self.gsat[0] = 255
-            elif x > 440 and y > 408 and x < 440 + 180 and y < 408 + 24:
+            elif 440 < x < 440 + 180 and 408 < y < 408 + 24:
                 garea = 2
                 self.gsat[1] = 255
-        if x > 440 and y > 438 and x < 440 + 180 and y < 438 + 24:
+        if 440 < x < 440 + 180 and 438 < y < 438 + 24:
             garea = 3
             self.gsat[2] = 255
         if garea and garea != self.garea:
@@ -884,7 +909,7 @@ class Monsterz:
         self.garea = garea
         system.blit(data.board, (0, 0))
         # Print various buttons
-        r = (127, 255, 127)
+        r = (255, 127, 127)
         if system.have_sound:
             if FLAG_SFX:
                 led, color = data.led_on, (255, 255, 255)
@@ -928,13 +953,13 @@ class Monsterz:
         if event.type == MOUSEBUTTONDOWN:
             x, y = pygame.mouse.get_pos()
             if system.have_sound:
-                if x > 440 and y > 378 and x < 440 + 180 and y < 378 + 24:
+                if 440 < x < 440 + 180 and 378 < y < 378 + 24:
                     system.toggle_sfx()
                     return True
-                elif x > 440 and y > 408 and x < 440 + 180 and y < 408 + 24:
+                elif 440 < x < 440 + 180 and 408 < y < 408 + 24:
                     system.toggle_music()
                     return True
-            if x > 440 and y > 438 and x < 440 + 180 and y < 438 + 24:
+            if 440 < x < 440 + 180 and 438 < y < 438 + 24:
                 system.toggle_fullscreen()
                 return True
         return False
@@ -948,16 +973,16 @@ class Monsterz:
         shapes = [2, 3, 4, 0]
         messages = ['NEW GAME', 'HELP', 'SCORES', 'QUIT']
         x, y = data.screen2board(pygame.mouse.get_pos())
-        if y == 4 and x >= 1 and x <= 6:
+        if y == 4 and 1 <= x <= 6:
             marea = STATUS_GAME
             self.msat[0] = 255
-        elif y == 5 and x >= 1 and x <= 4:
+        elif y == 5 and 1 <= x <= 4:
             marea = STATUS_HELP
             self.msat[1] = 255
-        elif y == 6 and x >= 1 and x <= 5:
+        elif y == 6 and 1 <= x <= 5:
             marea = STATUS_SCORES
             self.msat[2] = 255
-        elif y == 7 and x >= 1 and x <= 4:
+        elif y == 7 and 1 <= x <= 4:
             marea = STATUS_QUIT
             self.msat[3] = 255
         else:
@@ -998,10 +1023,10 @@ class Monsterz:
     def iterate_game(self):
         x, y = pygame.mouse.get_pos()
         parea = None
-        if x > 440 and y > 288 and x < 440 + 180 and y < 288 + 24:
+        if 440 < x < 440 + 180 and 288 < y < 288 + 24:
             parea = 1
             self.game.psat[0] = 255
-        elif x > 440 and y > 328 and x < 440 + 180 and y < 328 + 24:
+        elif 440 < x < 440 + 180 and 328 < y < 328 + 24:
             parea = 2
             self.game.psat[1] = 255
         if parea and parea != self.game.parea:
@@ -1031,11 +1056,11 @@ class Monsterz:
                 self.game.pause()
             elif event.type == MOUSEBUTTONDOWN:
                 x, y = pygame.mouse.get_pos()
-                if x > 440 and y > 288 and x < 440 + 180 and y < 288 + 24:
+                if 440 < x < 440 + 180 and 288 < y < 288 + 24:
                     system.play('whip')
                     self.game.pause()
                     return
-                elif x > 440 and y > 328 and x < 440 + 180 and y < 328 + 24:
+                elif 440 < x < 440 + 180 and 328 < y < 328 + 24:
                     system.play('whip')
                     self.status = STATUS_MENU
                     return
