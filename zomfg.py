@@ -71,10 +71,16 @@ class Theme:
         for x in [36, 48, 60, 120]:
             self.font[x] = pygame.font.Font(None, x)
 
+    def scale(self, surf, size):
+        w, h = surf.get_size()
+        if (w, h) == size:
+            return pygame.transform.scale(surf, size)
+        return pygame.transform.rotozoom(surf, 0.0, 1.0 * size[0] / w)
+
     def make_sprites(self, t):
         self.tile_size = t
         s = self.orig_size
-        scale = pygame.transform.scale
+        scale = self.scale
         crop = self.tiles.subsurface
         # Create sprites
         for x in range(8):
@@ -93,9 +99,9 @@ class Theme:
             self.angry[x] = scale(crop((s * 3, (x+1) * s, s, s)), (t, t))
             self.exploded[x] = scale(crop((s * 4, (x+1) * s, s, s)), (t, t))
             #tmp = crop((s, 0, s, s)).copy() # marche pas !
-            special = scale(crop((s, 0, s, s)), (s, s)) # marche...
+            special = scale(crop((s, 0, s, s)), (t, t)) # marche...
             mini = crop((0, (x+1) * s, s, s))
-            mini = scale(mini, (s * 7 / 8, s * 7 / 8))
+            mini = scale(mini, (t * 7 / 8 - 1, t * 7 / 8 - 1))
             special.blit(mini, (s / 16, s / 16))
             self.special[x] = scale(special, (t, t))
         # Create selector sprite
@@ -270,9 +276,9 @@ class Game:
 
     def draw_board(self):
         # Have a random piece blink
-        if randint(0, 7) is 0:
-            x, y = randint(0, self.board_width - 1), randint(0, self.board_height - 1)
-            self.blink_list[(x, y)] = 5
+        c = randint(0, self.board_width - 1), randint(0, self.board_height - 1)
+        if randint(0, 5) is 0 and not self.blink_list.has_key(c):
+            self.blink_list[c] = 5
         # Handle special scrolling cases
         if self.level_timer:
             timer = self.level_timer
@@ -325,8 +331,7 @@ class Game:
             elif self.blink_list.has_key(c):
                 shape = theme.blink[n - 1]
                 self.blink_list[c] -= 1
-                if self.blink_list[c] is 0:
-                    del self.blink_list[c]
+                if self.blink_list[c] is 0: del self.blink_list[c]
             else:
                 shape = theme.normal[n - 1]
             # Remember the selector coordinates
@@ -376,17 +381,16 @@ class Game:
         else:
             del self.pause_bitmap
 
-    def outline_render(self, msg, size):
-        delta = 1 + size / 30
+    def render_text(self, msg, size):
+        delta = 1 + size / 16
         black = theme.font[size].render(msg, 2, (0, 0, 0))
         w, h = black.get_size()
         text = pygame.Surface((w + delta, h + delta)).convert_alpha()
         text.fill(black.get_at((0, 0)))
-        for x, y in [(0, 0), (0, 1), (0, 2), (1, 2), (2, 2), (2, 1), (2, 0), (1, 0)]:
-            text.blit(black, (x * delta / 2, y * delta / 2))
-#        text = pygame.transform.scale(black, (w + delta, h + delta))
+        for x, y in [(5, 5), (6, 3), (5, 1), (3, 0), (1, 1), (0, 3), (1, 5), (3, 6)]:
+            text.blit(black, (x * delta / 6, y * delta / 6))
         white = theme.font[size].render(msg, 2, (255, 255, 255))
-        text.blit(white, ((delta + 1) / 2, (delta + 1) / 2))
+        text.blit(white, (delta / 2, delta / 2))
         return text
 
     def draw_game(self):
@@ -406,61 +410,47 @@ class Game:
             pygame.draw.rect(bg, color, (x, y, w * self.time / 2000000, h))
         # Draw pieces
         if self.pause:
-            bg.blit(self.pause_bitmap, (24 + theme.tile_size, 24))
-            text = self.outline_render('PAUSED', 120)
+            bg.blit(self.pause_bitmap, (72, 24))
+            text = self.render_text('PAUSED', 120)
             w, h = text.get_rect().size
-            bg.blit(text, (theme.tile_size * self.board_width / 2 - w / 2 + 24, theme.tile_size * self.board_height * 7 / 8 - h / 2 + 24))
+            bg.blit(text, (24 + 192 - w / 2, 24 + 336 - h / 2))
         elif self.lost_timer >= 0:
             self.draw_board()
-        # Print score
-        delta = 3
-        for x in range(2):
-            text = theme.font[60].render(str(self.score), 2, (x * 255, x * 255, x * 255))
-            bg.blit(text, (theme.tile_size * self.board_width + theme.tile_size * 3 / 2 - delta * x, 10 - delta * x))
         # Print play again message
         if self.lost_timer < 0:
-            delta = 2
-            for x in range(2):
-                text = theme.font[48].render('CLICK TO PLAY AGAIN', 2, (x * 255, x * 255, x * 255))
-                w, h = text.get_rect().size
-                bg.blit(text, (theme.tile_size * self.board_width / 2 - w / 2 + 24 - delta * x, theme.tile_size * self.board_height / 2 - h / 2 + 24 - delta * x))
+            text = self.render_text('CLICK TO PLAY AGAIN', 48)
+            w, h = text.get_rect().size
+            bg.blit(text, (24 + 192 - w / 2, 24 + 192 - h / 2))
         # Print new level stuff
-        if self.level_timer and (self.level > 1 or self.level_timer > SCROLL_DELAY / 2):
-            if self.level_timer > SCROLL_DELAY / 2:
-                msg = 'LEVEL UP'
-            else:
-                msg = 'LEVEL ' + str(self.level)
-            delta = 5
-            for x in range(2):
-                text = theme.font[120].render(msg, 2, (x * 255, x * 255, x * 255))
-                w, h = text.get_rect().size
-                bg.blit(text, (theme.tile_size * self.board_width / 2 - w / 2 + 24 - delta * x, theme.tile_size * self.board_height / 2 - h / 2 + 24 - delta * x))
+        if self.level_timer > SCROLL_DELAY / 2:
+            text = self.render_text('LEVEL UP!', 60)
+            w, h = text.get_rect().size
+            bg.blit(text, (24 + 192 - w / 2, 24 + 192 - h / 2))
         # Print 'no more moves' stuff
         if self.board_timer > SCROLL_DELAY / 2:
-            delta = 2
-            for x in range(2):
-                text = theme.font[60].render('NO MORE MOVES!', 2, (x * 255, x * 255, x * 255))
-                w, h = text.get_rect().size
-                bg.blit(text, (theme.tile_size * self.board_width / 2 - w / 2 + 24 - delta * x, theme.tile_size * self.board_height / 2 - h / 2 + 24 - delta * x))
+            text = self.render_text('NO MORE MOVES!', 60)
+            w, h = text.get_rect().size
+            bg.blit(text, (24 + 192 - w / 2, 24 + 192 - h / 2))
         # Print bonus
         for b in self.bonus_list:
-            for d in range(2):
-                text = theme.font[36].render(str(b[1]), 2, (d * 255, d * 255, d * 255))
-                (x, y) = self.board2screen(b[0])
-                bg.blit(text, (x + theme.tile_size / 4 - delta * d, y + theme.tile_size / 4 - delta * d))
+            text = self.render_text(str(b[1]), 36)
+            w, h = text.get_rect().size
+            x, y = self.board2screen(b[0])
+            bg.blit(text, (x + 24 - w / 2, y + 24 - h / 2))
+        # Print score
+        bg.blit(self.render_text(str(self.score), 60), (444, 10))
+        # Print level
+        text = self.render_text('LEVEL ' + str(self.level) + ' - ' + str(self.needed[1]), 36)
+        bg.blit(text, (444, 58))
         # Print done/needed
-        delta = 2
-        x = theme.tile_size * self.board_width + theme.tile_size * 3 / 2
-        y = theme.tile_size / 2 + SCREEN_HEIGHT / 8
         for i in range(self.population):
             if self.done[i + 1] >= self.needed[i + 1]:
-                bg.blit(theme.tiny[i], (x, y))
+                surf = theme.tiny[i]
             else:
-                bg.blit(theme.gray[i], (x, y))
-            for d in range(2):
-                text = theme.font[36].render(str(self.done[i + 1]) + '/' + str(self.needed[i + 1]), 2, (d * 255, d * 255, d * 255))
-                bg.blit(text, (x + theme.tile_size * 3 / 4 - delta * d, y - delta * d))
-            y += SCREEN_HEIGHT / 16
+                surf = theme.gray[i]
+            bg.blit(surf, (444, 100 + i * 38))
+            text = self.render_text(str(self.done[i + 1]), 36)
+            bg.blit(text, (488, 102 + i * 38))
         win.blit(bg, (0, 0))
         pygame.display.flip()
 
