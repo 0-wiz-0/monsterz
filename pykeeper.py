@@ -4,37 +4,30 @@ import pygame
 from pygame.locals import *
 from random import randint
 
-screen_width = 640
-screen_height = 480
+# constants
+TIME_MAX = 2000000
+
+screen_width = 800
+screen_height = 600
 
 board_width = 8
 board_height = 8
 
 animals = [
-    { 'name': 'elephants', 'color': (127, 200, 255) },
-    { 'name': 'pandas', 'color': (255, 255, 255) },
-    { 'name': 'girafes', 'color': (255, 255, 63) },
-    { 'name': 'crocodiles', 'color': (63, 200, 63) },
-    { 'name': 'lions', 'color': (250, 160, 63) },
-    { 'name': 'baboons', 'color': (255, 63, 63) },
-    { 'name': 'hippos', 'color': (200, 63, 200) },
-#    { 'name': 'rabbits', 'color': (255, 180, 180) }
+    { 'name': 'elephants', 'color': (127, 200, 255), 'img': None },
+    { 'name': 'pandas', 'color': (255, 255, 255), 'img': None },
+    { 'name': 'girafes', 'color': (255, 255, 63), 'img': None },
+    { 'name': 'crocodiles', 'color': (63, 200, 63), 'img': None },
+    { 'name': 'lions', 'color': (250, 160, 63), 'img': None },
+    { 'name': 'baboons', 'color': (255, 63, 63), 'img': None },
+    { 'name': 'hippos', 'color': (200, 63, 200), 'img': None },
+    { 'name': 'bunnies', 'color': (255, 180, 180), 'img': None }
 ]
 
 class AnimalSprite(pygame.sprite.Sprite):
     def __init__(self, type, group=None):
         pygame.sprite.Sprite.__init__(self, group)
-
-        tmp = pygame.Surface((sprite_size, sprite_size))
-        tmp.set_colorkey(tmp.get_at((0, 0)), RLEACCEL)
-        pygame.draw.circle(tmp, (20, 1, 1), (sprite_size / 2, sprite_size / 2), sprite_size * 4 / 9)
-        pygame.draw.circle(tmp, type['color'], (sprite_size / 2, sprite_size / 2), sprite_size * 3 / 8)
-        pygame.draw.circle(tmp, (20, 1, 1), (sprite_size / 3, sprite_size * 3 / 8), sprite_size / 8)
-        pygame.draw.circle(tmp, (255, 255, 255), (sprite_size / 3, sprite_size * 3 / 8), sprite_size / 16)
-        pygame.draw.circle(tmp, (20, 1, 1), (sprite_size - sprite_size / 3, sprite_size * 3 / 8), sprite_size / 8)
-        pygame.draw.circle(tmp, (255, 255, 255), (sprite_size - sprite_size / 3, sprite_size * 3 / 8), sprite_size / 16)
-        pygame.draw.circle(tmp, (20, 1, 1), (sprite_size / 2, sprite_size * 5 / 8), sprite_size / 16)
-        self.image = tmp
+        self.image = type['img']
         self.rect  = tmp.get_rect()
         self.moveTo = None
 
@@ -50,6 +43,8 @@ class SelectSprite(pygame.sprite.Sprite):
         tmp = pygame.Surface((sprite_size, sprite_size))
         tmp.set_colorkey(tmp.get_at((0, 0)), RLEACCEL)
         pygame.draw.rect(tmp, (255, 255, 0), (0, 0, sprite_size, sprite_size), sprite_size / 8)
+        pygame.draw.rect(tmp, (0, 0, 0), (0, sprite_size / 4, sprite_size, sprite_size * 2 / 4), sprite_size / 8)
+        pygame.draw.rect(tmp, (0, 0, 0), (sprite_size / 4, 0, sprite_size * 2 / 4, sprite_size), sprite_size / 8)
         self.image = tmp
         self.rect  = tmp.get_rect()
         self.moveTo = None
@@ -94,7 +89,7 @@ def fill_board():
                 board[(x, y)] = board[found]
                 del board[found]
             else:
-                board[(x, y)] = animals[randint(0, len(animals) - 1)]
+                board[(x, y)] = random_animal()
 
 def enum_wins(wins):
     msg = ''
@@ -170,6 +165,10 @@ def get_wins(board):
 
 def draw_sprites():
     backSprites.empty()
+    if time > 0:
+        background.fill((210, 200, 150))
+    else:
+        background.fill((255, 20, 15))
     # Draw board
     for (coord, animal) in board.items():
         tmp = AnimalSprite(animal, backSprites)
@@ -184,58 +183,149 @@ def draw_sprites():
         x *= sprite_size
         y *= sprite_size
         tmp.moveTo = (x + sprite_size / 2, y + sprite_size / 2)
+    # Print score
+    font = pygame.font.Font(None, screen_height / 5)
+    delta = 1 + screen_height / 200
+    for x in range(2):
+        text = font.render(str(score), 2, (x * 255, x * 255, x * 255))
+        background.blit(text, (sprite_size * board_width + sprite_size / 2 - delta * x, - delta * x))
+    # Print done/needed:
+    font = pygame.font.Font(None, screen_height / 8)
+    delta = 1 + screen_height / 300
+    x = sprite_size * board_width + sprite_size / 2
+    y = sprite_size / 2 + screen_height / 10
+    for a in animals:
+        n = a['name']
+        if needed[n] == 0:
+            continue
+        background.blit(a['img'], (x, y))
+        for d in range(2):
+            text = font.render(str(done[n]) + '/' + str(needed[n]), 2, (d * 255, d * 255, d * 255))
+            background.blit(text, (x + sprite_size * 5 / 4 - delta * d, y - delta * d))
+        y += screen_height / 10
 
-def new_game():
+def draw_time():
+    x = sprite_size / 2
+    y = screen_height * 18 / 20
+    w = (board_width - 1) * sprite_size
+    h = screen_height / 20
+    w2 = w * time / 2000000
+    if time <= 350000:
+        color = (255, 0, 0)
+    else:
+        color = (255, 240, 0)
+    pygame.draw.rect(background, (0, 0, 0), (x, y, w, h))
+    if w2 > 0:
+        pygame.draw.rect(background, color, (x, y, w * time / 2000000, h))
+
+def new_board():
     global board
     for y in range(board_height):
         while True:
             for x in range(board_width):
-                board[(x, y)] = animals[randint(0, len(animals) - 1)]
+                board[(x, y)] = random_animal()
             if not get_wins(board):
                 break
 
+def random_animal():
+    if level < 8:
+        return animals[randint(0, 6)]
+    else:
+        return animals[randint(0, 7)]
+
 # Init values
 board = {}
+needed = {}
+done = {}
 select = (-1, -1)
-level = 1
 
 # Compute stuff
 sprite_size = screen_width / board_width
-tmp = screen_height / board_height
+tmp = screen_height * 17 / 20 / board_height
 if tmp < sprite_size:
     sprite_size = tmp
 
+# Create sprites
+for a in animals:
+    tmp = pygame.Surface((sprite_size, sprite_size))
+    tmp.set_colorkey(tmp.get_at((0, 0)), RLEACCEL)
+    pygame.draw.circle(tmp, (20, 1, 1), (sprite_size / 2, sprite_size / 2), sprite_size * 4 / 9)
+    pygame.draw.circle(tmp, a['color'], (sprite_size / 2, sprite_size / 2), sprite_size * 3 / 8)
+    pygame.draw.circle(tmp, (20, 1, 1), (sprite_size / 3, sprite_size * 3 / 8), sprite_size / 8)
+    pygame.draw.circle(tmp, (255, 255, 255), (sprite_size / 3, sprite_size * 3 / 8), sprite_size / 16)
+    pygame.draw.circle(tmp, (20, 1, 1), (sprite_size - sprite_size / 3, sprite_size * 3 / 8), sprite_size / 8)
+    pygame.draw.circle(tmp, (255, 255, 255), (sprite_size - sprite_size / 3, sprite_size * 3 / 8), sprite_size / 16)
+    pygame.draw.circle(tmp, (20, 1, 1), (sprite_size / 2, sprite_size * 9 / 16), sprite_size / 16)
+    pygame.draw.rect(tmp, (20, 1, 1), (sprite_size / 3, sprite_size * 11 / 16, sprite_size / 3, sprite_size / 16), sprite_size / 16)
+    a['img'] = tmp
+
 # Start all the stuff
 pygame.init()
-window = pygame.display.set_mode((640, 480))
+window = pygame.display.set_mode((screen_width, screen_height))
 pygame.display.set_caption('Le meilleur jeu du monde')
 background = pygame.Surface(window.get_size())
-background.fill((210,200,150))
 
 backSprites = pygame.sprite.RenderUpdates()
 frontSprites = pygame.sprite.RenderUpdates()
 
-new_game()
-draw_sprites()
-
 def main():
-    global select
+    global select, score, done, level, time
+    level = 0
+    score = 0
     need_update = True
+    new_level = True
     clock = pygame.time.Clock()
-    pygame.time.get_ticks()
+    oldticks = pygame.time.get_ticks()
     while True:
+        # Compute level data
+        if new_level:
+            level += 1
+            for a in animals:
+                x = a['name']
+                done[x] = 0
+                if x == 'bunnies' and level < 8:
+                    needed[x] = 0
+                else:
+                    needed[x] = level + 2
+            new_board()
+            time = TIME_MAX / 2
+            new_level = False
+        # Draw screen
         if need_update:
             while not list_moves(board):
                 print 'no more moves!'
-                new_game()
+                new_board()
             draw_sprites()
             need_update = False
+        draw_time()
+        window.blit(background, (0, 0))
+        # Draw stuff here
+        backSprites.clear(window, background)
+        frontSprites.clear(window, background)
+        backSprites.update()
+        frontSprites.update()
+        dirtyRects1 = backSprites.draw(window)
+        dirtyRects2 = frontSprites.draw(window)
+        dirtyRects = dirtyRects1 + dirtyRects2
+        #pygame.display.update(dirtyRects)
+        pygame.display.flip()
+        clock.tick(30)
+        # Update time
+        ticks = pygame.time.get_ticks()
+        delta = (ticks - oldticks) * 400 / (11 - level)
+        oldticks = ticks
+        if time <= delta:
+            need_update = True
+        time -= delta
+        # Handle events
         for event in pygame.event.get():
             if event.type == QUIT:
                 return
             elif event.type == KEYDOWN and event.key == K_ESCAPE:
                 return
-            elif event.type == MOUSEBUTTONDOWN:
+            if time <= 0:
+                continue
+            if event.type == MOUSEBUTTONDOWN:
                 (x2, y2) = event.pos
                 x2 /= sprite_size
                 y2 /= sprite_size
@@ -243,12 +333,12 @@ def main():
                     continue
                 if select == (-1, -1):
                     select = (x2, y2)
-                    draw_sprites()
+                    need_update = True
                     continue
                 (x1, y1) = select
                 if x1 == x2 and y1 == y2:
                     select = (-1, -1)
-                    draw_sprites()
+                    need_update = True
                     continue
                 if abs(x1 - x2) + abs(y1 - y2) != 1:
                     continue
@@ -261,37 +351,36 @@ def main():
                     board[(x1, y1)] = board[(x2, y2)]
                     board[(x2, y2)] = tmp
                 else:
-                    score = 0
+                    points = 0
                     iter = 0
                     msg = ''
                     while wins:
                         msg += enum_wins(wins)
                         for w in wins:
-                            score += (10 * level) * (2 ** (iter + len(w) - 3))
+                            points += (10 * level) * (2 ** (iter + len(w) - 3))
+                            time += 45000 * len(w)
                             for p in w:
-                                if board.has_key(p): del board[p]
+                                if board.has_key(p):
+                                    done[board[p]['name']] += 1
+                                    del board[p]
                         fill_board()
                         wins = get_wins(board)
                         if wins:
-                            print 'cascade'
                             msg += '+ '
                         iter += 1
-                    print msg, score
+                    if time > TIME_MAX:
+                        time = TIME_MAX
+                    #print msg, points
+                    score += points
                 select = (-1, -1)
                 need_update = True
-        clock.tick(30)
-        window.blit(background, (0, 0))
-        # Draw stuff here
-        backSprites.clear(window, background)
-        frontSprites.clear(window, background)
-        backSprites.update()
-        frontSprites.update()
-        dirtyRects1 = backSprites.draw(window)
-        dirtyRects2 = frontSprites.draw(window)
-        dirtyRects = dirtyRects1 + dirtyRects2
-        #pygame.display.update(dirtyRects)
-
-        pygame.display.flip()
+        # Check for new level
+        new_level = True
+        for a in animals:
+            n = a['name']
+            if done[n] < needed[n]:
+                new_level = False
+                break
 
 main()
 
