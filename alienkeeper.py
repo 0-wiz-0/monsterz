@@ -1,5 +1,16 @@
 #!/usr/bin/env python
 
+"""
+ alienkeeper: puzzle game
+ $Id$
+
+ Copyright: (c) 2005 Sam Hocevar <sam@zoy.org>
+   This program is free software; you can redistribute it and/or
+   modify it under the terms of the Do What The Fuck You Want To
+   Public License, Version 2, as published by Sam Hocevar. See
+   http://sam.zoy.org/projects/COPYING.WTFPL for more details.
+"""
+
 import pygame
 from pygame.locals import *
 from random import randint
@@ -247,13 +258,13 @@ class Game:
             text = font.render(str(self.score), 2, (x * 255, x * 255, x * 255))
             background.blit(text, (self.tile_size * self.board_width + self.tile_size / 2 - delta * x, - delta * x))
         # Print bonus:
+        font = pygame.font.Font(None, self.tile_size * 3 / 4)
         for b in self.bonus_list:
             for d in range(2):
                 text = font.render(str(b[1]), 2, (d * 255, d * 255, d * 255))
                 (x, y) = self.board2screen(b[0])
                 background.blit(text, (x + self.tile_size / 4 - delta * d, y + self.tile_size / 4 - delta * d))
         # Print done/needed:
-        font = pygame.font.Font(None, screen_height / 12)
         delta = 1 + screen_height / 300
         x = self.tile_size * self.board_width + self.tile_size / 2
         y = self.tile_size / 2 + screen_height / 8
@@ -461,6 +472,10 @@ class Game:
 
 # Init Pygame
 pygame.init()
+# Sound test
+#pygame.mixer.get_init()
+#sound = pygame.mixer.Sound('foo.wav')
+#sound.play()
 # Load stuff
 tiles = pygame.image.load('tiles.png')
 (w, h) = tiles.get_rect().size
