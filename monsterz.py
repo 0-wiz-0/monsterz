@@ -22,10 +22,10 @@ from os import write, geteuid
 
 # String constants
 VERSION = '0.3'
-COPYRIGHT = 'MONSTERZ -- COPYRIGHT 2005 SAM HOCEVAR -- MONSTERZ IS ' \
+COPYRIGHT = 'MONSTERZ - COPYRIGHT 2005 SAM HOCEVAR - MONSTERZ IS ' \
             'FREE SOFTWARE, YOU CAN REDISTRIBUTE IT AND/OR MODIFY IT ' \
             'UNDER THE TERMS OF THE DO WHAT THE FUCK YOU WANT TO ' \
-            'PUBLIC LICENSE, VERSION 2 -- '
+            'PUBLIC LICENSE, VERSION 2 - '
 
 # Constants
 HAVE_AI = False # broken
@@ -505,6 +505,8 @@ class Game:
             sprite = crop((0, 0, width, data.tile_size - delta))
         system.blit(sprite, (x, y))
 
+    psat = [0] * 2
+    parea = None
     def game_draw(self):
         # Draw timebar
         timebar = pygame.Surface((400, 24)).convert_alpha()
@@ -540,7 +542,7 @@ class Game:
             text = fonter.render('GAME OVER', 80)
             w, h = text.get_rect().size
             system.blit(text, (24 + 192 - w / 2, 24 + 192 - h / 2))
-            text = fonter.render('CLICK TO CONTINUE', 24)
+            text = fonter.render('YUO = TEH L0SER', 24)
             w, h = text.get_rect().size
             system.blit(text, (24 + 192 - w / 2, 24 + 240 - h / 2))
         # Print new level stuff
@@ -577,15 +579,20 @@ class Game:
             text = fonter.render(str(self.done[i + 1]), 36)
             system.blit(text, (x + 44, y + 2))
         # Print pause and abort buttons
+        r = (127, 255, 127)
         if self.paused:
             led, color = data.led_on, (255, 255, 255)
         else:
             led, color = data.led_off, (180, 150, 127)
+        c = map(lambda a, b: b - (b - a) * self.psat[0] / 255, r, color)
         system.blit(led, (440, 288))
-        system.blit(fonter.render('PAUSE', 30, color), (470, 286))
-        led, color = data.led_off, (180, 150, 127)
-        system.blit(led, (440, 328))
-        system.blit(fonter.render('ABORT', 30, color), (470, 326))
+        system.blit(fonter.render('PAUSE', 30, c), (470, 286))
+        color = (180, 150, 127)
+        c = map(lambda a, b: b - (b - a) * self.psat[1] / 255, r, color)
+        system.blit(fonter.render('ABORT', 30, c), (470, 326))
+        for x in range(2):
+            if self.psat[x]:
+                self.psat[x] = self.psat[x] * 8 / 10
         # Print level
         msg = 'LEVEL ' + str(self.level)
         if self.needed[1]: msg += ' - ' + str(self.needed[1])
@@ -816,7 +823,7 @@ class Monsterz:
     def go(self):
         while True:
             if self.status == STATUS_MENU:
-                self.area = None
+                self.marea = None
                 iterator = self.iterate_menu
             elif self.status == STATUS_GAME:
                 self.game = Game()
@@ -857,28 +864,52 @@ class Monsterz:
             pass
         system.blit(scroll, (13, 437))
 
+    gsat = [0] * 3
+    garea = None
     def generic_draw(self):
+        x, y = pygame.mouse.get_pos()
+        garea = None
+        if system.have_sound:
+            if x > 440 and y > 378 and x < 440 + 180 and y < 378 + 24:
+                garea = 1
+                self.gsat[0] = 255
+            elif x > 440 and y > 408 and x < 440 + 180 and y < 408 + 24:
+                garea = 2
+                self.gsat[1] = 255
+        if x > 440 and y > 438 and x < 440 + 180 and y < 438 + 24:
+            garea = 3
+            self.gsat[2] = 255
+        if garea and garea != self.garea:
+            system.play('click')
+        self.garea = garea
         system.blit(data.board, (0, 0))
         # Print various buttons
+        r = (127, 255, 127)
         if system.have_sound:
             if FLAG_SFX:
                 led, color = data.led_on, (255, 255, 255)
             else:
                 led, color = data.led_off, (180, 150, 127)
+            c = map(lambda a, b: b - (b - a) * self.gsat[0] / 255, r, color)
             system.blit(led, (440, 378))
-            system.blit(fonter.render('SOUND FX', 30, color), (470, 376))
+            system.blit(fonter.render('SOUND FX', 30, c), (470, 376))
             if FLAG_MUSIC:
                 led, color = data.led_on, (255, 255, 255)
             else:
                 led, color = data.led_off, (180, 150, 127)
+            c = map(lambda a, b: b - (b - a) * self.gsat[1] / 255, r, color)
             system.blit(led, (440, 408))
-            system.blit(fonter.render('MUSIC', 30, color), (470, 406))
+            system.blit(fonter.render('MUSIC', 30, c), (470, 406))
         if FLAG_FULLSCREEN:
             led, color = data.led_on, (255, 255, 255)
         else:
             led, color = data.led_off, (180, 150, 127)
+        c = map(lambda a, b: b - (b - a) * self.gsat[2] / 255, r, color)
         system.blit(led, (440, 438))
-        system.blit(fonter.render('FULLSCREEN', 30, color), (470, 436))
+        system.blit(fonter.render('FULLSCREEN', 30, c), (470, 436))
+        for x in range(3):
+            if self.gsat[x]:
+                self.gsat[x] = self.gsat[x] * 8 / 10
 
     def generic_event(self, event):
         if event.type == QUIT:
@@ -908,8 +939,8 @@ class Monsterz:
                 return True
         return False
 
-    sat = [0] * 4
-    area = None
+    msat = [0] * 4
+    marea = None
     def iterate_menu(self):
         self.generic_draw()
         self.copyright_draw()
@@ -918,39 +949,39 @@ class Monsterz:
         messages = ['NEW GAME', 'HELP', 'SCORES', 'QUIT']
         x, y = data.screen2board(pygame.mouse.get_pos())
         if y == 4 and x >= 1 and x <= 6:
-            area = STATUS_GAME
-            self.sat[0] = 255
+            marea = STATUS_GAME
+            self.msat[0] = 255
         elif y == 5 and x >= 1 and x <= 4:
-            area = STATUS_HELP
-            self.sat[1] = 255
+            marea = STATUS_HELP
+            self.msat[1] = 255
         elif y == 6 and x >= 1 and x <= 5:
-            area = STATUS_SCORES
-            self.sat[2] = 255
+            marea = STATUS_SCORES
+            self.msat[2] = 255
         elif y == 7 and x >= 1 and x <= 4:
-            area = STATUS_QUIT
-            self.sat[3] = 255
+            marea = STATUS_QUIT
+            self.msat[3] = 255
         else:
-            area = None
-        if area and area != self.area:
+            marea = None
+        if marea and marea != self.marea:
             system.play('click')
-        self.area = area
+        self.marea = marea
         # Print logo and menu
         w, h = data.logo.get_size()
         system.blit(data.logo, (24 + 192 - w / 2, 24 + 96 - h / 2))
         for x in range(4):
-            if self.sat[x] > 180:
+            if self.msat[x] > 180:
                 monster = data.surprise[shapes[x]]
-            elif self.sat[x] > 40:
+            elif self.msat[x] > 40:
                 monster = data.normal[shapes[x]]
             else:
                 monster = data.blink[shapes[x]]
             system.blit(monster, data.board2screen((1, 4 + x)))
-            c = map(lambda a: 255 - (255 - a) * self.sat[x] / 255, colors[x])
+            c = map(lambda a: 255 - (255 - a) * self.msat[x] / 255, colors[x])
             text = fonter.render(messages[x], 48, c)
             w, h = text.get_rect().size
             system.blit(text, (24 + 102, 24 + 216 + 48 * x - h / 2))
-            if self.sat[x]:
-                self.sat[x] = self.sat[x] * 8 / 10
+            if self.msat[x]:
+                self.msat[x] = self.msat[x] * 8 / 10
         # Handle events
         for event in pygame.event.get():
             if self.generic_event(event):
@@ -959,24 +990,34 @@ class Monsterz:
                 system.play('whip')
                 self.status = STATUS_QUIT
                 return
-            elif event.type == MOUSEBUTTONDOWN and area:
+            elif event.type == MOUSEBUTTONDOWN and marea:
                 system.play('whip')
-                self.status = area
+                self.status = marea
                 return
 
     def iterate_game(self):
-        game = self.game
+        x, y = pygame.mouse.get_pos()
+        parea = None
+        if x > 440 and y > 288 and x < 440 + 180 and y < 288 + 24:
+            parea = 1
+            self.game.psat[0] = 255
+        elif x > 440 and y > 328 and x < 440 + 180 and y < 328 + 24:
+            parea = 2
+            self.game.psat[1] = 255
+        if parea and parea != self.game.parea:
+            system.play('click')
+        self.game.parea = parea
         # Draw screen
         self.generic_draw()
-        if game.check_moves:
-            for move in game.list_moves():
+        if self.game.check_moves:
+            for move in self.game.list_moves():
                 break
             else:
                 system.play('ding')
-                game.board_timer = SCROLL_DELAY
-            game.check_moves = False
-            game.clicks = []
-        game.game_draw()
+                self.game.board_timer = SCROLL_DELAY
+            self.game.check_moves = False
+            self.game.clicks = []
+        self.game.game_draw()
         # Handle events
         for event in pygame.event.get():
             if self.generic_event(event):
@@ -987,25 +1028,25 @@ class Monsterz:
                 self.status = STATUS_MENU
                 return
             elif event.type == KEYDOWN and (event.key == K_p or event.key == K_SPACE):
-                game.pause()
+                self.game.pause()
             elif event.type == MOUSEBUTTONDOWN:
                 x, y = pygame.mouse.get_pos()
                 if x > 440 and y > 288 and x < 440 + 180 and y < 288 + 24:
                     system.play('whip')
-                    game.pause()
+                    self.game.pause()
                     return
                 elif x > 440 and y > 328 and x < 440 + 180 and y < 328 + 24:
                     system.play('whip')
                     self.status = STATUS_MENU
                     return
-                if game.lost_timer < 0:
+                if self.game.lost_timer < 0:
                     self.status = STATUS_MENU
                     return
                 x, y = data.screen2board(event.pos)
                 if x < 0 or x >= BOARD_WIDTH or y < 0 or y >= BOARD_HEIGHT:
                     continue
-                game.clicks.append((x, y))
-        game.update()
+                self.game.clicks.append((x, y))
+        self.game.update()
 
     def iterate_help(self):
         self.generic_draw()
