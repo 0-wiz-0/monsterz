@@ -754,6 +754,8 @@ class Game:
                         system.play('applause')
                         self.select = None
                         self.level_timer = SCROLL_DELAY
+                else:
+                    self.check_moves = True
             return
         if self.warning_timer:
             self.warning_timer -= 1
