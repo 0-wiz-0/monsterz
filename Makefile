@@ -25,9 +25,9 @@ icon.png: tiles.svg
 	inkscape tiles.svg -z -a 800:240:860:300 -w64 -h64 -e icon.png
 tiles.png: tiles.svg
 	inkscape tiles.svg -z -a 800:0:1100:600 -d 72 -e tiles.png
-background.png: tiles.svg
+background.png: tiles.svg pattern.png
 	inkscape tiles.svg -z -a 0:0:800:600 -d 72 -e background.png
-board.png: tiles.svg
+board.png: tiles.svg pattern.png
 	inkscape tiles.svg -z -a 30:690:510:1170 -d 72 -e board.png
 logo.png: tiles.svg
 	inkscape tiles.svg -z -a 810:618:1220:835 -w380 -h180 -e logo.png

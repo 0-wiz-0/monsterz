@@ -35,11 +35,21 @@ BOARD_WIDTH = 8
 BOARD_HEIGHT = 8
 
 STATUS_MENU = 0
-STATUS_GAME = 1
-STATUS_HELP = 2
-STATUS_ABOUT = 3
-STATUS_SCORES = 4
+STATUS_NEW = 1
+STATUS_GAME = 2
+STATUS_HELP = 3
+STATUS_ABOUT = 4
+STATUS_SCORES = 5
 STATUS_QUIT = -1
+
+GAME_CLASSIC = 0
+GAME_QUEST = 1
+GAME_PUZZLE = 2
+GAME_SURVIVAL = 3
+GAME_MOREMONSTERZ = 10
+GAME_LESSMONSTERZ = 11
+GAME_MORELEVEL = 12
+GAME_LESSLEVEL = 13
 
 LOST_DELAY = 40
 SCROLL_DELAY = 40
@@ -315,7 +325,8 @@ class Fonter:
 
 class Game:
     # Nothing here yet
-    def __init__(self):
+    def __init__(self, type = GAME_CLASSIC, level = 1, items = 7):
+        self.type = type
         self.needed = [0] * 9
         self.done = [0] * 9
         self.bonus_list = []
@@ -327,6 +338,7 @@ class Game:
         self.switch = None
         self.score = 0
         self.lost_timer = 0
+        self.lost = False
         self.extra_offset = [[(0, 0)] * BOARD_WIDTH for x in range(BOARD_HEIGHT)]
         self.win_timer = 0
         self.warning_timer = 0
@@ -339,9 +351,10 @@ class Game:
         self.paused = False
         self.pause_bitmap = None
         self.play_again = False
+        self.items = items
         self.eyes = 3
         self.show_move = False
-        self.level = 1
+        self.level = level
         self.new_level()
         self.oldticks = pygame.time.get_ticks()
 
@@ -430,19 +443,26 @@ class Game:
 
     def new_level(self):
         # Compute level data
-        if self.level < 7:
-            self.population = 7
-        else:
-            self.population = 8
-        for i in range(self.population):
-            self.done[i + 1] = 0
-            if self.level < 10:
-                self.needed[i + 1] = self.level + 2
+        if self.type == GAME_SURVIVAL:
+            self.population = self.items
+            for i in range(self.population):
+                self.done[i + 1] = 0
+                self.needed[i + 1] = 0
+            self.time = 1000000
+        elif self.type == GAME_CLASSIC:
+            if self.level < 7:
+                self.population = 7
             else:
-                self.needed[i + 1] = 0 # level 10 is the highest
+                self.population = 8
+            for i in range(self.population):
+                self.done[i + 1] = 0
+                if self.level < 10:
+                    self.needed[i + 1] = self.level + 2
+                else:
+                    self.needed[i + 1] = 0 # level 10 is the highest
+            self.time = 1000000
         self.angry_tiles = -1
         self.new_board()
-        self.time = 1000000
 
     def board_draw(self):
         # Draw checkered board
@@ -592,16 +612,8 @@ class Game:
         except:
             pass
         system.blit(timebar, (13, 436))
-        # Draw pieces
-        if self.paused:
-            system.blit(self.pause_bitmap, (72, 24))
-            text = fonter.render('PAUSED', 120)
-            w, h = text.get_rect().size
-            system.blit(text, (24 + 192 - w / 2, 24 + 336 - h / 2))
-        elif self.lost_timer >= 0:
-            self.board_draw()
         # Print play again message
-        if self.lost_timer < 0:
+        if self.lost_timer == -1:
             text = fonter.render('GAME OVER', 80)
             w, h = text.get_rect().size
             system.blit(text, (24 + 192 - w / 2, 24 + 192 - h / 2))
@@ -616,6 +628,15 @@ class Game:
             text = fonter.render(msg, 24)
             w, h = text.get_rect().size
             system.blit(text, (24 + 192 - w / 2, 24 + 240 - h / 2))
+        # Draw pause message
+        elif self.paused:
+            system.blit(self.pause_bitmap, (72, 24))
+            text = fonter.render('PAUSED', 120)
+            w, h = text.get_rect().size
+            system.blit(text, (24 + 192 - w / 2, 24 + 336 - h / 2))
+        # Draw pieces
+        elif self.lost_timer != -1:
+            self.board_draw()
         # Print new level stuff
         if self.level_timer > SCROLL_DELAY / 2:
             text = fonter.render('LEVEL UP!', 80)
@@ -666,7 +687,7 @@ class Game:
             else:
                 system.blit(data.shadeye, (x, y))
         # Print pause and abort buttons
-        if self.lost_timer >= 0:
+        if self.lost_timer != -1:
             r = (255, 127, 127)
             if self.paused:
                 led, color = data.led_on, (255, 255, 255)
@@ -682,8 +703,11 @@ class Game:
                 if self.psat[x]:
                     self.psat[x] = self.psat[x] * 8 / 10
         # Print level
-        msg = 'LEVEL ' + str(self.level)
-        if self.needed[1]: msg += ': ' + str(self.needed[1]) + 'x'
+        if self.type == GAME_SURVIVAL:
+            msg = 'SURVIVAL'
+        elif self.type == GAME_CLASSIC:
+            msg = 'LEVEL ' + str(self.level)
+            if self.needed[1]: msg += ': ' + str(self.needed[1]) + 'x'
         text = fonter.render(msg, 40)
         system.blit(text, (444, 216))
 
@@ -715,12 +739,19 @@ class Game:
                 system.play('boing')
                 self.check_moves = True # Need to check again
             return
-        if self.lost_timer:
+        if self.lost_timer: # FIXME: this is quite a mess...
+            if self.lost:
+                return # Continue forever
+            if self.lost_timer is -1:
+                if self.type == GAME_SURVIVAL:
+                    hiscores.add('SURVIVAL', self.score, self.level)
+                elif self.type == GAME_CLASSIC:
+                    hiscores.add('CLASSIC', self.score, self.level)
+                self.lost = True
+                return
             self.lost_timer -= 1
             if self.lost_timer is 0:
-                hiscores.add('CLASSIC', self.score, self.level)
-                self.lost = True
-                self.lost_timer = -1 # Continue forever
+                self.lost_timer = -1
             return
         if self.switch_timer:
             self.switch_timer -= 1
@@ -825,18 +856,22 @@ class Game:
         if self.show_move and (monsterz.timer % 6) == 0:
             system.play('click')
         if self.warning_timer:
-            self.warning_timer -= 1
+            if self.time <= 200000:
+                self.warning_timer -= 1
+            else:
+                self.warning_timer = 0
         elif self.time <= 200000:
             system.play('warning')
             self.warning_timer = WARNING_DELAY
         # Update time
-        self.time -= delta
-        if self.time <= 0:
-            system.play('laugh')
-            self.select = None
-            self.show_move = False
-            self.lost_timer = LOST_DELAY
-            return
+        if self.type in [GAME_SURVIVAL, GAME_CLASSIC]:
+            self.time -= delta
+            if self.time <= 0:
+                system.play('laugh')
+                self.select = None
+                self.show_move = False
+                self.lost_timer = LOST_DELAY
+                return
         # Handle moves from the AI:
         if HAVE_AI:
             if not self.will_play:
@@ -930,8 +965,9 @@ class Monsterz:
             if self.status == STATUS_MENU:
                 self.marea = None
                 iterator = self.iterate_menu
+            elif self.status == STATUS_NEW:
+                iterator = self.iterate_new
             elif self.status == STATUS_GAME:
-                self.game = Game()
                 iterator = self.iterate_game
             elif self.status == STATUS_HELP:
                 self.page = 1
@@ -1055,7 +1091,7 @@ class Monsterz:
         messages = ['NEW GAME', 'HELP', 'SCORES', 'QUIT']
         x, y = data.screen2board(pygame.mouse.get_pos())
         if y == 4 and 1 <= x <= 6:
-            marea = STATUS_GAME
+            marea = STATUS_NEW
             self.msat[0] = 255
         elif y == 5 and 1 <= x <= 4:
             marea = STATUS_HELP
@@ -1098,7 +1134,7 @@ class Monsterz:
                 return
             elif event.type == KEYDOWN and event.key == K_n:
                 system.play('whip')
-                self.status = STATUS_GAMES
+                self.status = STATUS_NEW
                 return
             elif event.type == KEYDOWN and event.key == K_h:
                 system.play('whip')
@@ -1108,9 +1144,101 @@ class Monsterz:
                 system.play('whip')
                 self.status = STATUS_QUIT
                 return
-            elif event.type == MOUSEBUTTONDOWN and marea:
+            elif event.type == MOUSEBUTTONDOWN and marea is not None:
                 system.play('whip')
                 self.status = marea
+                return
+
+    nsat = [0] * 8
+    narea = None
+    wanted_level = 1
+    wanted_items = 7
+    def iterate_new(self):
+        self.generic_draw()
+        self.copyright_draw()
+        messages = ['CLASSIC', 'QUEST', 'PUZZLE', 'SURVIVAL', '-', '+', '-', '+']
+        x, y = data.screen2board(pygame.mouse.get_pos())
+        if y == 2 and 1 <= x <= 6:
+            narea = GAME_CLASSIC
+            self.nsat[0] = 255
+        #elif y == 3 and 1 <= x <= 4:
+        #    narea = GAME_CLASSIC
+        #    self.nsat[1] = 255
+        #elif y == 4 and 1 <= x <= 5:
+        #    narea = GAME_CLASSIC
+        #    self.nsat[2] = 255
+        elif y == 5 and 1 <= x <= 4:
+            narea = GAME_SURVIVAL
+            self.nsat[3] = 255
+        elif (x, y) == (1, 6):
+            narea = GAME_LESSMONSTERZ
+            self.nsat[4] = 255
+        elif (x, y) == (6, 6):
+            narea = GAME_MOREMONSTERZ
+            self.nsat[5] = 255
+        elif (x, y) == (1, 7):
+            narea = GAME_LESSLEVEL
+            self.nsat[6] = 255
+        elif (x, y) == (6, 7):
+            narea = GAME_MORELEVEL
+            self.nsat[7] = 255
+        else:
+            narea = None
+        if narea and narea != self.narea:
+            system.play('click')
+        self.narea = narea
+        # Print menu
+        text = fonter.render('GAME TYPE', 60)
+        w, h = text.get_rect().size
+        system.blit(text, (24 + 192 - w / 2, 24 + 24 - h / 2))
+        for i in range(4):
+            c = map(lambda a: 255 - (255 - a) * self.nsat[i] / 255, [255, 127, 127])
+            text = fonter.render(messages[i], 48, c)
+            w, h = text.get_rect().size
+            system.blit(text, (24 + 102, 24 + 120 + 48 * i - h / 2))
+            if self.nsat[i]:
+                self.nsat[i] = self.nsat[i] * 8 / 10
+        for i in range(4, 8):
+            c = map(lambda a: 255 - (255 - a) * self.nsat[i] / 255, [255, 127, 127])
+            text = fonter.render(messages[i], 48, c)
+            w, h = text.get_rect().size
+            if i & 1:
+                x = 24 + 48 * 6 + 4
+            else:
+                x = 24 + 96 - w - 8
+            y = 24 + 48 * (6 + (i - 4) / 2) + 24 - h / 2
+            system.blit(text, (x, y))
+            if self.nsat[i]:
+                self.nsat[i] = self.nsat[i] * 8 / 10
+        # Print wanted monsterz
+        for i in range(self.wanted_items):
+            system.blit(data.normal[i], (24 + 96 + 48 * 3 * i / (self.wanted_items - 1), 24 + 48 * 6))
+        text = fonter.render('DIFFICULTY ' + str(self.wanted_level), 36)
+        w, h = text.get_rect().size
+        system.blit(text, (24 + 192 - w / 2, 24 + 48 * 7 + 24 - h / 2))
+        # Handle events
+        for event in pygame.event.get():
+            if self.generic_event(event):
+                return
+            elif event.type == KEYDOWN and event.key == K_ESCAPE:
+                system.play('whip')
+                self.status = STATUS_MENU
+                return
+            elif event.type == MOUSEBUTTONDOWN and narea >= 10:
+                system.play('whip')
+                if narea == GAME_MOREMONSTERZ:
+                    if self.wanted_items < 8: self.wanted_items += 1
+                elif narea == GAME_LESSMONSTERZ:
+                    if self.wanted_items > 4: self.wanted_items -= 1
+                if narea == GAME_MORELEVEL:
+                    if self.wanted_level < 10: self.wanted_level += 1
+                elif narea == GAME_LESSLEVEL:
+                    if self.wanted_level > 0: self.wanted_level -= 1
+                return
+            elif event.type == MOUSEBUTTONDOWN and narea is not None:
+                system.play('whip')
+                self.game = Game(type = narea, level = self.wanted_level, items = self.wanted_items)
+                self.status = STATUS_GAME
                 return
 
     def iterate_game(self):
@@ -1142,23 +1270,26 @@ class Monsterz:
             if self.generic_event(event):
                 return
             elif event.type == KEYDOWN and event.key == K_ESCAPE:
-                # FIXME: remove board nicely, add score to hiscore list
                 system.play('whip')
-                self.status = STATUS_MENU
+                if self.game.lost:
+                    self.status = STATUS_MENU
+                    return
+                self.game.lost_timer = -1
                 return
             elif event.type == KEYDOWN and (event.key == K_p or event.key == K_SPACE) and self.game.lost_timer >= 0:
                 self.game.pause()
             elif event.type == MOUSEBUTTONDOWN:
                 x, y = pygame.mouse.get_pos()
-                if 440 < x < 440 + 180 and 298 < y < 298 + 24:
-                    system.play('whip')
-                    self.game.pause()
-                    return
-                elif 440 < x < 440 + 180 and 328 < y < 328 + 24:
-                    system.play('whip')
-                    self.status = STATUS_MENU
-                    return
-                if self.game.lost_timer < 0:
+                if self.game.lost_timer >= 0:
+                    if 440 < x < 440 + 180 and 298 < y < 298 + 24:
+                        system.play('whip')
+                        self.game.pause()
+                        return
+                    elif 440 < x < 440 + 180 and 328 < y < 328 + 24:
+                        system.play('whip')
+                        self.game.lost_timer = -1
+                        return
+                if self.game.lost_timer == -1:
                     self.status = STATUS_MENU
                     return
                 if 440 < x < 440 + 36 * 3 and 252 < y < 252 + 36:
