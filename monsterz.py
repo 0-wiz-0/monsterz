@@ -159,11 +159,10 @@ class Data:
         # Load stuff
         tiles = pygame.image.load(join(dir, 'tiles.png')).convert_alpha()
         w, h = tiles.get_rect().size
-        if w * 9 != h * 5:
-            raise 'error: ' + file + ' has wrong image size'
         self.tiles = tiles
         icon = pygame.image.load(join(dir, 'icon.png')).convert_alpha()
         pygame.display.set_icon(icon)
+        self.background = pygame.image.load(join(dir, 'background.png')).convert()
         self.board = pygame.image.load(join(dir, 'board.png')).convert()
         self.logo = pygame.image.load(join(dir, 'logo.png')).convert_alpha()
         self.orig_size = w / 5
@@ -197,17 +196,17 @@ class Data:
         tile_at = lambda x, y: self.tiles.subsurface((x * s, y * s, s, s))
         # Create sprites
         for i in range(8):
-            self.normal[i] = scale(tile_at(0, i + 1), (t, t))
-            self.tiny[i] = scale(tile_at(0, i + 1), (t * 3 / 4, t * 3 / 4))
-            self.shaded[i] = scale(tile_at(3, i + 1), (t * 3 / 4, t * 3 / 4))
+            self.normal[i] = scale(tile_at(0, i + 2), (t, t))
+            self.tiny[i] = scale(tile_at(0, i + 2), (t * 3 / 4, t * 3 / 4))
+            self.shaded[i] = scale(tile_at(3, i + 2), (t * 3 / 4, t * 3 / 4))
             semi_grayscale(self.shaded[i])
-            self.blink[i] = scale(tile_at(1, i + 1), (t, t))
-            self.surprise[i] = scale(tile_at(2, i + 1), (t, t))
-            self.angry[i] = scale(tile_at(3, i + 1), (t, t))
-            self.exploded[i] = scale(tile_at(4, i + 1), (t, t))
+            self.blink[i] = scale(tile_at(1, i + 2), (t, t))
+            self.surprise[i] = scale(tile_at(2, i + 2), (t, t))
+            self.angry[i] = scale(tile_at(3, i + 2), (t, t))
+            self.exploded[i] = scale(tile_at(4, i + 2), (t, t))
             #tmp = tile_at(1, 0).copy() # marche pas !
             tmp = scale(tile_at(1, 0), (t, t)) # marche...
-            mini = tile_at(0, i + 1)
+            mini = tile_at(0, i + 2)
             mini = scale(mini, (t * 7 / 8 - 1, t * 7 / 8 - 1))
             tmp.blit(mini, (s / 16, s / 16))
             self.special[i] = scale(tmp, (t, t))
@@ -250,6 +249,12 @@ class System:
 
     def blit(self, surf, coords):
         self.background.blit(surf, coords)
+
+    def blit_board(self, (x1, y1, x2, y2)):
+        x1, y1 = x1 * 48, y1 * 48
+        x2, y2 = x2 * 48 - x1, y2 * 48 - y1
+        surf = data.board.subsurface((x1, y1, x2, y2))
+        self.background.blit(surf, (x1 + 24, y1 + 24))
 
     def flip(self):
         self.window.blit(self.background, (0, 0))
@@ -440,6 +445,8 @@ class Game:
         self.time = 1000000
 
     def board_draw(self):
+        # Draw checkered board
+        system.blit(data.board, (24, 24))
         # Have a random piece blink
         c = randint(0, BOARD_WIDTH - 1), randint(0, BOARD_HEIGHT - 1)
         if randint(0, 5) is 0 and not self.blink_list.has_key(c):
@@ -983,7 +990,7 @@ class Monsterz:
         if garea and garea != self.garea:
             system.play('click')
         self.garea = garea
-        system.blit(data.board, (0, 0))
+        system.blit(data.background, (0, 0))
         # Print various buttons
         r = (255, 127, 127)
         if system.have_sound:
@@ -1186,29 +1193,32 @@ class Monsterz:
             w, h = text.get_rect().size
             system.blit(text, (24 + 6, 24 + 132 - h / 2))
             # Iter 1
-            system.blit(data.blink[0], data.board2screen((0, 3)))
+            system.blit_board((0, 3, 2, 7))
+            system.blit(data.normal[2], data.board2screen((0, 3)))
             system.blit(data.normal[5], data.board2screen((0, 4)))
-            system.blit(data.normal[2], data.board2screen((0, 5)))
+            system.blit(data.blink[0], data.board2screen((0, 5)))
             system.blit(data.normal[3], data.board2screen((0, 6)))
-            system.blit(data.normal[4], data.board2screen((1, 3)))
+            system.blit(data.normal[0], data.board2screen((1, 3)))
             system.blit(data.normal[0], data.board2screen((1, 4)))
-            system.blit(data.normal[0], data.board2screen((1, 5)))
+            system.blit(data.normal[4], data.board2screen((1, 5)))
             system.blit(data.normal[6], data.board2screen((1, 6)))
-            system.blit(data.selector, data.board2screen((0, 3)))
+            system.blit(data.selector, data.board2screen((0, 5)))
             # Iter 2
-            system.blit(data.normal[4], data.board2screen((3, 3)))
+            system.blit_board((3, 3, 5, 7))
+            system.blit(data.normal[2], data.board2screen((3, 3)))
             system.blit(data.normal[5], data.board2screen((3, 4)))
-            system.blit(data.normal[2], data.board2screen((3, 5)))
+            system.blit(data.normal[4], data.board2screen((3, 5)))
             system.blit(data.normal[3], data.board2screen((3, 6)))
             system.blit(data.surprise[0], data.board2screen((4, 3)))
             system.blit(data.surprise[0], data.board2screen((4, 4)))
             system.blit(data.surprise[0], data.board2screen((4, 5)))
             system.blit(data.normal[6], data.board2screen((4, 6)))
-            system.blit(data.selector, data.board2screen((4, 3)))
+            system.blit(data.selector, data.board2screen((4, 5)))
             # Iter 2
-            system.blit(data.normal[4], data.board2screen((6, 3)))
+            system.blit_board((6, 3, 8, 7))
+            system.blit(data.normal[2], data.board2screen((6, 3)))
             system.blit(data.normal[5], data.board2screen((6, 4)))
-            system.blit(data.normal[2], data.board2screen((6, 5)))
+            system.blit(data.normal[4], data.board2screen((6, 5)))
             system.blit(data.normal[3], data.board2screen((6, 6)))
             system.blit(data.exploded[0], data.board2screen((7, 3)))
             system.blit(data.exploded[0], data.board2screen((7, 4)))
@@ -1238,6 +1248,7 @@ class Monsterz:
             w, h = text.get_rect().size
             system.blit(text, (24 + 6, 24 + 132 - h / 2))
             # Surprised
+            system.blit_board((0, 3, 8, 5))
             for x in range(8):
                 system.blit(data.surprise[(x * 3 + 2) % 8], data.board2screen((x, 3)))
                 system.blit(data.surprise[(x * 7) % 8], data.board2screen((x, 4)))
@@ -1267,6 +1278,7 @@ class Monsterz:
             w, h = text.get_rect().size
             system.blit(text, (24 + 6, 24 + 132 - h / 2))
             # Print done/needed
+            system.blit_board((0, 3, 4, 5))
             for i in range(4):
                 if i > 0:
                     surf = data.tiny[i + 4]
@@ -1290,6 +1302,7 @@ class Monsterz:
             system.blit(text, (24 + 6, 24 + 276 - h / 2))
             shape = data.special[self.timer % 7]
             # Iter 1
+            system.blit_board((0, 6, 3, 8))
             system.blit(data.normal[1], data.board2screen((0, 6)))
             system.blit(data.normal[2], data.board2screen((0, 7)))
             system.blit(shape, data.board2screen((1, 6)))
@@ -1297,6 +1310,7 @@ class Monsterz:
             system.blit(data.normal[2], data.board2screen((2, 6)))
             system.blit(data.normal[0], data.board2screen((2, 7)))
             # Iter 2
+            system.blit_board((4, 6, 7, 8))
             system.blit(data.normal[1], data.board2screen((4, 6)))
             system.blit(data.exploded[2], data.board2screen((4, 7)))
             system.blit(data.normal[5], data.board2screen((5, 7)))

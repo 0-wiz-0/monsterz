@@ -10,7 +10,7 @@ VERSION = 0.4.1
 DIRECTORY = monsterz-$(VERSION)
 
 DATA = $(BITMAP) $(SOUND) $(MUSIC)
-BITMAP = tiles.png board.png logo.png icon.png
+BITMAP = tiles.png background.png board.png logo.png icon.png
 SOUND = grunt.wav click.wav pop.wav boing.wav whip.wav \
         applause.wav laugh.wav warning.wav duh.wav ding.wav
 MUSIC = music.s3m
@@ -22,13 +22,15 @@ monsterz: monsterz.c
 	$(CC) -Wall monsterz.c -DDATADIR=\"$(pkgdatadir)\" -DSCOREFILE=\"$(scorefile)\" -o monsterz
 
 icon.png: tiles.svg
-	inkscape tiles.svg -z -a 0:600:60:660 -w64 -h64 -e icon.png
+	inkscape tiles.svg -z -a 800:240:860:300 -w64 -h64 -e icon.png
 tiles.png: tiles.svg
-	inkscape tiles.svg -z -a 0:360:300:900 -d 72 -e tiles.png
+	inkscape tiles.svg -z -a 800:0:1100:600 -d 72 -e tiles.png
+background.png: tiles.svg
+	inkscape tiles.svg -z -a 0:0:800:600 -d 72 -e background.png
 board.png: tiles.svg
-	inkscape tiles.svg -z -a 300:360:1100:960 -d 72 -e board.png
+	inkscape tiles.svg -z -a 30:690:510:1170 -d 72 -e board.png
 logo.png: tiles.svg
-	inkscape tiles.svg -z -a 77:100:481:323 -w374 -h182 -e logo.png
+	inkscape tiles.svg -z -a 810:618:1220:835 -w380 -h180 -e logo.png
 
 install: all
 	mkdir -p $(DESTDIR)$(gamesdir)
