@@ -9,7 +9,6 @@ scorefile = $(scoredir)/monsterz
 VERSION = 0.5.0
 DIRECTORY = monsterz-$(VERSION)
 
-DATA = $(BITMAP) $(SOUND) $(MUSIC)
 BITMAP = graphics/tiles.png graphics/bigtiles.png graphics/background.png \
          graphics/board.png graphics/logo.png graphics/icon.png
 SOUND = sound/grunt.wav sound/click.wav sound/pop.wav sound/boing.wav sound/whip.wav \
@@ -41,8 +40,11 @@ install: all
 	cp monsterz $(DESTDIR)$(gamesdir)/
 	chown root:games $(DESTDIR)$(gamesdir)/monsterz
 	chmod g+s $(DESTDIR)$(gamesdir)/monsterz
-	mkdir -p $(DESTDIR)$(pkgdatadir)
-	cp monsterz.py $(DATA) $(DESTDIR)$(pkgdatadir)/
+	mkdir -p $(DESTDIR)$(pkgdatadir)/graphics
+	mkdir -p $(DESTDIR)$(pkgdatadir)/sound
+	cp monsterz.py $(DESTDIR)$(pkgdatadir)/
+	cp $(BITMAP) $(DESTDIR)$(pkgdatadir)/graphics/
+	cp $(SOUND) $(MUSIC) $(DESTDIR)$(pkgdatadir)/sound/
 	mkdir -p $(DESTDIR)$(scoredir)
 	test -f $(DESTDIR)$(scorefile) || echo "" > $(DESTDIR)$(scorefile)
 	chown root:games $(DESTDIR)$(scorefile)
