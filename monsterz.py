@@ -114,7 +114,8 @@ def semi_transp(surf):
 
 def username():
     if platform == 'win32':
-        return os.environ.get('USER') or os.environ.get('USERNAME') or 'You'
+        from os import environ
+        return environ.get('USER') or environ.get('USERNAME') or 'You'
     from pwd import getpwuid
     from os import geteuid
     return getpwuid(geteuid())[0]
@@ -362,9 +363,17 @@ class System:
 
     def toggle_fullscreen(self):
         self.play('whip')
-        settings.set('fullscreen', not settings.get('fullscreen'))
+        if settings.get('fullscreen'):
+            settings.set('fullscreen', False)
+            f = 0
+        else:
+            settings.set('fullscreen', True)
+            f = pygame.FULLSCREEN
         settings.save()
-        pygame.display.toggle_fullscreen()
+        if platform == 'win32':
+            self.window = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), f)
+        else:
+            pygame.display.toggle_fullscreen()
 
     def toggle_sfx(self):
         self.play('whip')
