@@ -82,18 +82,22 @@ class Theme:
             self.normal[i] = scale(crop((0, (i + 1) * s, s, s)), (t, t))
             self.tiny[i] = scale(self.normal[i], (t * 3 / 4, t * 3 / 4))
             self.shaded[i] = scale(self.normal[i], (t * 3 / 4, t * 3 / 4))
-            pixels = pygame.surfarray.pixels3d(self.shaded[i])
-            alpha = pygame.surfarray.pixels_alpha(self.shaded[i])
-            for y, line in enumerate(pixels):
-                for x, p in enumerate(line):
-                    r, g, b = p
-                    M = max(r, g, b)
-                    m = min(r, g, b)
-                    val = (r + g + b + 2 * M) / 5
-                    p[:] = (val + r) / 2, (val + g) / 2, (val + b) / 2
-                    if alpha[y][x] >= 250: alpha[y][x] = 255 - (M - m) * 3 / 4
-            del pixels
-            del alpha
+            try:
+                pixels = pygame.surfarray.pixels3d(self.shaded[i])
+                alpha = pygame.surfarray.pixels_alpha(self.shaded[i])
+                for y, line in enumerate(pixels):
+                    for x, p in enumerate(line):
+                        r, g, b = p
+                        M = max(r, g, b)
+                        m = min(r, g, b)
+                        val = (r + g + b + 2 * M) / 5
+                        p[:] = (val + r) / 2, (val + g) / 2, (val + b) / 2
+                        if alpha[y][x] >= 250:
+                            alpha[y][x] = 255 - (M - m) * 3 / 4
+                del pixels
+                del alpha
+            except:
+                pass
             self.blink[i] = scale(crop((s, (i + 1) * s, s, s)), (t, t))
             self.surprise[i] = scale(crop((s * 2, (i + 1) * s, s, s)), (t, t))
             self.angry[i] = scale(crop((s * 3, (i + 1) * s, s, s)), (t, t))
@@ -377,8 +381,8 @@ class Game:
                 del self.text_cache[i]
                 self.text_cache.append((m, s, t))
                 return t
-        font = pygame.font.Font(None, size)
-        delta = 1 + size / 16
+        font = pygame.font.Font(None, size * 2)
+        delta = 2 + size / 8
         black = font.render(msg, 2, (0, 0, 0))
         w, h = black.get_size()
         text = pygame.Surface((w + delta, h + delta)).convert_alpha()
@@ -388,6 +392,7 @@ class Game:
             text.blit(black, (x * delta / 6, y * delta / 6))
         white = font.render(msg, 2, (255, 255, 255))
         text.blit(white, (delta / 2, delta / 2))
+        text = pygame.transform.rotozoom(text, 0.0, 0.5)
         self.text_cache.append((msg, size, text))
         # Keep 15 items in our cache, it’s more than enough
         if len(self.text_cache) > 15:
