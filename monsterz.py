@@ -62,6 +62,7 @@ SCROLL_DELAY = 40
 WIN_DELAY = 12
 SWITCH_DELAY = 4
 WARNING_DELAY = 12
+SPECIAL_FREQ = 500
 
 rainbow = [ (255, 127, 127), (255, 255, 0), (127, 255, 127), (0, 255, 255), (127, 127, 255), (255, 0, 255) ]
 
@@ -459,31 +460,32 @@ class Game:
         self.oldticks = pygame.time.get_ticks()
 
     def get_random(self, no_special = False):
-        if not no_special and randint(0, 500) == 0:
+        if not no_special and randint(0, SPECIAL_FREQ) == 0:
             return ITEM_SPECIAL
         return randint(0, self.population - 1)
 
     def new_board(self):
-        self.board = {}
+        self.board = [[ITEM_NONE] * (BOARD_WIDTH + 2) for x in range(BOARD_HEIGHT + 2)]
         for y in range(BOARD_HEIGHT):
             while True:
                 for x in range(BOARD_WIDTH):
-                    self.board[(x, y)] = self.get_random()
+                    self.board[x][y] = self.get_random()
                 if not self.get_wins(): break
+        #self.board[randint(3, 4)][0] = ITEM_METAL
 
     def fill_board(self):
         for y in xrange(BOARD_HEIGHT - 1, -1, -1):
             for x in xrange(BOARD_WIDTH - 1, -1, -1):
-                if self.board.has_key((x, y)):
+                if self.board[x][y] != ITEM_NONE:
                     continue
                 for y2 in xrange(y - 1, -1, -1):
-                    if self.board.has_key((x, y2)):
-                        self.board[(x, y)] = self.board[(x, y2)]
+                    if self.board[x][y2] != ITEM_NONE:
+                        self.board[x][y] = self.board[x][y2]
                         self.extra_offset[x][y] = (0, ITEM_SIZE * (y2 - y))
-                        del self.board[(x, y2)]
+                        self.board[x][y2] = ITEM_NONE
                         break
                 else:
-                    self.board[(x, y)] = self.get_random()
+                    self.board[x][y] = self.get_random()
                     #self.board[(x, y)] = ITEM_METAL
                     self.extra_offset[x][y] = ((0, ITEM_SIZE * (-2 - y)))
 
@@ -492,14 +494,13 @@ class Game:
         # Horizontal
         for y in range(BOARD_HEIGHT):
             for x in range(BOARD_WIDTH - 2):
-                a = self.board.get((x, y))
-                if a is None or a >= ITEMS: continue
-                b = self.board.get((x - 1, y))
-                if b is not None and a == b: continue
+                a = self.board[x][y]
+                if a == ITEM_NONE or a >= ITEMS: continue
+                b = self.board[x - 1][y]
+                if a == b: continue
                 len = 1
                 for t in range(1, BOARD_WIDTH - x):
-                    b = self.board.get((x + t, y))
-                    if a != b: break
+                    if a!= self.board[x + t][y]: break
                     len += 1
                 if len < 3: continue
                 win = []
@@ -509,14 +510,13 @@ class Game:
         # Horizontal
         for x in range(BOARD_WIDTH):
             for y in range(BOARD_HEIGHT - 2):
-                a = self.board.get((x, y))
-                if a is None or a >= ITEMS: continue
-                b = self.board.get((x, y - 1))
-                if b is not None and a == b: continue
+                a = self.board[x][y]
+                if a == ITEM_NONE or a >= ITEMS: continue
+                b = self.board[x][y - 1]
+                if a == b: continue
                 len = 1
                 for t in range(1, BOARD_HEIGHT - y):
-                    b = self.board.get((x, y + t))
-                    if a != b: break
+                    if a != self.board[x][y + t]: break
                     len += 1
                 if len < 3: continue
                 win = []
@@ -533,13 +533,13 @@ class Game:
         delta = [(1, 0), (-1, 0), (0, 1), (0, -1)]
         for y in range(BOARD_HEIGHT):
             for x in range(BOARD_WIDTH):
-                a = self.board.get((x, y))
+                a = self.board[x][y]
                 if a >= ITEMS:
                    continue # We don’t want no special piece
                 for [(a1, b1), (a2, b2)] in checkme:
                     for dx, dy in delta:
-                        if a == self.board.get((x + dx * a1 + dy * b1, y + dx * b1 + dy * a1)) and \
-                           a == self.board.get((x + dx * a2 + dy * b2, y + dx * b2 + dy * a2)):
+                        if a == self.board[x + dx * a1 + dy * b1][y + dx * b1 + dy * a1] and \
+                           a == self.board[x + dx * a2 + dy * b2][y + dx * b2 + dy * a2]:
                             yield [(x, y), (x + dx, y + dy)]
 
     def new_level(self):
@@ -597,18 +597,21 @@ class Game:
             x1, y1 = data.board2screen(self.select)
             x2, y2 = data.board2screen(self.switch)
             t = self.switch_timer * 1.0 / SWITCH_DELAY
-        for c, n in self.board.items():
+        for i, j in [(x, y) for x in range(BOARD_WIDTH) for y in range(BOARD_HEIGHT)]:
             # Don’t print pieces for last frame
             if self.lost_timer == 1:
                 break
+            # Don’t print empty slots
+            n = self.board[i][j]
+            if n == ITEM_NONE:
+                continue
             # Decide the coordinates
-            if c == self.switch and self.switch_timer:
+            if (i, j) == self.switch and self.switch_timer:
                 x, y = x2 * t + x1 * (1 - t), y2 * t + y1 * (1 - t)
-            elif c == self.select and self.switch_timer:
+            elif (i, j) == self.select and self.switch_timer:
                 x, y = x1 * t + x2 * (1 - t), y1 * t + y2 * (1 - t)
             else:
-                x, y = data.board2screen(c)
-            i, j = c
+                x, y = data.board2screen((i, j))
             xoff, yoff = self.extra_offset[i][j]
             if self.lost_timer:
                 d = LOST_DELAY - self.lost_timer
@@ -631,23 +634,23 @@ class Game:
                 shape = data.metal
             elif self.level_timer and self.level_timer < SCROLL_DELAY / 2:
                 shape = data.blink[n]
-            elif c in self.surprised_list \
+            elif (i, j) in self.surprised_list \
               or self.board_timer > SCROLL_DELAY / 2 \
               or self.level_timer > SCROLL_DELAY / 2:
                 shape = data.surprise[n]
-            elif c in self.disappear_list:
+            elif (i, j) in self.disappear_list:
                 shape = data.exploded[n]
             elif n == self.angry_items:
                 shape = data.angry[n]
-            elif self.blink_list.has_key(c):
+            elif self.blink_list.has_key((i, j)):
                 shape = data.blink[n]
-                self.blink_list[c] -= 1
-                if self.blink_list[c] is 0: del self.blink_list[c]
+                self.blink_list[i, j] -= 1
+                if self.blink_list[i, j] is 0: del self.blink_list[i, j]
             else:
                 shape = data.normal[n]
             # Remember the selector coordinates
-            if c == self.select and not self.missed \
-            or c == self.switch and self.missed:
+            if (i, j) == self.select and not self.missed \
+            or (i, j) == self.switch and self.missed:
                 select_coord = (x, y)
                 shape = data.blink[n] # Not sure if it looks nice
             # Print the shit
@@ -891,8 +894,9 @@ class Game:
         if self.switch_timer:
             self.switch_timer -= 1
             if self.switch_timer is 0:
-                self.board[self.select], self.board[self.switch] = \
-                    self.board[self.switch], self.board[self.select]
+                x1, y1 = self.select
+                x2, y2 = self.switch
+                self.board[x1][y1], self.board[x2][y2] = self.board[x2][y2], self.board[x1][y1]
                 if self.missed:
                     self.clicks = []
                     self.missed = False
@@ -931,7 +935,7 @@ class Game:
                 self.scorebonus = 0
                 self.timebonus = 0
                 for w in self.wins:
-                    if self.board[w[0]] == self.lucky:
+                    if self.board[w[0][0]][w[0][1]] == self.lucky:
                         mul = 20
                         lucky = True
                     else:
@@ -952,9 +956,9 @@ class Game:
                 self.surprised_list = []
             elif self.win_timer is WIN_DELAY * 3 / 5:
                 for x, y in self.disappear_list:
-                    if self.board.has_key((x, y)):
-                        self.done[self.board[(x, y)]] += 1
-                        del self.board[(x, y)]
+                    if self.board[x][y] != ITEM_NONE:
+                        self.done[self.board[x][y]] += 1
+                        self.board[x][y] = ITEM_NONE
                 if self.angry_items == -1:
                     unfinished = 0
                     for i in range(self.population):
@@ -1055,8 +1059,8 @@ class Game:
             self.ai_timer -= 1
         # Handle moves from the player or the AI
         if self.clicks:
-            played = self.clicks.pop(0)
-            if played == (99, 99):
+            i, j = self.clicks.pop(0)
+            if (i, j) == (99, 99):
                 system.play('whip')
                 self.select = None
                 self.eyes -= 1
@@ -1065,33 +1069,32 @@ class Game:
                 return
             self.show_move = False
             if self.select:
-                if self.select == played:
+                if self.select == (i, j):
                     system.play('click')
                     self.select = None
                     return
                 x1, y1 = self.select
-                x2, y2 = played
+                x2, y2 = i, j
                 if abs(x1 - x2) + abs(y1 - y2) != 1:
                     return
                 system.play('whip')
-                self.switch = played
+                self.switch = i, j
                 self.switch_timer = SWITCH_DELAY
-            elif self.board[played] == ITEM_METAL:
+            elif self.board[i][j] == ITEM_METAL:
                 pass
-            elif self.board[played] == ITEM_SPECIAL:
+            elif self.board[i][j] == ITEM_SPECIAL:
                 # Deal with the special block
                 self.wins = []
                 target = monsterz.timer % self.population
-                self.board[played] = target
-                for y in range(BOARD_HEIGHT):
-                    for x in range(BOARD_WIDTH):
-                        if self.board[(x, y)] == target:
-                            self.wins.append([(x, y)])
+                self.board[i][j] = target
+                for x, y in [(x, y) for x in range(BOARD_WIDTH) for y in range(BOARD_HEIGHT)]:
+                    if self.board[x][y] == target:
+                        self.wins.append([(x, y)])
                 self.win_iter = 0
                 self.win_timer = WIN_DELAY
             else:
                 system.play('click')
-                self.select = played
+                self.select = i, j
         return
 
 class Monsterz:
