@@ -14,6 +14,8 @@
 import pygame
 from pygame.locals import *
 from random import randint
+from sys import argv
+from os.path import join, dirname
 
 # constants
 AI = False
@@ -515,7 +517,7 @@ background = pygame.Surface(window.get_size())
 level = 1
 size = (8, 8)
 # Go!
-theme = Theme(file = 'tiles.png')
+theme = Theme(file = join(dirname(argv[0]), 'tiles.png'))
 game = Game(size = size, level = level)
 game.go()
 
