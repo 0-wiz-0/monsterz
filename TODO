@@ -1,7 +1,7 @@
+$Id foo $
+
 To make the game more complete:
  * sliding animation when filling holes
- * pause screen
- * don’t die when the game is finished
 
 Future plans:
  * survival mode

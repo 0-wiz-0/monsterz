@@ -49,6 +49,8 @@ class Theme:
         self.exploded = {}
         self.special = {}
         self.selector = None
+        pygame.mixer.music.load(join(dir, 'music.s3m'))
+        pygame.mixer.music.play(-1, 0.0)
 
     def make_sprites(self, t):
         self.tile_size = t
