@@ -1017,6 +1017,18 @@ class Monsterz:
                 system.play('whip')
                 self.status = STATUS_QUIT
                 return
+            elif event.type == KEYDOWN and event.key == K_n:
+                system.play('whip')
+                self.status = STATUS_GAMES
+                return
+            elif event.type == KEYDOWN and event.key == K_h:
+                system.play('whip')
+                self.status = STATUS_HELP
+                return
+            elif event.type == KEYDOWN and event.key == K_q:
+                system.play('whip')
+                self.status = STATUS_QUIT
+                return
             elif event.type == MOUSEBUTTONDOWN and marea:
                 system.play('whip')
                 self.status = marea
