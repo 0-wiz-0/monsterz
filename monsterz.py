@@ -341,7 +341,7 @@ class Game:
         self.play_again = False
         self.eyes = 3
         self.show_move = False
-        self.level = 10
+        self.level = 1
         self.new_level()
         self.oldticks = pygame.time.get_ticks()
 
@@ -649,8 +649,6 @@ class Game:
         system.blit(text, (624 - w, 10))
         # Print done/needed
         for i in range(self.population):
-            #if not self.needed[i + 1]:
-            #    break
             if self.done[i + 1] >= self.needed[i + 1]:
                 surf = data.tiny[i]
             else:
