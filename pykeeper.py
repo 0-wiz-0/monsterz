@@ -5,26 +5,9 @@ from pygame.locals import *
 from random import randint
 
 # constants
-AI = True
-screen_width = 500
-screen_height = 400
-
-animals = [
-    { 'color': (127, 127, 127) },
-    { 'color': (127, 200, 255) },
-    { 'color': (230, 230, 230) },
-    { 'color': (255, 255, 63) },
-    { 'color': (63, 200, 63) },
-    { 'color': (250, 160, 63) },
-    { 'color': (255, 63, 63) },
-    { 'color': (200, 63, 200) },
-    { 'color': (255, 180, 180) }
-]
-
-# LOL, this is gay
-selector = [
-    None
-]
+AI = False
+screen_width = 640
+screen_height = 480
 
 class MySprite(pygame.sprite.Sprite):
     def __init__(self, image, group=None):
@@ -36,53 +19,54 @@ class MySprite(pygame.sprite.Sprite):
 class Game:
     def __init__(self, size = (8, 8), level = 1):
         pygame.init()
+        # Init display
+        #self.window = pygame.display.set_mode((screen_width, screen_height), pygame.FULLSCREEN)
         self.window = pygame.display.set_mode((screen_width, screen_height))
         pygame.display.set_caption('Le meilleur jeu du monde')
         self.background = pygame.Surface(self.window.get_size())
         self.backsprites = pygame.sprite.RenderUpdates()
         self.frontsprites = pygame.sprite.RenderUpdates()
+        # Load stuff
+        self.tiles = pygame.image.load('tiles.png').convert_alpha()
         # Init values
         (self.board_width, self.board_height) = size
         self.needed = {}
         self.done = {}
         self.bonus_list = []
+        self.disappear_list = []
+        self.surprised_list = []
         self.select = None
+        self.happy = {}
+        self.surprised = {}
+        self.angry = {}
+        self.exploded = {}
+        self.special = {}
         # Compute stuff
         self.sprite_size = screen_width / self.board_width
         tmp = screen_height * 17 / 20 / self.board_height
         if tmp < self.sprite_size:
             self.sprite_size = tmp
         # Create sprites
-        for x in range(len(animals)):
-            a = animals[x]
-            tmp = pygame.Surface((self.sprite_size, self.sprite_size))
-            tmp.set_colorkey(tmp.get_at((0, 0)), RLEACCEL)
-            if x != 0:
-                pygame.draw.circle(tmp, (20, 1, 1), (self.sprite_size / 2, self.sprite_size / 2), self.sprite_size * 4 / 9)
-                pygame.draw.circle(tmp, a['color'], (self.sprite_size / 2, self.sprite_size / 2), self.sprite_size * 3 / 8)
-            else:
-                pygame.draw.rect(tmp, a['color'], (0, 0, self.sprite_size, self.sprite_size), self.sprite_size)
-                pygame.draw.rect(tmp, (20, 1, 1), (0, 0, self.sprite_size, self.sprite_size), self.sprite_size / 8)
-            pygame.draw.circle(tmp, (255, 255, 255), (self.sprite_size / 3, self.sprite_size * 3 / 8), self.sprite_size / 8)
-            pygame.draw.circle(tmp, (20, 1, 1), (self.sprite_size / 3, self.sprite_size * 3 / 8), self.sprite_size / 16)
-            pygame.draw.circle(tmp, (255, 255, 255), (self.sprite_size - self.sprite_size / 3, self.sprite_size * 3 / 8), self.sprite_size / 8)
-            pygame.draw.circle(tmp, (20, 1, 1), (self.sprite_size - self.sprite_size / 3, self.sprite_size * 3 / 8), self.sprite_size / 16)
-            pygame.draw.circle(tmp, (20, 1, 1), (self.sprite_size / 2, self.sprite_size * 9 / 16), self.sprite_size / 16)
-            pygame.draw.rect(tmp, (20, 1, 1), (self.sprite_size / 3, self.sprite_size * 11 / 16, self.sprite_size / 3, self.sprite_size / 16), self.sprite_size / 16)
-            a['img'] = tmp
+        for x in range(8):
+            self.happy[x] = pygame.transform.scale(self.tiles.subsurface((0, (x + 1) * 128, 128, 128)), (self.sprite_size, self.sprite_size))
+            self.surprised[x] = pygame.transform.scale(self.tiles.subsurface((128, (x + 1) * 128, 128, 128)), (self.sprite_size, self.sprite_size))
+            self.angry[x] = pygame.transform.scale(self.tiles.subsurface((256, (x + 1) * 128, 128, 128)), (self.sprite_size, self.sprite_size))
+            self.exploded[x] = pygame.transform.scale(self.tiles.subsurface((384, (x + 1) * 128, 128, 128)), (self.sprite_size, self.sprite_size))
+            tmp = pygame.Surface((128, 128))
+            tmp.blit(self.tiles.subsurface((128, 0, 128, 128)), (0, 0))
+            tmp2 = self.tiles.subsurface((0, (x + 1) * 128, 128, 128))
+            # Crappy FX
+            #tmp2 = pygame.transform.scale(tmp2, (24, 24))
+            #tmp2 = pygame.transform.scale(tmp2, (128, 128))
+            tmp.blit(tmp2, (0, 0))
+            self.special[x] = pygame.transform.scale(tmp, (self.sprite_size, self.sprite_size))
         # Create selector sprite
-        tmp = pygame.Surface((self.sprite_size, self.sprite_size))
-        tmp.set_colorkey(tmp.get_at((0, 0)), RLEACCEL)
-        pygame.draw.rect(tmp, (20, 20, 20), (0, 0, self.sprite_size, self.sprite_size), self.sprite_size / 6)
-        pygame.draw.rect(tmp, (255, 255, 0), (0, 0, self.sprite_size, self.sprite_size), self.sprite_size / 8)
-        pygame.draw.rect(tmp, (0, 0, 0), (0, self.sprite_size / 4, self.sprite_size, self.sprite_size * 2 / 4), self.sprite_size / 8)
-        pygame.draw.rect(tmp, (0, 0, 0), (self.sprite_size / 4, 0, self.sprite_size * 2 / 4, self.sprite_size), self.sprite_size / 8)
-        selector[0] = tmp
-        #global select, score, done, level, population, bonus, time
+        self.selector = pygame.transform.scale(self.tiles.subsurface((0, 0, 128, 128)), (self.sprite_size, self.sprite_size))
+        # Other initialisation stuff
         self.score = 0
+        self.timer = 0
         self.resolve_wins = False
         self.need_update = True
-        self.need_refresh = True
         self.will_play = None
         self.clock = pygame.time.Clock()
         self.oldticks = pygame.time.get_ticks()
@@ -93,10 +77,10 @@ class Game:
     def go(self):
         while not self.die:
             self.iterate()
-            self.clock.tick(30)
+            self.clock.tick(15)
 
     def get_random(self, no_special = False):
-        if not no_special and randint(0, 500) == 0:
+        if not no_special and randint(0, 50) == 0:
             return 0
         return randint(1, self.population)
 
@@ -194,18 +178,10 @@ class Game:
                 if a == 0:
                    continue # We don't want no special piece
                 for [(a1, b1), (a2, b2)] in checkme:
-                    if a == self.board.get((x + a1, y + b1)) and \
-                       a == self.board.get((x + a2, y + b2)):
-                        yield [(x, y), (x + 1, y + 0)]
-                    if a == self.board.get((x - a1, y + b1)) and \
-                       a == self.board.get((x - a2, y + b2)):
-                        yield [(x, y), (x - 1, y + 0)]
-                    if a == self.board.get((x + b1, y + a1)) and \
-                       a == self.board.get((x + b2, y + a2)):
-                        yield [(x, y), (x + 0, y + 1)]
-                    if a == self.board.get((x + b1, y - a1)) and \
-                       a == self.board.get((x + b2, y - a2)):
-                        yield [(x, y), (x + 0, y - 1)]
+                    for (dx, dy) in delta:
+                        if a == self.board.get((x + dx * a1 + dy * b1, y + dx * b1 + dy * a1)) and \
+                           a == self.board.get((x + dx * a2 + dy * b2, y + dx * b2 + dy * a2)):
+                            yield [(x, y), (x + dx, y + dy)]
 
     def new_level(self):
         # Compute level data
@@ -214,7 +190,6 @@ class Game:
         else:
             self.population = 7
         for i in range(self.population):
-            x = animals[i + 1]
             self.done[i + 1] = 0
             if i + 1 == 8 and self.level < 8:
                 self.needed[i + 1] = 0
@@ -232,14 +207,21 @@ class Game:
             self.background.fill((255, 20, 15))
         # Draw board
         for (coord, n) in self.board.items():
-            tmp = MySprite(animals[n]['img'], self.backsprites)
+            if n == 0:
+                tmp = MySprite(self.special[self.timer % self.population], self.backsprites)
+            elif coord in self.surprised_list:
+                tmp = MySprite(self.surprised[n - 1], self.backsprites)
+            elif coord in self.disappear_list:
+                tmp = MySprite(self.exploded[n - 1], self.backsprites)
+            else:
+                tmp = MySprite(self.happy[n - 1], self.backsprites)
             (x, y) = coord
             x *= self.sprite_size
             y *= self.sprite_size
             tmp.rect.center = (x + self.sprite_size / 2, y + self.sprite_size / 2)
         # Draw selector
         if self.select:
-            tmp = MySprite(selector[0], self.backsprites)
+            tmp = MySprite(self.selector, self.backsprites)
             (x, y) = self.select
             x *= self.sprite_size
             y *= self.sprite_size
@@ -256,8 +238,7 @@ class Game:
         x = self.sprite_size * self.board_width + self.sprite_size / 2
         y = self.sprite_size / 2 + screen_height / 8
         for i in range(self.population):
-            a = animals[i + 1]
-            self.background.blit(a['img'], (x, y))
+            self.background.blit(self.happy[i], (x, y))
             for d in range(2):
                 text = font.render(str(self.done[i + 1]) + '/' + str(self.needed[i + 1]), 2, (d * 255, d * 255, d * 255))
                 self.background.blit(text, (x + self.sprite_size * 5 / 4 - delta * d, y + screen_height / 64 - delta * d))
@@ -286,21 +267,19 @@ class Game:
         ticks = pygame.time.get_ticks()
         delta = (ticks - self.oldticks) * 400 / (11.0000001 - self.level) # FIXME
         self.oldticks = ticks
+        self.timer += 1
         # Draw screen
         if self.need_update:
             can_play = False
             for move in self.list_moves():
                 can_play = True
                 break
-            self.need_refresh = True
             self.need_update = False
             if not can_play:
                 print 'no more moves!'
                 self.new_board()
                 self.need_update = True # Need to check again
-        if self.need_refresh:
-            self.draw_sprites()
-            self.need_refresh = False
+        self.draw_sprites()
         self.draw_time()
         self.window.blit(self.background, (0, 0))
         # Draw stuff here
@@ -315,7 +294,12 @@ class Game:
         pygame.display.flip()
         # Resolve winning moves and chain reactions
         if self.resolve_wins:
-            if self.win_timer is 15:
+            self.win_timer -= 1
+            if self.win_timer is 10:
+                for w in self.wins:
+                    for (x, y) in w:
+                        self.surprised_list.append((x, y))
+            elif self.win_timer is 6:
                 self.scorebonus = 0
                 self.timebonus = 0
                 for w in self.wins:
@@ -325,30 +309,31 @@ class Game:
                         points = (10 * self.level) * (2 ** (self.win_iter + len(w) - 3))
                     self.scorebonus += points
                     self.timebonus += 45000 * len(w)
-                    (x, y) = (0.0, 0.0)
-                    for (x2, y2) in w:
-                        x += x2
-                        y += y2
-                        if self.board.has_key((x2, y2)):
-                            self.done[self.board[(x2, y2)]] += 1
-                            del self.board[(x2, y2)]
-                    self.bonus_list.append([x / len(w), y / len(w), points])
-                self.need_refresh = True
-            elif self.win_timer is 8:
+                    (x2, y2) = (0.0, 0.0)
+                    for (x, y) in w:
+                        x2 += x
+                        y2 += y
+                    self.bonus_list.append([x2 / len(w), y2 / len(w), points])
+                self.disappear_list = self.surprised_list
+                self.surprised_list = []
+            elif self.win_timer is 4:
                 self.bonus_list = []
-                self.need_refresh = True
-            elif self.win_timer is 5:
+                for (x, y) in self.disappear_list:
+                    if self.board.has_key((x, y)):
+                        self.done[self.board[(x, y)]] += 1
+                        del self.board[(x, y)]
+                self.disappear_list = []
+            elif self.win_timer is 2:
                 self.time += self.timebonus
                 if self.time > 2000000:
                     self.time = 2000000
                 self.score += self.scorebonus
                 self.fill_board()
-                self.need_refresh = True
             elif self.win_timer is 0:
                 self.wins = self.get_wins()
                 if self.wins:
                     print '  cascade wins!'
-                    self.win_timer = 20
+                    self.win_timer = 12
                     self.win_iter += 1
                 else:
                     print '  no more wins'
@@ -365,7 +350,6 @@ class Game:
                         self.new_level()
                 self.need_update = True
             if self.win_timer:
-                self.win_timer -= 1
                 return
         # Handle events
         played = None
@@ -391,8 +375,6 @@ class Game:
             #self.die = True
             return
         # Update time
-        if self.time <= delta:
-            self.need_refresh = True
         self.time -= delta
         if AI:
             if not self.will_play:
@@ -437,11 +419,10 @@ class Game:
             if not self.select:
                 if self.board[played] != 0:
                     self.select = played
-                    self.need_refresh = True
                     return
                 # Deal with the special block
                 self.wins = []
-                target = self.get_random(no_special = True)
+                target = 1 + (self.timer % self.population)
                 found = 0
                 for y in range(self.board_height):
                     for x in range(self.board_width):
@@ -450,15 +431,13 @@ class Game:
                 self.board[played] = target
                 self.wins.append([played])
                 self.win_iter = 0
-                self.win_timer = 20
+                self.win_timer = 12
                 self.resolve_wins = True
-                self.need_refresh = True
                 return
             (x1, y1) = self.select
             (x2, y2) = played
             if x1 == x2 and y1 == y2:
                 self.select = None
-                self.need_refresh = True
                 return
             if abs(x1 - x2) + abs(y1 - y2) != 1:
                 return
@@ -472,10 +451,9 @@ class Game:
                 self.board[played] = tmp
             self.select = None
             self.win_iter = 0
-            self.win_timer = 20
+            self.win_timer = 12
             print 'winning!'
             self.resolve_wins = True
-            self.need_refresh = True
 
 level = 1
 size = (8, 8)
