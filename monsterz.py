@@ -106,6 +106,8 @@ def semi_transp(surf):
         del pixels
         del alpha
     except:
+        # If it did not work, make it empty
+        surf.fill((0, 0, 0, 0))
         return
 
 class Settings:
