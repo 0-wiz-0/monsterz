@@ -179,16 +179,13 @@ class Game:
 
     def new_level(self):
         # Compute level data
-        if self.level >= 8:
-            self.population = 8
-        else:
+        if self.level < 8:
             self.population = 7
+        else:
+            self.population = 8
         for i in range(self.population):
             self.done[i + 1] = 0
-            if i + 1 == 8 and self.level < 8:
-                self.needed[i + 1] = 0
-            else:
-                self.needed[i + 1] = self.level + 2
+            self.needed[i + 1] = self.level + 2
         self.angry_tiles = -1
         self.new_board()
         self.time = 1000000
@@ -256,7 +253,23 @@ class Game:
         delta = 1 + screen_height / 200
         for x in range(2):
             text = font.render(str(self.score), 2, (x * 255, x * 255, x * 255))
-            background.blit(text, (self.tile_size * self.board_width + self.tile_size / 2 - delta * x, - delta * x))
+            background.blit(text, (self.tile_size * self.board_width + self.tile_size / 2 - delta * x, 10 - delta * x))
+        # Print new level stuff
+        if self.level_timer and self.level_timer < 25:
+            font = pygame.font.Font(None, screen_height / 4)
+            delta = 1 + screen_height / 100
+            for x in range(2):
+                text = font.render('level ' + str(self.level), 2, (x * 255, x * 255, x * 255))
+                (w, h) = text.get_rect().size
+                background.blit(text, (self.tile_size * self.board_width / 2 - w / 2 - delta * x, self.tile_size * self.board_height / 2 - h / 2 - delta * x))
+        # Print no more moves stuff
+        if self.board_timer > 25:
+            font = pygame.font.Font(None, screen_height / 6)
+            delta = 1 + screen_height / 150
+            for x in range(2):
+                text = font.render('no more moves!', 2, (x * 255, x * 255, x * 255))
+                (w, h) = text.get_rect().size
+                background.blit(text, (self.tile_size * self.board_width / 2 - w / 2 - delta * x, self.tile_size * self.board_height / 2 - h / 2 - delta * x))
         # Print bonus:
         font = pygame.font.Font(None, self.tile_size * 3 / 4)
         for b in self.bonus_list:
