@@ -58,18 +58,17 @@ class Theme:
         # Create sprites
         for x in range(8):
             self.normal[x] = scale(crop((0, (x+1) * s, s, s)), (t, t))
-            self.tiny[x] = scale(crop((0, (x+1) * s, s, s)), (t * 3 / 4, t * 3 / 4))
+            self.tiny[x] = scale(crop((0, (x+1) * s, s, s)), (t / 2, t / 2))
             self.blink[x] = scale(crop((s, (x+1) * s, s, s)), (t, t))
             self.surprise[x] = scale(crop((s * 2, (x+1) * s, s, s)), (t, t))
             self.angry[x] = scale(crop((s * 3, (x+1) * s, s, s)), (t, t))
             self.exploded[x] = scale(crop((s * 4, (x+1) * s, s, s)), (t, t))
             #tmp = crop((s, 0, s, s)).copy() # marche pas !
-            spcial = scale(crop((s, 0, s, s)), (s, s))
+            special = scale(crop((s, 0, s, s)), (s, s)) # marche...
             mini = crop((0, (x+1) * s, s, s))
-            # Crappy FX
             mini = scale(mini, (s * 7 / 8, s * 7 / 8))
-            spcial.blit(mini, (s / 16, s / 16))
-            self.special[x] = scale(spcial, (t, t))
+            special.blit(mini, (s / 16, s / 16))
+            self.special[x] = scale(special, (t, t))
         # Create selector sprite
         self.selector = scale(crop((0, 0, s, s)), (t, t))
 
@@ -90,8 +89,7 @@ class Game:
         # Compute stuff
         tile_size = (SCREEN_WIDTH - 20) / self.board_width
         tmp = (SCREEN_HEIGHT - 20) * 17 / 20 / self.board_height
-        if tmp < tile_size:
-            tile_size = tmp
+        if tmp < tile_size: tile_size = tmp
         theme.make_sprites(tile_size)
         # Other initialisation stuff
         self.score = 0
@@ -133,11 +131,7 @@ class Game:
             while True:
                 for x in range(self.board_width):
                     self.board[(x, y)] = self.get_random()
-                if not self.get_wins():
-                    break
-                msg = ''
-                for x in range(self.board_width):
-                    msg += str(self.board[(x, y)])
+                if not self.get_wins(): break
 
     def fill_board(self):
         for z in range(self.board_height):
@@ -346,7 +340,7 @@ class Game:
     def toggle_pause(self):
         self.pause = not self.pause
         if self.pause:
-            self.pause_bitmap = pygame.transform.scale(theme.normal[self.get_random(no_special = True)], (8 * theme.tile_size, 8 * theme.tile_size))
+            self.pause_bitmap = pygame.transform.scale(theme.normal[self.get_random(no_special = True)], (6 * theme.tile_size, 6 * theme.tile_size))
         else:
             del self.pause_bitmap
 
@@ -365,7 +359,7 @@ class Game:
             pygame.draw.rect(background, color, (x, y, w * self.time / 2000000, h))
         # Draw pieces
         if self.pause:
-            background.blit(self.pause_bitmap, (24, 24))
+            background.blit(self.pause_bitmap, (24 + theme.tile_size, 24))
             font = pygame.font.Font(None, SCREEN_HEIGHT / 4)
             delta = 1 + SCREEN_HEIGHT / 100
             for x in range(2):
@@ -423,8 +417,8 @@ class Game:
             background.blit(theme.tiny[i], (x, y))
             for d in range(2):
                 text = font.render(str(self.done[i + 1]) + '/' + str(self.needed[i + 1]), 2, (d * 255, d * 255, d * 255))
-                background.blit(text, (x + theme.tile_size * 5 / 4 - delta * d, y + SCREEN_HEIGHT / 64 - delta * d))
-            y += SCREEN_HEIGHT / 12
+                background.blit(text, (x + theme.tile_size * 3 / 4 - delta * d, y - delta * d))
+            y += SCREEN_HEIGHT / 16
         window.blit(background, (0, 0))
         pygame.display.flip()
 
