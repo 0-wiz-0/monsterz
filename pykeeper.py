@@ -128,28 +128,44 @@ def get_wins(board):
     for y in range(board_height):
         for x in range(board_width - 2):
             a = board.get((x, y))
-            b = board.get((x + 1, y))
-            c = board.get((x + 2, y))
-            if not a or not b or not c:
+            if not a:
                 continue
-            if a != b or a != c:
+            b = board.get((x - 1, y))
+            if b and a == b:
                 continue
-            wins.append([(x, y), (x + 1, y), (x + 2, y)])
+            len = 1
+            for t in range(1, board_width - x):
+                b = board.get((x + t, y))
+                if a != b:
+                    break
+                len += 1
+            if len < 3:
+                continue
+            win = []
+            for t in range(len):
+                win.append((x + t, y))
+            wins.append(win)
     # Horizontal
     for x in range(board_width):
         for y in range(board_height - 2):
             a = board.get((x, y))
-            b = board.get((x, y + 1))
-            c = board.get((x, y + 2))
-            if not a or not b or not c:
+            if not a:
                 continue
-            if a != b or a != c:
+            b = board.get((x, y - 1))
+            if b and a == b:
                 continue
-            wins.append([(x, y), (x, y + 1), (x, y + 2)])
-    old = None
-    while wins != old:
-        old = wins
-        wins = reduce_wins(old)
+            len = 1
+            for t in range(1, board_height - y):
+                b = board.get((x, y + t))
+                if a != b:
+                    break
+                len += 1
+            if len < 3:
+                continue
+            win = []
+            for t in range(len):
+                win.append((x, y + t))
+            wins.append(win)
     return wins
 
 def draw_sprites():
@@ -178,15 +194,16 @@ def new_game():
             if not get_wins(board):
                 break
 
-# Compute sprite size
+# Init values
+board = {}
+select = (-1, -1)
+level = 1
+
+# Compute stuff
 sprite_size = screen_width / board_width
 tmp = screen_height / board_height
 if tmp < sprite_size:
     sprite_size = tmp
-
-# Init values
-board = {}
-select = (-1, -1)
 
 # Start all the stuff
 pygame.init()
@@ -242,17 +259,21 @@ def main():
                     board[(x1, y1)] = board[(x2, y2)]
                     board[(x2, y2)] = tmp
                 else:
+                    score = 0
+                    iter = 0
                     msg = ''
                     while wins:
                         msg += enum_wins(wins)
                         for w in wins:
+                            score += (10 * level) * (2 ** (iter + len(w) - 3))
                             for p in w:
-                                del board[p]
+                                if board.has_key(p): del board[p]
                         fill_board()
                         wins = get_wins(board)
                         if wins:
                             msg += '+ '
-                    print msg
+                        iter += 1
+                    print msg, score
                 select = (-1, -1)
                 need_update = True
         clock.tick(30)
