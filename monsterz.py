@@ -20,7 +20,7 @@ from os.path import join, dirname
 from os import write
 
 # String constants
-VERSION = '0.4.2'
+VERSION = '0.5.0'
 COPYRIGHT = 'MONSTERZ - COPYRIGHT 2005 SAM HOCEVAR - MONSTERZ IS ' \
             'FREE SOFTWARE, YOU CAN REDISTRIBUTE IT AND/OR MODIFY IT ' \
             'UNDER THE TERMS OF THE DO WHAT THE FUCK YOU WANT TO ' \
@@ -706,7 +706,7 @@ class Game:
                 system.blit(data.shadeye, (x, y))
         # Print pause and abort buttons
         if self.lost_timer != -1:
-            r = (255, 127, 127)
+            r = (127, 0, 255)
             if self.paused:
                 led, color = data.led_on, (255, 255, 255)
             else:
@@ -1046,7 +1046,7 @@ class Monsterz:
         self.garea = garea
         system.blit(data.background, (0, 0))
         # Print various buttons
-        r = (255, 127, 127)
+        r = (127, 0, 255)
         if system.have_sound:
             if FLAG_SFX:
                 led, color = data.led_on, (255, 255, 255)
@@ -1212,14 +1212,14 @@ class Monsterz:
         w, h = text.get_rect().size
         system.blit(text, (24 + 192 - w / 2, 24 + 24 - h / 2))
         for i in range(4):
-            c = map(lambda a: 255 - (255 - a) * self.nsat[i] / 255, [255, 127, 127])
+            c = map(lambda a: 255 - (255 - a) * self.nsat[i] / 255, [127, 0, 255])
             text = fonter.render(messages[i], 48, c)
             w, h = text.get_rect().size
             system.blit(text, (24 + 48 * 4 - w / 2, 24 + 120 + 48 * i - h / 2))
             if self.nsat[i]:
                 self.nsat[i] = self.nsat[i] * 8 / 10
         for i in range(4, 8):
-            c = map(lambda a: 255 - (255 - a) * self.nsat[i] / 255, [255, 127, 127])
+            c = map(lambda a: 255 - (255 - a) * self.nsat[i] / 255, [127, 0, 255])
             text = fonter.render(messages[i], 48, c)
             w, h = text.get_rect().size
             if i & 1:
