@@ -126,11 +126,11 @@ class Settings:
         self.name = username()
         # Get home directory
         if platform == 'win32':
-            try:
-                from shell import SHGetFolderPath
-                from shellcon import CSIDL_APPDATA
-                configdir = join(SHGetFolderPath(0, CSIDL_APPDATA, 0, 0), 'monsterz')
-            except:
+            from os import environ
+            tmp = environ.get('APPDATA') or environ.get('TMP')
+            if tmp:
+                configdir = join(tmp, 'monsterz')
+            else:
                 configdir = join(dirname(argv[0]), 'settings')
         else:
             configdir = join(expanduser('~'), '.monsterz')
