@@ -21,14 +21,14 @@ all: monsterz $(BITMAP)
 monsterz: monsterz.c
 	$(CC) -Wall monsterz.c -DDATADIR=\"$(pkgdatadir)\" -DSCOREFILE=\"$(scorefile)\" -o monsterz
 
-icon.png:
+icon.png: tiles.svg
 	inkscape tiles.svg -z -a 0:600:60:660 -w64 -h64 -e icon.png
-tiles.png:
+tiles.png: tiles.svg
 	inkscape tiles.svg -z -a 0:360:300:900 -d 72 -e tiles.png
-board.png:
+board.png: tiles.svg
 	inkscape tiles.svg -z -a 300:360:1100:960 -d 72 -e board.png
-logo.png:
-	inkscape tiles.svg -z -a 77:100:481:323 -d 72 -e logo.png
+logo.png: tiles.svg
+	inkscape tiles.svg -z -a 77:100:481:323 -w374 -h182 -e logo.png
 
 install: all
 	mkdir -p $(DESTDIR)$(gamesdir)
@@ -51,8 +51,8 @@ dist:
 	rm -Rf $(DIRECTORY)
 	mkdir $(DIRECTORY)
 	# Copy everything we need
-	cp monsterz.py monsterz.c $(DATA) $(TEXT) Makefile $(DIRECTORY)/
-	cp pattern.png tiles.svg $(DIRECTORY)/
+	cp monsterz.py monsterz.c Makefile $(DIRECTORY)/
+	cp pattern.png tiles.svg $(SOUND) $(MUSIC) $(TEXT) $(DIRECTORY)/
 	# Build archive
 	tar cvzf $(DIRECTORY).tar.gz $(DIRECTORY)/
 	rm -Rf $(DIRECTORY)
