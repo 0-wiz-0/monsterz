@@ -180,6 +180,7 @@ class Data:
         self.tiles = tiles
         icon = pygame.image.load(join(dir, 'graphics', 'icon.png')).convert_alpha()
         pygame.display.set_icon(icon)
+        self.bigtiles = pygame.image.load(join(dir, 'graphics', 'bigtiles.png')).convert_alpha()
         self.background = pygame.image.load(join(dir, 'graphics', 'background.png')).convert()
         self.board = pygame.image.load(join(dir, 'graphics', 'board.png')).convert()
         self.logo = pygame.image.load(join(dir, 'graphics', 'logo.png')).convert_alpha()
@@ -734,8 +735,10 @@ class Game:
         self.paused = not self.paused
         system.play('whip')
         if self.paused:
-            self.pause_bitmap = pygame.transform.scale(data.normal[self.get_random(no_special = True) - 1], (6 * data.tile_size, 6 * data.tile_size))
-            #self.pause_bitmap = pygame.transform.rotozoom(data.normal[self.get_random(no_special = True) - 1], 0.0, 6.0)
+            i = self.get_random(no_special = True) - 1
+            #self.pause_bitmap = pygame.transform.scale(data.normal[i], (6 * data.tile_size, 6 * data.tile_size))
+            #self.pause_bitmap = pygame.transform.rotozoom(data.normal[i], 0.0, 6.0)
+            self.pause_bitmap = data.bigtiles.subsurface((0, i * 288, 288, 288))
         else:
             del self.pause_bitmap
         self.clicks = []

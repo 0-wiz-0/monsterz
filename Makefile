@@ -10,8 +10,8 @@ VERSION = 0.4.2
 DIRECTORY = monsterz-$(VERSION)
 
 DATA = $(BITMAP) $(SOUND) $(MUSIC)
-BITMAP = graphics/tiles.png graphics/background.png graphics/board.png \
-         graphics/logo.png graphics/icon.png
+BITMAP = graphics/tiles.png graphics/bigtiles.png graphics/background.png \
+         graphics/board.png graphics/logo.png graphics/icon.png
 SOUND = sound/grunt.wav sound/click.wav sound/pop.wav sound/boing.wav sound/whip.wav \
         sound/applause.wav sound/laugh.wav sound/warning.wav sound/duh.wav \
         sound/ding.wav
@@ -26,13 +26,15 @@ monsterz: monsterz.c
 graphics/icon.png: graphics/graphics.svg
 	inkscape graphics/graphics.svg -z -a 800:240:860:300 -w64 -h64 -e graphics/icon.png
 graphics/tiles.png: graphics/graphics.svg
-	inkscape graphics/graphics.svg -z -a 800:0:1100:600 -d 72 -e graphics/tiles.png
+	inkscape graphics/graphics.svg -z -a 800:0:1100:660 -d 72 -e graphics/tiles.png
+graphics/bigtiles.png: graphics/graphics.svg
+	inkscape graphics/graphics.svg -z -a 800:0:860:540 -d 432 -e graphics/bigtiles.png
 graphics/background.png: graphics/graphics.svg graphics/pattern.png
 	inkscape graphics/graphics.svg -z -a 0:0:800:600 -d 72 -e graphics/background.png
 graphics/board.png: graphics/graphics.svg graphics/pattern.png
 	inkscape graphics/graphics.svg -z -a 30:690:510:1170 -d 72 -e graphics/board.png
 graphics/logo.png: graphics/graphics.svg
-	inkscape graphics/graphics.svg -z -a 810:618:1220:835 -w380 -h180 -e graphics/logo.png
+	inkscape graphics/graphics.svg -z -a 810:678:1220:895 -w380 -h180 -e graphics/logo.png
 
 install: all
 	mkdir -p $(DESTDIR)$(gamesdir)
