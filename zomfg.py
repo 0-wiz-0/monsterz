@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 """
  alienkeeper: puzzle game
@@ -61,9 +62,6 @@ class Theme:
             for s in ['click', 'grunt', 'ding', 'whip', 'pop', 'duh', \
                       'boing', 'applause', 'laugh', 'warning']:
                 self.wav[s] = pygame.mixer.Sound(join(dir, s + '.wav'))
-        self.font = {}
-        for x in [36, 48, 60, 120]:
-            self.font[x] = pygame.font.Font(None, x)
 
     def play(self, sound):
         if HAVE_SOUND: self.wav[sound].play()
@@ -118,6 +116,7 @@ class Game:
         self.clicks = []
         self.select = None
         self.switch = None
+        self.text_cache = []
         # Compute stuff
         tile_size = min((SCREEN_WIDTH - 20) / self.board_width,
                         (SCREEN_HEIGHT - 20) * 17 / 20 / self.board_height)
@@ -229,7 +228,7 @@ class Game:
             for x in range(self.board_width):
                 a = self.board.get((x, y))
                 if a == 0:
-                   continue # We don't want no special piece
+                   continue # We don’t want no special piece
                 for [(a1, b1), (a2, b2)] in checkme:
                     for (dx, dy) in delta:
                         if a == self.board.get((x + dx * a1 + dy * b1, y + dx * b1 + dy * a1)) and \
@@ -365,15 +364,26 @@ class Game:
             del self.pause_bitmap
 
     def render_text(self, msg, size):
+        for i, (m, s, t) in enumerate(self.text_cache):
+            if s == size and m == msg:
+                del self.text_cache[i]
+                self.text_cache.append((m, s, t))
+                return t
+        font = pygame.font.Font(None, size)
         delta = 1 + size / 16
-        black = theme.font[size].render(msg, 2, (0, 0, 0))
+        black = font.render(msg, 2, (0, 0, 0))
         w, h = black.get_size()
         text = pygame.Surface((w + delta, h + delta)).convert_alpha()
         text.fill(black.get_at((0, 0)))
-        for x, y in [(5, 5), (6, 3), (5, 1), (3, 0), (1, 1), (0, 3), (1, 5), (3, 6)]:
+        for x, y in [(5, 5), (6, 3), (5, 1), (3, 0),
+                     (1, 1), (0, 3), (1, 5), (3, 6)]:
             text.blit(black, (x * delta / 6, y * delta / 6))
-        white = theme.font[size].render(msg, 2, (255, 255, 255))
+        white = font.render(msg, 2, (255, 255, 255))
         text.blit(white, (delta / 2, delta / 2))
+        self.text_cache.append((msg, size, text))
+        # Keep 15 items in our cache, it’s more than enough
+        if len(self.text_cache) > 15:
+            self.text_cache.pop(0)
         return text
 
     def draw_game(self):
@@ -406,10 +416,10 @@ class Game:
             bg.blit(text, (24 + 192 - w / 2, 24 + 192 - h / 2))
         # Print new level stuff
         if self.level_timer > SCROLL_DELAY / 2:
-            text = self.render_text('LEVEL UP!', 60)
+            text = self.render_text('LEVEL UP!', 80)
             w, h = text.get_rect().size
             bg.blit(text, (24 + 192 - w / 2, 24 + 192 - h / 2))
-        # Print 'no more moves' stuff
+        # When no more moves are possible
         if self.board_timer > SCROLL_DELAY / 2:
             text = self.render_text('NO MORE MOVES!', 60)
             w, h = text.get_rect().size
