@@ -80,7 +80,7 @@ class Game:
             self.clock.tick(15)
 
     def get_random(self, no_special = False):
-        if not no_special and randint(0, 50) == 0:
+        if not no_special and randint(0, 500) == 0:
             return 0
         return randint(1, self.population)
 
@@ -360,9 +360,9 @@ class Game:
             elif event.type == KEYDOWN and event.key == K_ESCAPE:
                 self.die = True
                 return
-            #elif event.type == KEYDOWN and event.key == K_n:
-            #    level -= 1
-            #    self.new_level = True
+            elif event.type == KEYDOWN and event.key == K_f:
+                pygame.display.toggle_fullscreen()
+                return
             elif event.type == MOUSEBUTTONDOWN:
                 (x2, y2) = event.pos
                 x2 /= self.sprite_size
