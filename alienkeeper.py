@@ -9,12 +9,6 @@ AI = False
 screen_width = 800
 screen_height = 600
 
-class MySprite(pygame.sprite.Sprite):
-    def __init__(self, image, group=None):
-        pygame.sprite.Sprite.__init__(self, group)
-        self.image = image
-        self.rect = self.image.get_rect()
-
 # Start all the stuff
 class Game:
     def __init__(self, size = (8, 8), level = 1):
@@ -23,8 +17,6 @@ class Game:
         self.window = pygame.display.set_mode((screen_width, screen_height))
         pygame.display.set_caption('Alienkeeper')
         self.background = pygame.Surface(self.window.get_size())
-        self.backsprites = pygame.sprite.RenderUpdates()
-        self.frontsprites = pygame.sprite.RenderUpdates()
         # Load stuff
         self.tiles = pygame.image.load('tiles.png').convert_alpha()
         # Init values
@@ -196,8 +188,7 @@ class Game:
         self.time = 1000000
         self.need_update = True
 
-    def draw_sprites(self):
-        self.backsprites.empty()
+    def draw_scene(self):
         if self.time > 0:
             self.background.fill((210, 200, 150))
         else:
@@ -205,26 +196,25 @@ class Game:
         # Draw board
         for (coord, n) in self.board.items():
             if n == 0:
-                tmp = MySprite(self.special[self.timer % self.population], self.backsprites)
+                tmp = self.special[self.timer % self.population]
             elif coord in self.surprised_list:
-                tmp = MySprite(self.surprised[n - 1], self.backsprites)
+                tmp = self.surprised[n - 1]
             elif coord in self.disappear_list:
-                tmp = MySprite(self.exploded[n - 1], self.backsprites)
+                tmp = self.exploded[n - 1]
             elif n == self.angry_tiles:
-                tmp = MySprite(self.angry[n - 1], self.backsprites)
+                tmp = self.angry[n - 1]
             else:
-                tmp = MySprite(self.happy[n - 1], self.backsprites)
+                tmp = self.happy[n - 1]
             (x, y) = coord
             x *= self.tile_size
             y *= self.tile_size
-            tmp.rect.center = (x + self.tile_size / 2, y + self.tile_size / 2)
+            self.background.blit(tmp, (x, y))
         # Draw selector
         if self.select:
-            tmp = MySprite(self.selector, self.backsprites)
             (x, y) = self.select
             x *= self.tile_size
             y *= self.tile_size
-            tmp.rect.center = (x + self.tile_size / 2, y + self.tile_size / 2)
+            self.background.blit(self.selector, (x, y))
         # Print score
         font = pygame.font.Font(None, screen_height / 8)
         delta = 1 + screen_height / 200
@@ -247,8 +237,7 @@ class Game:
             for d in range(2):
                 text = font.render(str(x[2]), 2, (d * 255, d * 255, d * 255))
                 self.background.blit(text, (x[0] * self.tile_size + self.tile_size / 4 - delta * d, x[1] * self.tile_size + self.tile_size / 4 - delta * d))
-
-    def draw_time(self):
+        # Print timebar:
         x = self.tile_size / 2
         y = screen_height * 18 / 20
         w = (self.board_width - 1) * self.tile_size
@@ -278,18 +267,9 @@ class Game:
                 print 'no more moves!'
                 self.new_board()
                 self.need_update = True # Need to check again
-        self.draw_sprites()
-        self.draw_time()
+        self.draw_scene()
         self.window.blit(self.background, (0, 0))
         # Draw stuff here
-        self.backsprites.clear(self.window, self.background)
-        self.frontsprites.clear(self.window, self.background)
-        self.backsprites.update()
-        self.frontsprites.update()
-        dirtyRects1 = self.backsprites.draw(self.window)
-        dirtyRects2 = self.frontsprites.draw(self.window)
-        dirtyRects = dirtyRects1 + dirtyRects2
-        #pygame.display.update(dirtyRects)
         pygame.display.flip()
         # Resolve winning moves and chain reactions
         if self.resolve_wins:
