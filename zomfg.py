@@ -248,7 +248,10 @@ class Game:
             self.population = 8
         for i in range(self.population):
             self.done[i + 1] = 0
-            self.needed[i + 1] = self.level + 2
+            if self.level < 10:
+                self.needed[i + 1] = self.level + 2
+            else:
+                self.needed[i + 1] = 0 # level 10 is the highest
         self.angry_tiles = -1
         self.new_board()
         self.time = 1000000
@@ -395,17 +398,32 @@ class Game:
         # Draw background
         bg.blit(theme.board, (0, 0))
         # Draw timebar
-        x = 16; y = 440; w = 400; h = 24
-        w2 = w * self.time / 2000000
-        if self.warning_timer:
-            color = (55 + 200 * abs(2 * self.warning_timer - WARNING_DELAY) / WARNING_DELAY, 0, 0)
-        elif self.time <= 350000:
-            color = (255, 0, 0)
-        else:
-            color = (255, 240, 0)
-        pygame.draw.rect(bg, (0, 0, 0), (x, y, w, h))
-        if w2 > 0:
-            pygame.draw.rect(bg, color, (x, y, w * self.time / 2000000, h))
+        pygame.draw.rect(bg, (60, 60, 60), (16, 440, 400, 2))
+        pygame.draw.rect(bg, (40, 40, 40), (16, 442, 400, 20))
+        pygame.draw.rect(bg, (0, 0, 0), (16, 462, 400, 2))
+        w = 400 * self.time / 2000000
+        if w > 0:
+            if self.warning_timer:
+                ratio = 1.0 * abs(2 * self.warning_timer - WARNING_DELAY) \
+                            / WARNING_DELAY
+                c0 = (60 + 195 * ratio, 60 + 40 * ratio, 60 + 40 * ratio)
+                c1 = (55 + 200 * ratio, 40 - 40 * ratio, 40 - 40 * ratio)
+                c2 = (220 * ratio, 0, 0)
+            elif self.time <= 350000:
+                c0 = (255, 100, 100)
+                c1 = (255, 0, 0)
+                c2 = (220, 0, 0)
+            elif self.time <= 650000:
+                c0 = (255, 255, 100)
+                c1 = (255, 240, 0)
+                c2 = (220, 180, 0)
+            else:
+                c0 = (100, 255, 100)
+                c1 = (0, 255, 0)
+                c2 = (0, 220, 0)
+            pygame.draw.rect(bg, c0, (16, 440, w, 2))
+            pygame.draw.rect(bg, c1, (16, 442, w, 20))
+            pygame.draw.rect(bg, c2, (16, 462, w, 2))
         # Draw pieces
         if self.pause:
             bg.blit(self.pause_bitmap, (72, 24))
@@ -438,10 +456,14 @@ class Game:
         # Print score
         bg.blit(self.render_text(str(self.score), 60), (444, 10))
         # Print level
-        text = self.render_text('LEVEL ' + str(self.level) + ' - ' + str(self.needed[1]), 36)
+        msg = 'LEVEL ' + str(self.level)
+        if self.needed[1]: msg += ' - ' + str(self.needed[1])
+        text = self.render_text(msg, 36)
         bg.blit(text, (444, 58))
         # Print done/needed
         for i in range(self.population):
+            if not self.needed[i + 1]:
+                break
             if self.done[i + 1] >= self.needed[i + 1]:
                 surf = theme.tiny[i]
             else:
@@ -455,7 +477,7 @@ class Game:
     def iterate(self):
         ask_pause = False
         ticks = pygame.time.get_ticks()
-        delta = (ticks - self.oldticks) * 400 / (11.0000001 - self.level) # FIXME
+        delta = (ticks - self.oldticks) * 400 / (11 - self.level)
         self.oldticks = ticks
         self.special_index = (self.special_index + 1) % self.population
         # Draw screen
@@ -591,20 +613,16 @@ class Game:
                 if self.wins:
                     self.win_timer = WIN_DELAY
                     self.win_iter += 1
-                else:
+                elif self.needed[1]:
                     # Check for new level
-                    finished = True
                     for i in range(self.population):
-                        n = i + 1
-                        if self.done[n] < self.needed[n]:
-                            finished = False
+                        if self.done[i + 1] < self.needed[i + 1]:
+                            self.check_moves = True
                             break
-                    if finished:
+                    else:
                         theme.play('applause')
                         self.select = None
                         self.level_timer = SCROLL_DELAY
-                    else:
-                        self.check_moves = True
             return
         if self.warning_timer:
             self.warning_timer -= 1
