@@ -39,6 +39,7 @@ ITEMS = 9
 ITEM_NONE = -1
 ITEM_SPECIAL = ITEMS + 1
 ITEM_METAL = ITEMS + 2
+ITEM_PUZZLE = ITEMS + 3
 
 STATUS_MENU = 0
 STATUS_NEW = 1
@@ -64,7 +65,27 @@ SWITCH_DELAY = 4
 WARNING_DELAY = 12
 SPECIAL_FREQ = 500
 
-rainbow = [ (255, 127, 127), (255, 255, 0), (127, 255, 127), (0, 255, 255), (127, 127, 255), (255, 0, 255) ]
+rainbow = [
+  (255, 127, 127),
+  (255, 255, 0),
+  (127, 255, 127),
+  (0, 255, 255),
+  (127, 127, 255),
+  (255, 0, 255)
+]
+
+puzzlevels = [
+  (5, 1, '2x1', [(3, 3), (4, 2)]),
+  (5, 1, '1x2', [(3, 2), (3, 4)]),
+  (6, 2, '1x3', [(3, 2), (3, 4), (3, 6)]),
+  (6, 2, '3x1', [(3, 2), (4, 3), (5, 4)]),
+  (6, 3, '2x1', [(3, 4), (4, 2)]),
+  (6, 3, '1x2', [(3, 2), (4, 4)]),
+  (7, 4, '2x2', [(4, 2), (5, 3), (4, 4), (5, 4)]),
+  (6, 4, '1x3', [(3, 2), (4, 4), (3, 6)]),
+  (7, 5, '3x1', [(2, 2), (4, 1), (5, 4)]),
+  (7, 5, '2x2', [(3, 0), (5, 0), (2, 7), (4, 7)]),
+]
 
 def compare_scores(x, y):
     if y[1] > x[1]:
@@ -315,7 +336,22 @@ class Data:
         semi_transp(self.shadeye)
         self.arrow = tile_at(4, 0)
         self.selector = scale(tile_at(0, 0), (t, t))
-        self.metal = scale(tile_at(0, 1), (t, t))
+        self.metal = scale(tile_at(3, 3), (t, t))
+        self.puzzle = {}
+        self.puzzle['2x1'] = (scale(tile_at(3, 2), (t, t)),
+                              scale(tile_at(4, 2), (t, t)))
+        self.puzzle['3x1'] = (scale(tile_at(1, 4), (t, t)),
+                              scale(tile_at(2, 4), (t, t)),
+                              scale(tile_at(3, 4), (t, t)))
+        self.puzzle['1x2'] = (scale(tile_at(4, 3), (t, t)),
+                              scale(tile_at(4, 4), (t, t)))
+        self.puzzle['1x3'] = (scale(tile_at(0, 2), (t, t)),
+                              scale(tile_at(0, 3), (t, t)),
+                              scale(tile_at(0, 4), (t, t)))
+        self.puzzle['2x2'] = (scale(tile_at(1, 2), (t, t)),
+                              scale(tile_at(2, 2), (t, t)),
+                              scale(tile_at(1, 3), (t, t)),
+                              scale(tile_at(2, 3), (t, t)))
 
     def _scale(self, surf, size):
         w, h = surf.get_size()
@@ -471,6 +507,9 @@ class Game:
                 for x in range(BOARD_WIDTH):
                     self.board[x][y] = self.get_random()
                 if not self.get_wins(): break
+        if self.type == GAME_PUZZLE:
+            for t, (x, y) in enumerate(puzzlevels[self.level - 1][3]):
+                self.board[x][y] = ITEM_PUZZLE + t
         #self.board[randint(3, 4)][0] = ITEM_METAL
 
     def fill_board(self):
@@ -565,8 +604,63 @@ class Game:
                     self.needed[i] = 0 # level 10 is the highest
             self.lucky = self.get_random(no_special = True)
             self.time = 1000000
+        elif self.type == GAME_PUZZLE:
+            self.population = puzzlevels[self.level - 1][0]
+            for i in range(self.population):
+                self.done[i] = 0
+                self.needed[i] = 0
+            self.lucky = -1
+            self.time = 1000000
         self.angry_items = -1
         self.new_board()
+
+    def check_puzzle(self):
+        c = [None] * 4
+        for x, y in [(x, y) for x in range(BOARD_WIDTH) for y in range(BOARD_HEIGHT)]:
+            t = self.board[x][y]
+            if t >= ITEM_PUZZLE:
+                c[t - ITEM_PUZZLE] = (x, y)
+        p = puzzlevels[self.level - 1][2]
+        if p == '2x1':
+            if c[0][0] + 1 == c[1][0] and c[0][1] == c[1][1]:
+                return 1
+            if c[0][1] == c[1][1] == BOARD_HEIGHT - 1 and c[0][0] > c[1][0]:
+                return -1
+        elif p == '3x1':
+            if c[0][0] + 1 == c[1][0] and c[0][0] + 2 == c[2][0] \
+                and c[0][1] == c[1][1] == c[2][1]:
+                return 1
+            if c[0][1] == c[1][1] == BOARD_HEIGHT - 1 and c[0][0] > c[1][0]:
+                return -1
+            if c[0][1] == c[2][1] == BOARD_HEIGHT - 1 and c[0][0] > c[2][0]:
+                return -1
+            if c[1][1] == c[2][1] == BOARD_HEIGHT - 1 and c[1][0] > c[2][0]:
+                return -1
+        elif p == '1x2':
+            if c[0][0] == c[1][0] and c[0][1] + 1 == c[1][1]:
+                return 1
+            if c[0][1] == BOARD_HEIGHT - 1:
+                return -1
+        elif p == '1x3':
+            if c[0][0] == c[1][0] == c[2][0] \
+               and c[0][1] + 1 == c[1][1] and c[0][1] + 2 == c[2][1]:
+                return 1
+            if c[0][1] >= BOARD_HEIGHT - 2:
+                return -1
+            if c[1][1] == BOARD_HEIGHT - 1:
+                return -1
+        elif p == '2x2':
+            if c[0][0] + 1 == c[1][0] and c[0][1] == c[1][1] \
+                and c[0][0] == c[2][0] and c[0][1] + 1 == c[2][1] \
+                and c[1][0] == c[3][0] and c[1][1] + 1 == c[3][1]:
+                return 1
+            if c[0][1] == BOARD_HEIGHT - 1 or c[1][1] == BOARD_HEIGHT - 1:
+                return -1
+            if c[0][1] == c[1][1] == BOARD_HEIGHT - 2 and c[0][0] > c[1][0]:
+                return -1
+            if c[2][1] == c[3][1] == BOARD_HEIGHT - 1 and c[2][0] > c[3][0]:
+                return -1
+        return 0
 
     def board_draw(self):
         # Draw checkered board
@@ -632,6 +726,8 @@ class Game:
                 shape = data.special[monsterz.timer % self.population]
             elif n == ITEM_METAL:
                 shape = data.metal
+            elif n >= ITEM_PUZZLE:
+                shape = data.puzzle[puzzlevels[self.level - 1][2]][n - ITEM_PUZZLE]
             elif self.level_timer and self.level_timer < SCROLL_DELAY / 2:
                 shape = data.blink[n]
             elif (i, j) in self.surprised_list \
@@ -753,13 +849,15 @@ class Game:
         elif self.splash:
             if self.type == GAME_TRAINING:
                 msg = 'TRAINING'
-            elif self.type == GAME_CLASSIC:
+            elif self.type in [GAME_CLASSIC, GAME_PUZZLE]:
                 msg = 'LEVEL ' + str(self.level)
             text = fonter.render(msg, 60)
             w, h = text.get_rect().size
             system.blit(text, (24 + 192 - w / 2, 24 + 144 - h / 2))
             if self.needed[0]:
                 msg = 'MONSTERS NEEDED: ' + str(self.needed[0])
+            elif self.type == GAME_PUZZLE:
+                msg = 'COMPLETE THE PUZZLE'
             else:
                 msg = 'UNLIMITED LEVEL'
             text = fonter.render(msg, 40)
@@ -775,7 +873,10 @@ class Game:
             self.board_draw()
             # Print new level stuff
             if self.level_timer > SCROLL_DELAY / 2:
-                text = fonter.render('LEVEL UP!', 80)
+                if self.type == GAME_PUZZLE:
+                    text = fonter.render('COMPLETED!', 80)
+                else:
+                    text = fonter.render('LEVEL UP!', 80)
                 w, h = text.get_rect().size
                 system.blit(text, (24 + 192 - w / 2, 24 + 192 - h / 2))
             # When no more moves are possible
@@ -885,6 +986,8 @@ class Game:
                     settings.new_score('TRAINING', self.score, self.level)
                 elif self.type == GAME_CLASSIC:
                     settings.new_score('CLASSIC', self.score, self.level)
+                elif self.type == GAME_PUZZLE:
+                    settings.new_score('PUZZLE', self.score, self.level)
                 self.lost = True
                 return
             self.lost_timer -= 1
@@ -916,6 +1019,10 @@ class Game:
             self.level_timer -= 1
             if self.level_timer is SCROLL_DELAY / 2:
                 self.level += 1
+                if self.type == GAME_PUZZLE:
+                    if self.level > len(puzzlevels):
+                        self.lost_timer = -1
+                        return
                 self.new_level()
                 self.splash = True
             elif self.level_timer is 0:
@@ -936,15 +1043,15 @@ class Game:
                 self.timebonus = 0
                 for w in self.wins:
                     if self.board[w[0][0]][w[0][1]] == self.lucky:
-                        mul = 20
+                        points = 20
                         lucky = True
                     else:
-                        mul = 10
+                        points = 10
                         lucky = False
-                    if len(w) is 1:
-                        points = mul * self.level
-                    else:
-                        points = (mul * self.level) * (2 ** (self.win_iter + len(w) - 3))
+                    if self.type != GAME_PUZZLE:
+                        points *= self.level
+                    if len(w) >= 3:
+                        points *= 2 ** (self.win_iter + len(w) - 3)
                     self.scorebonus += points
                     self.timebonus += 45000 * len(w)
                     x2, y2 = 0.0, 0.0
@@ -986,6 +1093,22 @@ class Game:
                 if self.wins:
                     self.win_timer = WIN_DELAY
                     self.win_iter += 1
+                elif self.type == GAME_PUZZLE:
+                    # Check for puzzle completion
+                    status = self.check_puzzle()
+                    if status < 0:
+                        self.score -= 100
+                        system.play('ding')
+                        self.board_timer = SCROLL_DELAY
+                    elif status > 0:
+                        if (self.score % 10000) + 2000 >= 10000 \
+                          and self.eyes < 3:
+                            self.eyes += 1
+                        self.score += 2000
+                        system.play('applause')
+                        self.level_timer = SCROLL_DELAY
+                    else:
+                        self.check_moves = True
                 elif self.needed[0]:
                     # Check for new level
                     for i in range(self.population):
@@ -1010,7 +1133,7 @@ class Game:
             system.play('warning')
             self.warning_timer = WARNING_DELAY
         # Update time
-        if self.type in [GAME_TRAINING, GAME_CLASSIC]:
+        if self.type in [GAME_TRAINING, GAME_CLASSIC, GAME_PUZZLE]:
             self.time -= delta
             if self.time <= 0:
                 system.play('laugh')
@@ -1081,6 +1204,8 @@ class Game:
                 self.switch = i, j
                 self.switch_timer = SWITCH_DELAY
             elif self.board[i][j] == ITEM_METAL:
+                pass
+            elif self.board[i][j] >= ITEM_PUZZLE:
                 pass
             elif self.board[i][j] == ITEM_SPECIAL:
                 # Deal with the special block
@@ -1308,9 +1433,9 @@ class Monsterz:
         #elif y == 3 and 1 <= x <= 4:
         #    narea = GAME_CLASSIC
         #    self.nsat[1] = 255
-        #elif y == 4 and 1 <= x <= 5:
-        #    narea = GAME_CLASSIC
-        #    self.nsat[2] = 255
+        elif y == 4 and 1 <= x <= 5:
+            narea = GAME_PUZZLE
+            self.nsat[2] = 255
         elif y == 5 and 1 <= x <= 4:
             narea = GAME_TRAINING
             self.nsat[3] = 255
@@ -1404,10 +1529,13 @@ class Monsterz:
         self.game.parea = parea
         # Draw screen
         self.generic_draw()
+        # Check for new moves
         if self.game.check_moves:
             for move in self.game.list_moves():
                 break
             else:
+                if self.game.type == GAME_PUZZLE:
+                    self.game.score -= 50
                 system.play('ding')
                 self.game.board_timer = SCROLL_DELAY
             self.game.check_moves = False
