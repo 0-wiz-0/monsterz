@@ -735,10 +735,8 @@ class Monsterz:
             pygame.display.flip()
             self.timer += 1
             self.clock.tick(12)
-        # Leave enough time to hear the final sound
-        bg.fill((0,0,0))
-        win.blit(bg, (0, 0))
-        pygame.display.flip()
+        # Close the display, but give time to hear the last sample
+        pygame.display.quit()
         self.clock.tick(2)
 
     def copyright_draw(self):
