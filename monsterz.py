@@ -550,6 +550,7 @@ class Game:
                 for y in range(4):
                     col[y] = col[y] * y / 4
                     col[l - y - 1] = col[l - y - 1] * y / 4
+                del col
             del alpha
         except:
             pass
