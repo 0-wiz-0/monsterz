@@ -28,7 +28,7 @@ BOARD_WIDTH = 8
 BOARD_HEIGHT = 8
 
 STATUS_MENU = 0
-STATUS_PLAY = 1
+STATUS_GAME = 1
 STATUS_HELP = 2
 STATUS_ABOUT = 3
 STATUS_SCORES = 4
@@ -144,7 +144,7 @@ class Fonter:
         black = font.render(msg, 2, (0, 0, 0))
         w, h = black.get_size()
         text = pygame.Surface((w + delta, h + delta)).convert_alpha()
-        text.fill(black.get_at((0, 0)))
+        text.fill((0, 0, 0, 0))
         for x, y in [(5, 5), (6, 3), (5, 1), (3, 0),
                      (1, 1), (0, 3), (1, 5), (3, 6)]:
             text.blit(black, (x * delta / 6, y * delta / 6))
@@ -182,7 +182,7 @@ class Game:
         self.missed = False
         self.check_moves = False
         self.will_play = None
-        self.pause = False
+        self.paused = False
         self.pause_bitmap = None
         self.play_again = False
         self.level = 1
@@ -190,7 +190,7 @@ class Game:
         self.oldticks = pygame.time.get_ticks()
 
     def get_random(self, no_special = False):
-        if not no_special and randint(0, 1000) == 0:
+        if not no_special and randint(0, 500) == 0:
             return 0
         return randint(1, self.population)
 
@@ -412,7 +412,7 @@ class Game:
             pygame.draw.rect(timebar, c, (0, 0, w, 24))
         bg.blit(timebar, (16, 440))
         # Draw pieces
-        if self.pause:
+        if self.paused:
             bg.blit(self.pause_bitmap, (72, 24))
             text = fonter.render('PAUSED', 120)
             w, h = text.get_rect().size
@@ -444,12 +444,15 @@ class Game:
             x, y = data.board2screen(b[0])
             bg.blit(text, (x + 24 - w / 2, y + 24 - h / 2))
         # Print score
-        bg.blit(fonter.render(str(self.score), 60), (444, 10))
+        text = fonter.render(str(self.score), 60)
+        w, h = text.get_rect().size
+        bg.blit(text, (624 - w, 10))
         # Print level
         msg = 'LEVEL ' + str(self.level)
         if self.needed[1]: msg += ' - ' + str(self.needed[1])
         text = fonter.render(msg, 36)
-        bg.blit(text, (444, 58))
+        w, h = text.get_rect().size
+        bg.blit(text, (624 - w, 58))
         # Print done/needed
         for i in range(self.population):
             if not self.needed[i + 1]:
@@ -462,12 +465,219 @@ class Game:
             text = fonter.render(str(self.done[i + 1]), 36)
             bg.blit(text, (488, 102 + i * 38))
 
-    def toggle_pause(self):
-        self.pause = not self.pause
-        if self.pause:
+    def pause(self):
+        # TODO: prevent cheating by not allowing less than 1 second
+        # since the last pause
+        self.paused = not self.paused
+        data.play_sound('whip')
+        if self.paused:
             self.pause_bitmap = pygame.transform.scale(data.normal[self.get_random(no_special = True) - 1], (6 * data.tile_size, 6 * data.tile_size))
+            #self.pause_bitmap = pygame.transform.rotozoom(data.normal[self.get_random(no_special = True) - 1], 0.0, 6.0)
         else:
             del self.pause_bitmap
+        self.clicks = []
+
+    def update(self):
+        ticks = pygame.time.get_ticks()
+        delta = (ticks - self.oldticks) * 400 / (11 - self.level)
+        self.oldticks = ticks
+        # If paused, do nothing
+        if self.paused:
+            return
+        # Resolve winning moves and chain reactions
+        if self.board_timer:
+            self.board_timer -= 1
+            if self.board_timer is SCROLL_DELAY / 2:
+                self.new_board()
+            elif self.board_timer is 0:
+                data.play_sound('boing')
+                self.check_moves = True # Need to check again
+            return
+        if self.lost_timer:
+            self.lost_timer -= 1
+            if self.lost_timer is 0:
+                print str(self.level) + ':' + str(self.score)
+                self.lost = True
+                self.lost_timer = -1 # Continue forever
+            return
+        if self.switch_timer:
+            self.switch_timer -= 1
+            if self.switch_timer is 0:
+                self.board[self.select], self.board[self.switch] = \
+                    self.board[self.switch], self.board[self.select]
+                if self.missed:
+                    self.clicks = []
+                    self.missed = False
+                else:
+                    self.wins = self.get_wins()
+                    if not self.wins:
+                        data.play_sound('whip')
+                        self.missed = True
+                        self.switch_timer = SWITCH_DELAY
+                        return
+                    self.win_iter = 0
+                    self.win_timer = WIN_DELAY
+                self.select = None
+                self.switch = None
+            return
+        if self.level_timer:
+            self.level_timer -= 1
+            if self.level_timer is SCROLL_DELAY / 2:
+                self.level += 1
+                self.new_level()
+            elif self.level_timer is 0:
+                data.play_sound('boing')
+                self.blink_list = {}
+                self.check_moves = True
+            return
+        if self.win_timer:
+            self.win_timer -= 1
+            if self.win_timer is WIN_DELAY - 1:
+                data.play_sound('duh')
+                for w in self.wins:
+                    for x, y in w:
+                        self.surprised_list.append((x, y))
+            elif self.win_timer is WIN_DELAY * 3 / 6:
+                data.play_sound('pop')
+                self.scorebonus = 0
+                self.timebonus = 0
+                for w in self.wins:
+                    if len(w) is 1:
+                        points = 10 * self.level
+                    else:
+                        points = (10 * self.level) * (2 ** (self.win_iter + len(w) - 3))
+                    self.scorebonus += points
+                    self.timebonus += 45000 * len(w)
+                    x2, y2 = 0.0, 0.0
+                    for x, y in w:
+                        x2 += x
+                        y2 += y
+                    self.bonus_list.append([(x2 / len(w), y2 / len(w)), points])
+                self.disappear_list = self.surprised_list
+                self.surprised_list = []
+            elif self.win_timer is WIN_DELAY * 2 / 6:
+                self.bonus_list = []
+                for x, y in self.disappear_list:
+                    if self.board.has_key((x, y)):
+                        self.done[self.board[(x, y)]] += 1
+                        del self.board[(x, y)]
+                if self.angry_tiles == -1:
+                    unfinished = 0
+                    for i in range(self.population):
+                        if self.done[i + 1] < self.needed[i + 1]:
+                            unfinished += 1
+                            angry = i + 1
+                    if unfinished == 1:
+                        data.play_sound('grunt')
+                        self.angry_tiles = angry
+                self.disappear_list = []
+            elif self.win_timer is WIN_DELAY / 6:
+                self.time += self.timebonus
+                if self.time > 2000000:
+                    self.time = 2000000
+                self.score += self.scorebonus
+                self.fill_board()
+                data.play_sound('boing')
+            elif self.win_timer is 0:
+                self.wins = self.get_wins()
+                if self.wins:
+                    self.win_timer = WIN_DELAY
+                    self.win_iter += 1
+                elif self.needed[1]:
+                    # Check for new level
+                    for i in range(self.population):
+                        if self.done[i + 1] < self.needed[i + 1]:
+                            self.check_moves = True
+                            break
+                    else:
+                        data.play_sound('applause')
+                        self.select = None
+                        self.level_timer = SCROLL_DELAY
+            return
+        if self.warning_timer:
+            self.warning_timer -= 1
+        elif self.time <= 200000:
+            data.play_sound('warning')
+            self.warning_timer = WARNING_DELAY
+        # Update time
+        self.time -= delta
+        if self.time <= 0:
+            data.play_sound('laugh')
+            self.select = None
+            self.lost_timer = LOST_DELAY
+            return
+        # Handle moves from the AI:
+        if HAVE_AI:
+            if not self.will_play:
+                self.will_play = None
+                # Special piece?
+                if randint(0, 3) == 0:
+                    special = None
+                    for y in range(BOARD_HEIGHT):
+                        for x in range(BOARD_WIDTH):
+                            if self.board[(x, y)] == 0:
+                                special = (x, y)
+                                break
+                        if special:
+                            break
+                    if special:
+                        incomplete = 0
+                        for i in range(self.population):
+                            if self.done[i + 1] >= self.needed[i + 1]:
+                                incomplete += 1
+                                if incomplete == 2:
+                                    break
+                        if incomplete == 2 or randint(0, 3) == 0:
+                            self.will_play = [None, special]
+                # Normal piece
+                if not self.will_play:
+                    min = 0
+                    for move in self.list_moves():
+                        color = self.board.get(move[0])
+                        if self.done[color] >= min or \
+                           self.done[color] >= self.needed[color]:
+                            self.will_play = move
+                            min = self.done[color]
+                self.ai_timer = 15 - self.level
+            if self.ai_timer is (15 - self.level) / 2:
+                self.clicks.append(self.will_play[0])
+            elif self.ai_timer is 0:
+                self.clicks.append(self.will_play[1])
+                self.will_play = None
+            self.ai_timer -= 1
+        # Handle moves from the player or the AI
+        if self.clicks:
+            played = self.clicks.pop(0)
+            if self.select:
+                x1, y1 = self.select
+                x2, y2 = played
+                if x1 == x2 and y1 == y2:
+                    data.play_sound('click')
+                    self.select = None
+                    return
+                if abs(x1 - x2) + abs(y1 - y2) != 1:
+                    return
+                data.play_sound('whip')
+                self.switch = played
+                self.switch_timer = SWITCH_DELAY
+            else:
+                if self.board[played] != 0:
+                    data.play_sound('click')
+                    self.select = played
+                    return
+                # Deal with the special block
+                self.wins = []
+                target = 1 + (monsterz.timer % self.population)
+                found = 0
+                for y in range(BOARD_HEIGHT):
+                    for x in range(BOARD_WIDTH):
+                        if self.board[(x, y)] == target:
+                            self.wins.append([(x, y)])
+                self.board[played] = target
+                self.wins.append([played])
+                self.win_iter = 0
+                self.win_timer = WIN_DELAY
+            return
 
 class Monsterz:
     def __init__(self):
@@ -481,10 +691,11 @@ class Monsterz:
     def go(self):
         while True:
             if self.status == STATUS_MENU:
+                self.area = None
                 iterator = self.iterate_menu
-            elif self.status == STATUS_PLAY:
+            elif self.status == STATUS_GAME:
                 self.game = Game()
-                iterator = self.iterate_play
+                iterator = self.iterate_game
             elif self.status == STATUS_HELP:
                 iterator = self.iterate_help
             elif self.status == STATUS_SCORES:
@@ -501,6 +712,26 @@ class Monsterz:
     def generic_draw(self):
         bg.blit(data.board, (0, 0))
 
+    def copyright_draw(self):
+        scroll = pygame.Surface((406, 40)).convert_alpha()
+        scroll.fill((0, 0, 0, 0))
+        text = fonter.render('MONSTERZ - COPYRIGHT 2005 SAM HOCEVAR - ', 30)
+        w, h = text.get_size()
+        d = (self.timer * 2) % w
+        scroll.blit(text, (0 - d, 0))
+        scroll.blit(text, (w - d, 0))
+        try:
+            alpha = pygame.surfarray.pixels_alpha(scroll)
+            for x in range(10):
+                for y, p in enumerate(alpha[x]):
+                    alpha[x][y] = p * x / 12
+                for y, p in enumerate(alpha[406 - x - 1]):
+                    alpha[406 - x - 1][y] = p * x / 12
+            del alpha
+        except:
+            pass
+        bg.blit(scroll, (13, 437))
+
     def generic_event(self, event):
         if event.type == QUIT:
             self.status = STATUS_QUIT
@@ -510,37 +741,49 @@ class Monsterz:
             return True
         return False
 
+    sat = [0] * 4
+    area = None
     def iterate_menu(self):
         self.generic_draw()
-        x, y = data.screen2board(pygame.mouse.get_pos())
-        colors = [(255, 255, 255)] * 4
-        shapes = [data.blink[2], data.blink[3], data.blink[4], data.blink[0]]
+        self.copyright_draw()
+        colors = [[0, 255, 0], [255, 0, 255], [255, 255, 0], [255, 0, 0]]
+        shapes = [2, 3, 4, 0]
         messages = ['NEW GAME', 'HELP', 'SCORES', 'QUIT']
+        x, y = data.screen2board(pygame.mouse.get_pos())
         if y == 4 and x >= 1 and x <= 6:
-            area = STATUS_PLAY
-            colors[0] = (0, 255, 0)
-            shapes[0] = data.surprise[2]
+            area = STATUS_GAME
+            self.sat[0] = 255
         elif y == 5 and x >= 1 and x <= 4:
             area = STATUS_HELP
-            colors[1] = (255, 0, 255)
-            shapes[1] = data.surprise[3]
+            self.sat[1] = 255
         elif y == 6 and x >= 1 and x <= 5:
             area = STATUS_SCORES
-            colors[2] = (255, 255, 0)
-            shapes[2] = data.surprise[4]
+            self.sat[2] = 255
         elif y == 7 and x >= 1 and x <= 4:
             area = STATUS_QUIT
-            colors[3] = (255, 0, 0)
-            shapes[3] = data.surprise[0]
+            self.sat[3] = 255
         else:
             area = None
+        if area and area != self.area:
+            data.play_sound('click')
+        self.area = area
+        # Print logo and menu
         w, h = data.logo.get_size()
         bg.blit(data.logo, (24 + 192 - w / 2, 24 + 96 - h / 2))
         for x in range(4):
-            bg.blit(shapes[x], data.board2screen((1, 4 + x)))
-            text = fonter.render(messages[x], 48, colors[x])
+            if self.sat[x] > 180:
+                monster = data.surprise[shapes[x]]
+            elif self.sat[x] > 40:
+                monster = data.normal[shapes[x]]
+            else:
+                monster = data.blink[shapes[x]]
+            bg.blit(monster, data.board2screen((1, 4 + x)))
+            c = map(lambda a: 255 - (255 - a) * self.sat[x] / 255, colors[x])
+            text = fonter.render(messages[x], 48, c)
             w, h = text.get_rect().size
             bg.blit(text, (24 + 102, 24 + 216 + 48 * x - h / 2))
+            if self.sat[x]:
+                self.sat[x] = max(0, self.sat[x] - 20)
         # Handle events
         for event in pygame.event.get():
             if self.generic_event(event):
@@ -552,12 +795,8 @@ class Monsterz:
                 self.status = area
                 return
 
-    def iterate_play(self):
+    def iterate_game(self):
         game = self.game
-        ask_pause = False
-        ticks = pygame.time.get_ticks()
-        delta = (ticks - game.oldticks) * 400 / (11 - game.level)
-        game.oldticks = ticks
         # Draw screen
         self.generic_draw()
         if game.check_moves:
@@ -577,7 +816,7 @@ class Monsterz:
                 self.status = STATUS_MENU
                 return
             elif event.type == KEYDOWN and (event.key == K_p or event.key == K_SPACE):
-                ask_pause = True
+                game.pause()
             elif event.type == MOUSEBUTTONDOWN:
                 if game.lost_timer < 0:
                     self.status = STATUS_MENU
@@ -586,210 +825,11 @@ class Monsterz:
                 if x < 0 or x >= BOARD_WIDTH or y < 0 or y >= BOARD_HEIGHT:
                     continue
                 game.clicks.append((x, y))
-        # If paused, do nothing
-        if game.pause and not ask_pause:
-            return
-        # Resolve winning moves and chain reactions
-        if game.board_timer:
-            game.board_timer -= 1
-            if game.board_timer is SCROLL_DELAY / 2:
-                game.new_board()
-            elif game.board_timer is 0:
-                data.play_sound('boing')
-                game.check_moves = True # Need to check again
-            return
-        if game.lost_timer:
-            game.lost_timer -= 1
-            if game.lost_timer is 0:
-                print str(game.level) + ':' + str(game.score)
-                game.lost = True
-                game.lost_timer = -1 # Continue forever
-            return
-        if game.switch_timer:
-            game.switch_timer -= 1
-            if game.switch_timer is 0:
-                game.board[game.select], game.board[game.switch] = \
-                    game.board[game.switch], game.board[game.select]
-                if game.missed:
-                    game.clicks = []
-                    game.missed = False
-                else:
-                    game.wins = game.get_wins()
-                    if not game.wins:
-                        data.play_sound('whip')
-                        game.missed = True
-                        game.switch_timer = SWITCH_DELAY
-                        return
-                    game.win_iter = 0
-                    game.win_timer = WIN_DELAY
-                game.select = None
-                game.switch = None
-            return
-        if game.level_timer:
-            game.level_timer -= 1
-            if game.level_timer is SCROLL_DELAY / 2:
-                game.level += 1
-                game.new_level()
-            elif game.level_timer is 0:
-                data.play_sound('boing')
-                game.blink_list = {}
-                game.check_moves = True
-            return
-        if game.win_timer:
-            game.win_timer -= 1
-            if game.win_timer is WIN_DELAY - 1:
-                data.play_sound('duh')
-                for w in game.wins:
-                    for x, y in w:
-                        game.surprised_list.append((x, y))
-            elif game.win_timer is WIN_DELAY * 3 / 6:
-                data.play_sound('pop')
-                game.scorebonus = 0
-                game.timebonus = 0
-                for w in game.wins:
-                    if len(w) is 1:
-                        points = 10 * game.level
-                    else:
-                        points = (10 * game.level) * (2 ** (game.win_iter + len(w) - 3))
-                    game.scorebonus += points
-                    game.timebonus += 45000 * len(w)
-                    x2, y2 = 0.0, 0.0
-                    for x, y in w:
-                        x2 += x
-                        y2 += y
-                    game.bonus_list.append([(x2 / len(w), y2 / len(w)), points])
-                game.disappear_list = game.surprised_list
-                game.surprised_list = []
-            elif game.win_timer is WIN_DELAY * 2 / 6:
-                game.bonus_list = []
-                for x, y in game.disappear_list:
-                    if game.board.has_key((x, y)):
-                        game.done[game.board[(x, y)]] += 1
-                        del game.board[(x, y)]
-                if game.angry_tiles == -1:
-                    unfinished = 0
-                    for i in range(game.population):
-                        if game.done[i + 1] < game.needed[i + 1]:
-                            unfinished += 1
-                            angry = i + 1
-                    if unfinished == 1:
-                        data.play_sound('grunt')
-                        game.angry_tiles = angry
-                game.disappear_list = []
-            elif game.win_timer is WIN_DELAY / 6:
-                game.time += game.timebonus
-                if game.time > 2000000:
-                    game.time = 2000000
-                game.score += game.scorebonus
-                game.fill_board()
-                data.play_sound('boing')
-            elif game.win_timer is 0:
-                game.wins = game.get_wins()
-                if game.wins:
-                    game.win_timer = WIN_DELAY
-                    game.win_iter += 1
-                elif game.needed[1]:
-                    # Check for new level
-                    for i in range(game.population):
-                        if game.done[i + 1] < game.needed[i + 1]:
-                            game.check_moves = True
-                            break
-                    else:
-                        data.play_sound('applause')
-                        game.select = None
-                        game.level_timer = SCROLL_DELAY
-            return
-        if game.warning_timer:
-            game.warning_timer -= 1
-        elif game.time <= 200000:
-            data.play_sound('warning')
-            game.warning_timer = WARNING_DELAY
-        # Update time
-        game.time -= delta
-        if game.time <= 0:
-            data.play_sound('laugh')
-            game.select = None
-            game.lost_timer = LOST_DELAY
-            return
-        # Honour pause request
-        if ask_pause:
-            game.toggle_pause()
-            return
-        # Handle moves from the AI:
-        if HAVE_AI:
-            if not game.will_play:
-                game.will_play = None
-                # Special piece?
-                if randint(0, 3) == 0:
-                    special = None
-                    for y in range(BOARD_HEIGHT):
-                        for x in range(BOARD_WIDTH):
-                            if game.board[(x, y)] == 0:
-                                special = (x, y)
-                                break
-                        if special:
-                            break
-                    if special:
-                        incomplete = 0
-                        for i in range(game.population):
-                            if game.done[i + 1] >= game.needed[i + 1]:
-                                incomplete += 1
-                                if incomplete == 2:
-                                    break
-                        if incomplete == 2 or randint(0, 3) == 0:
-                            game.will_play = [None, special]
-                # Normal piece
-                if not game.will_play:
-                    min = 0
-                    for move in game.list_moves():
-                        color = game.board.get(move[0])
-                        if game.done[color] >= min or \
-                           game.done[color] >= game.needed[color]:
-                            game.will_play = move
-                            min = game.done[color]
-                game.ai_timer = 15 - game.level
-            if game.ai_timer is (15 - game.level) / 2:
-                game.clicks.append(game.will_play[0])
-            elif game.ai_timer is 0:
-                game.clicks.append(game.will_play[1])
-                game.will_play = None
-            game.ai_timer -= 1
-        # Handle moves from the player or the AI
-        if game.clicks:
-            played = game.clicks.pop(0)
-            if game.select:
-                x1, y1 = game.select
-                x2, y2 = played
-                if x1 == x2 and y1 == y2:
-                    data.play_sound('click')
-                    game.select = None
-                    return
-                if abs(x1 - x2) + abs(y1 - y2) != 1:
-                    return
-                data.play_sound('whip')
-                game.switch = played
-                game.switch_timer = SWITCH_DELAY
-            else:
-                if game.board[played] != 0:
-                    data.play_sound('click')
-                    game.select = played
-                    return
-                # Deal with the special block
-                game.wins = []
-                target = 1 + (monsterz.timer % game.population)
-                found = 0
-                for y in range(BOARD_HEIGHT):
-                    for x in range(BOARD_WIDTH):
-                        if game.board[(x, y)] == target:
-                            game.wins.append([(x, y)])
-                game.board[played] = target
-                game.wins.append([played])
-                game.win_iter = 0
-                game.win_timer = WIN_DELAY
-            return
+        game.update()
 
     def iterate_help(self):
         self.generic_draw()
+        self.copyright_draw()
         # Title
         text = fonter.render('INSTRUCTIONS', 60)
         w, h = text.get_rect().size
@@ -869,17 +909,19 @@ class Monsterz:
 
     def iterate_scores(self):
         self.generic_draw()
+        self.copyright_draw()
         text = fonter.render('SCORES', 60)
         w, h = text.get_rect().size
         bg.blit(text, (24 + 192 - w / 2, 24 + 24 - h / 2))
-        for x in range(10):
-            text = fonter.render(str(x + 1) + '. UNIMPLEMENTED', 32)
+        scores = [['UNIMPLEMENTED', 100 - x * 10, 1] for x in range(10)]
+        for x, p in enumerate(scores):
+            text = fonter.render(str(x + 1) + '. ' + p[0], 32)
             w, h = text.get_rect().size
             bg.blit(text, (24 + 24, 24 + 72 + 32 * x - h / 2))
-            text = fonter.render(str(100 - x * 10), 32)
+            text = fonter.render(str(p[1]), 32)
             w, h = text.get_rect().size
             bg.blit(text, (24 + 324 - w, 24 + 72 + 32 * x - h / 2))
-            text = fonter.render(str(1), 32)
+            text = fonter.render(str(p[2]), 32)
             w, h = text.get_rect().size
             bg.blit(text, (24 + 360 - w, 24 + 72 + 32 * x - h / 2))
         # Handle events
