@@ -125,6 +125,8 @@ class Data:
         if w * 9 != h * 5:
             raise 'error: ' + file + ' has wrong image size'
         self.tiles = tiles
+        icon = pygame.image.load(join(dir, 'icon.png')).convert_alpha()
+        pygame.display.set_icon(icon)
         self.board = pygame.image.load(join(dir, 'board.png')).convert()
         self.logo = pygame.image.load(join(dir, 'logo.png')).convert_alpha()
         self.orig_size = w / 5
