@@ -1573,7 +1573,7 @@ def main():
         data = Data(sharedir)
     except:
         print argv[0] + ': could not open data from `' + sharedir + "'."
-        exit(1)
+        raise
     hiscores = Hiscores(scorefile, outfd)
     fonter = Fonter()
     monsterz = Monsterz()
