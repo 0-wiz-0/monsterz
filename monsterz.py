@@ -84,10 +84,10 @@ class Data:
         t = self.tile_size
         s = self.orig_size
         scale = self._scale
-        crop = self.tiles.subsurface
+        tile_at = lambda x, y: self.tiles.subsurface((x * s, y * s, s, s))
         # Create sprites
         for i in range(8):
-            self.normal[i] = scale(crop((0, (i + 1) * s, s, s)), (t, t))
+            self.normal[i] = scale(tile_at(0, i + 1), (t, t))
             self.tiny[i] = scale(self.normal[i], (t * 3 / 4, t * 3 / 4))
             self.shaded[i] = scale(self.normal[i], (t * 3 / 4, t * 3 / 4))
             try:
@@ -106,18 +106,17 @@ class Data:
                 del alpha
             except:
                 pass
-            self.blink[i] = scale(crop((s, (i + 1) * s, s, s)), (t, t))
-            self.surprise[i] = scale(crop((s * 2, (i + 1) * s, s, s)), (t, t))
-            self.angry[i] = scale(crop((s * 3, (i + 1) * s, s, s)), (t, t))
-            self.exploded[i] = scale(crop((s * 4, (i + 1) * s, s, s)), (t, t))
-            #tmp = crop((s, 0, s, s)).copy() # marche pas !
-            special = scale(crop((s, 0, s, s)), (t, t)) # marche...
-            mini = crop((0, (i + 1) * s, s, s))
+            self.blink[i] = scale(tile_at(1, i + 1), (t, t))
+            self.surprise[i] = scale(tile_at(2, i + 1), (t, t))
+            self.angry[i] = scale(tile_at(3, i + 1), (t, t))
+            self.exploded[i] = scale(tile_at(4, i + 1), (t, t))
+            #tmp = tile_at(1, 0).copy() # marche pas !
+            special = scale(tile_at(1, 0), (t, t)) # marche...
+            mini = tile_at(0, i + 1)
             mini = scale(mini, (t * 7 / 8 - 1, t * 7 / 8 - 1))
             special.blit(mini, (s / 16, s / 16))
             self.special[i] = scale(special, (t, t))
-        # Create selector sprite
-        self.selector = scale(crop((0, 0, s, s)), (t, t))
+        self.selector = scale(tile_at(0, 0), (t, t))
 
     def board2screen(self, coord):
         x, y = coord
@@ -783,7 +782,7 @@ class Monsterz:
             w, h = text.get_rect().size
             bg.blit(text, (24 + 102, 24 + 216 + 48 * x - h / 2))
             if self.sat[x]:
-                self.sat[x] = max(0, self.sat[x] - 20)
+                self.sat[x] = self.sat[x] * 8 / 10#max(0, self.sat[x] - 20)
         # Handle events
         for event in pygame.event.get():
             if self.generic_event(event):
@@ -842,25 +841,25 @@ class Monsterz:
         w, h = text.get_rect().size
         bg.blit(text, (24 + 6, 24 + 84 - h / 2))
         # Iter 1
-        bg.blit(data.normal[2], data.board2screen((0, 2)))
+        bg.blit(data.blink[0], data.board2screen((0, 2)))
         bg.blit(data.normal[3], data.board2screen((0, 3)))
-        bg.blit(data.blink[0], data.board2screen((0, 4)))
-        bg.blit(data.normal[0], data.board2screen((1, 2)))
+        bg.blit(data.normal[2], data.board2screen((0, 4)))
+        bg.blit(data.normal[4], data.board2screen((1, 2)))
         bg.blit(data.normal[0], data.board2screen((1, 3)))
-        bg.blit(data.normal[4], data.board2screen((1, 4)))
-        bg.blit(data.selector, data.board2screen((0, 4)))
+        bg.blit(data.normal[0], data.board2screen((1, 4)))
+        bg.blit(data.selector, data.board2screen((0, 2)))
         # Iter 2
-        bg.blit(data.normal[2], data.board2screen((3, 2)))
+        bg.blit(data.normal[4], data.board2screen((3, 2)))
         bg.blit(data.normal[3], data.board2screen((3, 3)))
-        bg.blit(data.normal[4], data.board2screen((3, 4)))
+        bg.blit(data.normal[2], data.board2screen((3, 4)))
         bg.blit(data.surprise[0], data.board2screen((4, 2)))
         bg.blit(data.surprise[0], data.board2screen((4, 3)))
         bg.blit(data.surprise[0], data.board2screen((4, 4)))
-        bg.blit(data.selector, data.board2screen((4, 4)))
+        bg.blit(data.selector, data.board2screen((4, 2)))
         # Iter 2
-        bg.blit(data.normal[2], data.board2screen((6, 2)))
+        bg.blit(data.normal[4], data.board2screen((6, 2)))
         bg.blit(data.normal[3], data.board2screen((6, 3)))
-        bg.blit(data.normal[4], data.board2screen((6, 4)))
+        bg.blit(data.normal[2], data.board2screen((6, 4)))
         bg.blit(data.exploded[0], data.board2screen((7, 2)))
         bg.blit(data.exploded[0], data.board2screen((7, 3)))
         bg.blit(data.exploded[0], data.board2screen((7, 4)))
