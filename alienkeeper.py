@@ -77,6 +77,7 @@ class Game:
         self.bonus_list = []
         self.disappear_list = []
         self.surprised_list = []
+        self.clicks = []
         self.select = None
         self.switch = None
         # Compute stuff
@@ -87,7 +88,7 @@ class Game:
         theme.make_sprites(tile_size)
         # Other initialisation stuff
         self.score = 0
-        self.special_timer = 0
+        self.special_index = 0
         self.lost_timer = 0
         self.lost_offset = {}
         for y in range(self.board_height):
@@ -110,6 +111,7 @@ class Game:
         while not self.die:
             self.iterate()
             self.clock.tick(15)
+        print str(self.level) + ':' + str(self.score)
 
     def get_random(self, no_special = False):
         if not no_special and randint(0, 500) == 0:
@@ -272,7 +274,7 @@ class Game:
         for (c, n) in self.board.items():
             # Decide the shape
             if n == 0:
-                shape = theme.special[self.special_timer]
+                shape = theme.special[self.special_index]
             elif c in self.surprised_list \
               or self.board_timer > SCROLL_DELAY / 2 \
               or self.level_timer > SCROLL_DELAY / 2:
@@ -353,20 +355,34 @@ class Game:
         ticks = pygame.time.get_ticks()
         delta = (ticks - self.oldticks) * 400 / (11.0000001 - self.level) # FIXME
         self.oldticks = ticks
-        self.special_timer = (self.special_timer + 1) % self.population
+        self.special_index = (self.special_index + 1) % self.population
         # Draw screen
         if self.check_moves:
-            can_play = False
             for move in self.list_moves():
-                can_play = True
                 break
-            self.check_moves = False
-            if not can_play:
+            else:
                 self.board_timer = SCROLL_DELAY
+            self.check_moves = False
+            self.clicks = []
         self.draw_scene()
         window.blit(background, (0, 0))
-        # Draw stuff here
         pygame.display.flip()
+        # Handle events
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                self.die = True
+                return
+            elif event.type == KEYDOWN and event.key == K_ESCAPE:
+                self.die = True
+                return
+            elif event.type == KEYDOWN and event.key == K_f:
+                pygame.display.toggle_fullscreen()
+                return
+            elif event.type == MOUSEBUTTONDOWN:
+                (x2, y2) = self.screen2board(event.pos)
+                if x2 < 0 or x2 >= self.board_width or y2 < 0 or y2 >= self.board_height:
+                    continue
+                self.clicks.append((x2, y2))
         # Resolve winning moves and chain reactions
         if self.board_timer:
             self.board_timer -= 1
@@ -385,6 +401,7 @@ class Game:
             if self.switch_timer is 0:
                 self.do_move(self.select, self.switch)
                 if self.missed:
+                    self.clicks = []
                     self.missed = False
                 else:
                     self.wins = self.get_wins()
@@ -468,29 +485,12 @@ class Game:
                     else:
                         self.check_moves = True
             return
-        # Handle events
-        played = None
-        for event in pygame.event.get():
-            if event.type == QUIT:
-                self.die = True
-                return
-            elif event.type == KEYDOWN and event.key == K_ESCAPE:
-                self.die = True
-                return
-            elif event.type == KEYDOWN and event.key == K_f:
-                pygame.display.toggle_fullscreen()
-                return
-            elif event.type == MOUSEBUTTONDOWN:
-                (x2, y2) = self.screen2board(event.pos)
-                if x2 < 0 or x2 >= self.board_width or y2 < 0 or y2 >= self.board_height:
-                    continue
-                played = (x2, y2)
-                break
+        # Update time
+        self.time -= delta
         if self.time <= 0:
             self.lost_timer = LOST_DELAY
             return
-        # Update time
-        self.time -= delta
+        # Handle moves from the AI:
         if AI:
             if not self.will_play:
                 self.will_play = None
@@ -524,39 +524,40 @@ class Game:
                             min = self.done[color]
                 self.ai_timer = 15 - self.level
             if self.ai_timer is (15 - self.level) / 2:
-                played = self.will_play[0]
+                self.clicks.append(self.will_play[0])
             elif self.ai_timer is 0:
-                played = self.will_play[1]
+                self.clicks.append(self.will_play[1])
                 self.will_play = None
             self.ai_timer -= 1
-        # Handle plays
-        if played and self.select:
-            (x1, y1) = self.select
-            (x2, y2) = played
-            if x1 == x2 and y1 == y2:
-                self.select = None
-                return
-            if abs(x1 - x2) + abs(y1 - y2) != 1:
-                return
-            self.switch = played
-            self.switch_timer = SWITCH_DELAY
-            return
-        if played and not self.select:
-            if self.board[played] != 0:
-                self.select = played
-                return
-            # Deal with the special block
-            self.wins = []
-            target = 1 + self.special_timer
-            found = 0
-            for y in range(self.board_height):
-                for x in range(self.board_width):
-                    if self.board[(x, y)] == target:
-                        self.wins.append([(x, y)])
-            self.board[played] = target
-            self.wins.append([played])
-            self.win_iter = 0
-            self.win_timer = WIN_DELAY
+        # Handle moves from the player or the AI
+        if self.clicks:
+            played = self.clicks.pop(0)
+            if self.select:
+                (x1, y1) = self.select
+                (x2, y2) = played
+                if x1 == x2 and y1 == y2:
+                    self.select = None
+                    return
+                if abs(x1 - x2) + abs(y1 - y2) != 1:
+                    return
+                self.switch = played
+                self.switch_timer = SWITCH_DELAY
+            else:
+                if self.board[played] != 0:
+                    self.select = played
+                    return
+                # Deal with the special block
+                self.wins = []
+                target = 1 + self.special_index
+                found = 0
+                for y in range(self.board_height):
+                    for x in range(self.board_width):
+                        if self.board[(x, y)] == target:
+                            self.wins.append([(x, y)])
+                self.board[played] = target
+                self.wins.append([played])
+                self.win_iter = 0
+                self.win_timer = WIN_DELAY
             return
 
 # Init Pygame
