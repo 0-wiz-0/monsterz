@@ -16,9 +16,8 @@ import pygame
 from pygame.locals import *
 from random import randint
 from sys import argv, exit, platform
-from getopt import getopt, GetoptError
 from os.path import join, dirname
-from os import write, geteuid
+from os import write
 
 # String constants
 VERSION = '0.3'
@@ -44,7 +43,7 @@ STATUS_QUIT = -1
 
 LOST_DELAY = 40
 SCROLL_DELAY = 40
-WIN_DELAY = 15
+WIN_DELAY = 12
 SWITCH_DELAY = 4
 WARNING_DELAY = 12
 
@@ -75,6 +74,7 @@ class Hiscores:
                 self.name = 'YOU'
         else:
             from pwd import getpwuid
+            from os import geteuid
             self.name = getpwuid(geteuid())[0].upper()
         # Load current score file
         try:
@@ -336,7 +336,7 @@ class Game:
                         break
                 else:
                     self.board[(x, y)] = self.get_random()
-                    self.extra_offset[x][y] = ((0, 48 * (-1 - y)))
+                    self.extra_offset[x][y] = ((0, 48 * (-2 - y)))
 
     def get_wins(self):
         wins = []
@@ -452,7 +452,7 @@ class Game:
                 yoff += (randint(0, d) - randint(0, d)) * randint(0, d) / 4
                 self.extra_offset[i][j] = xoff, yoff
             elif yoff and self.win_timer:
-                yoff = yoff * (self.win_timer - 1) / (WIN_DELAY / 2)
+                yoff = yoff * (self.win_timer - 1) / (WIN_DELAY * 2 / 3)
                 self.extra_offset[i][j] = xoff, yoff
             xoff += global_xoff
             yoff += global_yoff
@@ -481,12 +481,12 @@ class Game:
                 select_coord = (x, y)
                 shape = data.blink[n - 1] # Not sure if it looks nice
             # Print the shit
-            self.pieces_draw(shape, (x + xoff, y + yoff))
+            self.piece_draw(shape, (x + xoff, y + yoff))
         # Draw selector if necessary
         if self.select:
             system.blit(data.selector, select_coord)
 
-    def pieces_draw(self, sprite, (x, y)):
+    def piece_draw(self, sprite, (x, y)):
         width = data.tile_size
         crop = sprite.subsurface
         # Constrain X
@@ -604,20 +604,21 @@ class Game:
             text = fonter.render(str(self.done[i + 1]), 36)
             system.blit(text, (x + 44, y + 2))
         # Print pause and abort buttons
-        r = (255, 127, 127)
-        if self.paused:
-            led, color = data.led_on, (255, 255, 255)
-        else:
-            led, color = data.led_off, (180, 150, 127)
-        c = map(lambda a, b: b - (b - a) * self.psat[0] / 255, r, color)
-        system.blit(led, (440, 288))
-        system.blit(fonter.render('PAUSE', 30, c), (470, 286))
-        color = (180, 150, 127)
-        c = map(lambda a, b: b - (b - a) * self.psat[1] / 255, r, color)
-        system.blit(fonter.render('ABORT', 30, c), (470, 326))
-        for x in range(2):
-            if self.psat[x]:
-                self.psat[x] = self.psat[x] * 8 / 10
+        if self.lost_timer >= 0:
+            r = (255, 127, 127)
+            if self.paused:
+                led, color = data.led_on, (255, 255, 255)
+            else:
+                led, color = data.led_off, (180, 150, 127)
+            c = map(lambda a, b: b - (b - a) * self.psat[0] / 255, r, color)
+            system.blit(led, (440, 288))
+            system.blit(fonter.render('PAUSE', 30, c), (470, 286))
+            color = (180, 150, 127)
+            c = map(lambda a, b: b - (b - a) * self.psat[1] / 255, r, color)
+            system.blit(fonter.render('ABORT', 30, c), (470, 326))
+            for x in range(2):
+                if self.psat[x]:
+                    self.psat[x] = self.psat[x] * 8 / 10
         # Print level
         msg = 'LEVEL ' + str(self.level)
         if self.needed[1]: msg += ': ' + str(self.needed[1]) + 'x'
@@ -696,7 +697,7 @@ class Game:
                 for w in self.wins:
                     for x, y in w:
                         self.surprised_list.append((x, y))
-            elif self.win_timer is WIN_DELAY * 4 / 6:
+            elif self.win_timer is WIN_DELAY * 4 / 5:
                 system.play('pop')
                 self.scorebonus = 0
                 self.timebonus = 0
@@ -714,7 +715,7 @@ class Game:
                     self.bonus_list.append([(x2 / len(w), y2 / len(w)), points])
                 self.disappear_list = self.surprised_list
                 self.surprised_list = []
-            elif self.win_timer is WIN_DELAY * 3 / 6:
+            elif self.win_timer is WIN_DELAY * 3 / 5:
                 for x, y in self.disappear_list:
                     if self.board.has_key((x, y)):
                         self.done[self.board[(x, y)]] += 1
@@ -728,14 +729,14 @@ class Game:
                     if unfinished == 1:
                         system.play('grunt')
                         self.angry_tiles = angry
-                self.fill_board()
                 self.disappear_list = []
-            elif self.win_timer is WIN_DELAY * 3 / 6 - 2:
                 self.bonus_list = []
+            elif self.win_timer is WIN_DELAY * 2 / 5:
                 self.time += self.timebonus
                 if self.time > 2000000:
                     self.time = 2000000
                 self.score += self.scorebonus
+                self.fill_board()
             elif self.win_timer is 0:
                 system.play('boing')
                 self.wins = self.get_wins()
@@ -1023,12 +1024,13 @@ class Monsterz:
     def iterate_game(self):
         x, y = pygame.mouse.get_pos()
         parea = None
-        if 440 < x < 440 + 180 and 288 < y < 288 + 24:
-            parea = 1
-            self.game.psat[0] = 255
-        elif 440 < x < 440 + 180 and 328 < y < 328 + 24:
-            parea = 2
-            self.game.psat[1] = 255
+        if self.lost_timer >= 0:
+            if 440 < x < 440 + 180 and 288 < y < 288 + 24:
+                parea = 1
+                self.game.psat[0] = 255
+            elif 440 < x < 440 + 180 and 328 < y < 328 + 24:
+                parea = 2
+                self.game.psat[1] = 255
         if parea and parea != self.game.parea:
             system.play('click')
         self.game.parea = parea
@@ -1217,6 +1219,7 @@ def usage():
     print 'Report bugs or suggestions to <sam@zoy.org>.'
 
 def main():
+    from getopt import getopt, GetoptError
     global system, data, hiscores, fonter, monsterz
     global FLAG_FULLSCREEN, FLAG_MUSIC, FLAG_SFX
     sharedir = dirname(argv[0])
