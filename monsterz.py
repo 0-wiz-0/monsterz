@@ -60,6 +60,43 @@ def compare_scores(x, y):
     else:
         return y[2] - x[2]
 
+def semi_grayscale(surf):
+    try:
+        # Convert to semi-grayscale
+        pixels = pygame.surfarray.pixels3d(surf)
+        alpha = pygame.surfarray.pixels_alpha(surf)
+        for y, line in enumerate(pixels):
+            for x, p in enumerate(line):
+                r, g, b = p
+                M = max(r, g, b)
+                m = min(r, g, b)
+                val = (r + g + b + 2 * M) / 5
+                p[:] = (val + r) / 2, (val + g) / 2, (val + b) / 2
+                if alpha[y][x] >= 250:
+                    alpha[y][x] = 255 - (M - m) * 3 / 4
+        del pixels
+        del alpha
+    except:
+        return
+
+def semi_transp(surf):
+    try:
+        # Convert to semi-transparency
+        pixels = pygame.surfarray.pixels3d(surf)
+        alpha = pygame.surfarray.pixels_alpha(surf)
+        for y, line in enumerate(pixels):
+            for x, p in enumerate(line):
+                r, g, b = p
+                M = max(r, g, b)
+                m = min(r, g, b)
+                p[:] = (m + r) / 2, (m + g) / 2, (m + b) / 2
+                if alpha[y][x] >= 250:
+                    alpha[y][x] = 255 - M * 2 / 3
+        del pixels
+        del alpha
+    except:
+        return
+
 class Hiscores:
     def __init__(self, scorefile, outfd):
         self.scorefile = scorefile
@@ -163,34 +200,23 @@ class Data:
             self.normal[i] = scale(tile_at(0, i + 1), (t, t))
             self.tiny[i] = scale(tile_at(0, i + 1), (t * 3 / 4, t * 3 / 4))
             self.shaded[i] = scale(tile_at(3, i + 1), (t * 3 / 4, t * 3 / 4))
-            try:
-                pixels = pygame.surfarray.pixels3d(self.shaded[i])
-                alpha = pygame.surfarray.pixels_alpha(self.shaded[i])
-                for y, line in enumerate(pixels):
-                    for x, p in enumerate(line):
-                        r, g, b = p
-                        M = max(r, g, b)
-                        m = min(r, g, b)
-                        val = (r + g + b + 2 * M) / 5
-                        p[:] = (val + r) / 2, (val + g) / 2, (val + b) / 2
-                        if alpha[y][x] >= 250:
-                            alpha[y][x] = 255 - (M - m) * 3 / 4
-                del pixels
-                del alpha
-            except:
-                pass
+            semi_grayscale(self.shaded[i])
             self.blink[i] = scale(tile_at(1, i + 1), (t, t))
             self.surprise[i] = scale(tile_at(2, i + 1), (t, t))
             self.angry[i] = scale(tile_at(3, i + 1), (t, t))
             self.exploded[i] = scale(tile_at(4, i + 1), (t, t))
             #tmp = tile_at(1, 0).copy() # marche pas !
-            special = scale(tile_at(1, 0), (t, t)) # marche...
+            tmp = scale(tile_at(1, 0), (t, t)) # marche...
             mini = tile_at(0, i + 1)
             mini = scale(mini, (t * 7 / 8 - 1, t * 7 / 8 - 1))
-            special.blit(mini, (s / 16, s / 16))
-            self.special[i] = scale(special, (t, t))
+            tmp.blit(mini, (s / 16, s / 16))
+            self.special[i] = scale(tmp, (t, t))
         self.led_off = scale(self.tiles.subsurface((3 * s, 0, s / 2, s / 2)), (t / 2, t / 2))
         self.led_on = scale(self.tiles.subsurface((3 * s + s / 2, 0, s / 2, s / 2)), (t / 2, t / 2))
+        self.eye = scale(tile_at(2, 0), (t * 3 / 4, t * 3 / 4))
+        self.shadeye = scale(tile_at(2, 0), (t * 3 / 4, t * 3 / 4))
+        semi_transp(self.shadeye)
+        self.arrow = tile_at(4, 0)
         self.selector = scale(tile_at(0, 0), (t, t))
 
     def _scale(self, surf, size):
@@ -308,6 +334,8 @@ class Game:
         self.paused = False
         self.pause_bitmap = None
         self.play_again = False
+        self.eyes = 3
+        self.show_move = False
         self.level = 1
         self.new_level()
         self.oldticks = pygame.time.get_ticks()
@@ -597,6 +625,17 @@ class Game:
             w, h = text.get_rect().size
             x, y = data.board2screen(b[0])
             system.blit(text, (x + 24 - w / 2, y + 24 - h / 2))
+        # Print hint arrow
+        if self.show_move:
+            lookup = [0, 1, 5, 16, 27, 31, 32, 31, 27, 16, 5, 1]
+            for (src, dst) in self.list_moves():
+                x1, y1 = data.board2screen(src)
+                x2, y2 = data.board2screen(dst)
+                delta = lookup[monsterz.timer % 12]
+                x = -32 + (x1 * delta + x2 * (32 - delta)) / 32
+                y = 32 + (y1 * delta + y2 * (32 - delta)) / 32
+                system.blit(data.arrow, (x, y))
+                break # Only show one move
         # Print score
         text = fonter.render(str(self.score), 60)
         w, h = text.get_rect().size
@@ -614,6 +653,14 @@ class Game:
             system.blit(surf, (x, y))
             text = fonter.render(str(self.done[i + 1]), 36)
             system.blit(text, (x + 44, y + 2))
+        # Print eyes
+        x, y = 440, 252
+        if(self.eyes):
+            system.blit(data.eye, (x, y))
+        else:
+            system.blit(data.shadeye, (x, y))
+        text = fonter.render(str(self.eyes), 36)
+        system.blit(text, (x + 44, y + 2))
         # Print pause and abort buttons
         if self.lost_timer >= 0:
             r = (255, 127, 127)
@@ -622,8 +669,8 @@ class Game:
             else:
                 led, color = data.led_off, (180, 150, 127)
             c = map(lambda a, b: b - (b - a) * self.psat[0] / 255, r, color)
-            system.blit(led, (440, 288))
-            system.blit(fonter.render('PAUSE', 30, c), (470, 286))
+            system.blit(led, (440, 298))
+            system.blit(fonter.render('PAUSE', 30, c), (470, 296))
             color = (180, 150, 127)
             c = map(lambda a, b: b - (b - a) * self.psat[1] / 255, r, color)
             system.blit(fonter.render('ABORT', 30, c), (470, 326))
@@ -634,7 +681,7 @@ class Game:
         msg = 'LEVEL ' + str(self.level)
         if self.needed[1]: msg += ': ' + str(self.needed[1]) + 'x'
         text = fonter.render(msg, 40)
-        system.blit(text, (444, 230))
+        system.blit(text, (444, 216))
 
     def pause(self):
         # TODO: prevent cheating by not allowing less than 1 second
@@ -746,6 +793,9 @@ class Game:
                 self.time += self.timebonus
                 if self.time > 2000000:
                     self.time = 2000000
+                # Get a new eye each 5000 points
+                if (self.score % 5000) + self.scorebonus >= 5000:
+                    self.eyes += 1
                 self.score += self.scorebonus
                 self.fill_board()
             elif self.win_timer is 0:
@@ -767,6 +817,8 @@ class Game:
                 else:
                     self.check_moves = True
             return
+        if self.show_move and (monsterz.timer % 6) == 0:
+            system.play('click')
         if self.warning_timer:
             self.warning_timer -= 1
         elif self.time <= 200000:
@@ -777,6 +829,7 @@ class Game:
         if self.time <= 0:
             system.play('laugh')
             self.select = None
+            self.show_move = False
             self.lost_timer = LOST_DELAY
             return
         # Handle moves from the AI:
@@ -821,6 +874,14 @@ class Game:
         # Handle moves from the player or the AI
         if self.clicks:
             played = self.clicks.pop(0)
+            if played == (99, 99):
+                system.play('whip')
+                self.select = None
+                self.eyes -= 1
+                # show_move is removed when we click, or when we lose
+                self.show_move = True
+                return
+            self.show_move = False
             if self.select:
                 if self.select == played:
                     system.play('click')
@@ -1050,7 +1111,7 @@ class Monsterz:
         x, y = pygame.mouse.get_pos()
         parea = None
         if self.game.lost_timer >= 0:
-            if 440 < x < 440 + 180 and 288 < y < 288 + 24:
+            if 440 < x < 440 + 180 and 298 < y < 298 + 24:
                 parea = 1
                 self.game.psat[0] = 255
             elif 440 < x < 440 + 180 and 328 < y < 328 + 24:
@@ -1083,7 +1144,7 @@ class Monsterz:
                 self.game.pause()
             elif event.type == MOUSEBUTTONDOWN:
                 x, y = pygame.mouse.get_pos()
-                if 440 < x < 440 + 180 and 288 < y < 288 + 24:
+                if 440 < x < 440 + 180 and 298 < y < 298 + 24:
                     system.play('whip')
                     self.game.pause()
                     return
@@ -1093,6 +1154,10 @@ class Monsterz:
                     return
                 if self.game.lost_timer < 0:
                     self.status = STATUS_MENU
+                    return
+                if 440 < x < 440 + 36 and 252 < y < 252 + 36:
+                    if self.game.eyes >= 1 and not self.game.show_move:
+                        self.game.clicks.append((99, 99))
                     return
                 x, y = data.screen2board(event.pos)
                 if x < 0 or x >= BOARD_WIDTH or y < 0 or y >= BOARD_HEIGHT:
