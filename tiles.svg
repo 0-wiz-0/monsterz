@@ -6646,14 +6646,14 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/board.png"
-     rx="10.000001"
-     ry="9.9999971"
+     rx="25.000000"
+     ry="25.000000"
      y="11.251324"
      x="311.22610"
      height="517.49854"
      width="517.52368"
      id="rect4191"
-     style="color:#000000;fill:url(#radialGradient3081);fill-opacity:1.0;fill-rule:nonzero;stroke:#000000;stroke-width:2.5000010;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4.0000000;stroke-dashoffset:0.0000000;stroke-opacity:0.19607843;marker:none;marker-start:none;marker-mid:none;marker-end:none;visibility:visible" />
+     style="color:#000000;fill:url(#radialGradient3081);fill-opacity:1.0000000;fill-rule:nonzero;stroke:#000000;stroke-width:2.5000010;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4.0000000;stroke-dashoffset:0.0000000;stroke-opacity:0.19607843;marker:none;marker-start:none;marker-mid:none;marker-end:none;visibility:visible" />
   <g
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
@@ -7248,8 +7248,8 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/alienkeeper/board.png"
-     rx="10.000002"
-     ry="10.000001"
+     rx="12.500000"
+     ry="12.500000"
      y="11.252702"
      x="841.11169"
      height="577.46436"
