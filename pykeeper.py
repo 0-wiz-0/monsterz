@@ -18,7 +18,7 @@ animals = [
     { 'name': 'lions', 'color': (250, 160, 63) },
     { 'name': 'baboons', 'color': (255, 63, 63) },
     { 'name': 'hippos', 'color': (200, 63, 200) },
-    { 'name': 'rabbits', 'color': (255, 180, 180) }
+#    { 'name': 'rabbits', 'color': (255, 180, 180) }
 ]
 
 class AnimalSprite(pygame.sprite.Sprite):
@@ -246,9 +246,11 @@ def main():
                     draw_sprites()
                     continue
                 (x1, y1) = select
-                if abs(x1 - x2) + abs(y1 - y2) != 1:
+                if x1 == x2 and y1 == y2:
                     select = (-1, -1)
                     draw_sprites()
+                    continue
+                if abs(x1 - x2) + abs(y1 - y2) != 1:
                     continue
                 tmp = board[(x1, y1)]
                 board[(x1, y1)] = board[(x2, y2)]
@@ -271,6 +273,7 @@ def main():
                         fill_board()
                         wins = get_wins(board)
                         if wins:
+                            print 'cascade'
                             msg += '+ '
                         iter += 1
                     print msg, score
