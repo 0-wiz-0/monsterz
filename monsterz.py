@@ -514,42 +514,33 @@ class Monsterz:
         self.generic_draw()
         x, y = data.screen2board(pygame.mouse.get_pos())
         colors = [(255, 255, 255)] * 4
+        shapes = [data.blink[2], data.blink[3], data.blink[4], data.blink[0]]
+        messages = ['NEW GAME', 'HELP', 'SCORES', 'QUIT']
         if y == 4 and x >= 1 and x <= 6:
             area = STATUS_PLAY
             colors[0] = (0, 255, 0)
-            bg.blit(data.normal[2], data.board2screen((1, 4)))
+            shapes[0] = data.surprise[2]
         elif y == 5 and x >= 1 and x <= 4:
             area = STATUS_HELP
             colors[1] = (255, 0, 255)
-            bg.blit(data.surprise[3], data.board2screen((1, 5)))
+            shapes[1] = data.surprise[3]
         elif y == 6 and x >= 1 and x <= 5:
             area = STATUS_SCORES
             colors[2] = (255, 255, 0)
-            bg.blit(data.blink[4], data.board2screen((1, 6)))
+            shapes[2] = data.surprise[4]
         elif y == 7 and x >= 1 and x <= 4:
             area = STATUS_QUIT
             colors[3] = (255, 0, 0)
-            bg.blit(data.angry[0], data.board2screen((1, 7)))
+            shapes[3] = data.surprise[0]
         else:
             area = None
         w, h = data.logo.get_size()
         bg.blit(data.logo, (24 + 192 - w / 2, 24 + 96 - h / 2))
-        # PLAY
-        text = fonter.render('NEW GAME', 48, colors[0])
-        w, h = text.get_rect().size
-        bg.blit(text, (24 + 102, 24 + 216 - h / 2))
-        # HELP
-        text = fonter.render('HELP', 48, colors[1])
-        w, h = text.get_rect().size
-        bg.blit(text, (24 + 102, 24 + 264 - h / 2))
-        # SCORES
-        text = fonter.render('SCORES', 48, colors[2])
-        w, h = text.get_rect().size
-        bg.blit(text, (24 + 102, 24 + 312 - h / 2))
-        # QUIT
-        text = fonter.render('QUIT', 48, colors[3])
-        w, h = text.get_rect().size
-        bg.blit(text, (24 + 102, 24 + 360 - h / 2))
+        for x in range(4):
+            bg.blit(shapes[x], data.board2screen((1, 4 + x)))
+            text = fonter.render(messages[x], 48, colors[x])
+            w, h = text.get_rect().size
+            bg.blit(text, (24 + 102, 24 + 216 + 48 * x - h / 2))
         # Handle events
         for event in pygame.event.get():
             if self.generic_event(event):
