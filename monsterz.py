@@ -16,8 +16,8 @@ import pygame
 from pygame.locals import *
 from random import randint
 from sys import argv, exit, platform
-from os.path import join, dirname
-from os import write
+from os.path import join, isdir, isfile, dirname, expanduser
+from os import write, mkdir
 
 # String constants
 VERSION = '0.5.0'
@@ -58,11 +58,6 @@ SCROLL_DELAY = 40
 WIN_DELAY = 12
 SWITCH_DELAY = 4
 WARNING_DELAY = 12
-
-# Runtime flags
-FLAG_FULLSCREEN = False
-FLAG_MUSIC = True
-FLAG_SFX = True
 
 def compare_scores(x, y):
     if y[1] > x[1]:
@@ -109,10 +104,8 @@ def semi_transp(surf):
     except:
         return
 
-class Hiscores:
+class Settings:
     def __init__(self, scorefile, outfd):
-        self.scorefile = scorefile
-        self.outfd = outfd
         # Get username
         if platform == 'win32':
             try:
@@ -120,13 +113,87 @@ class Hiscores:
                 self.name = GetUserName().upper()
             except:
                 self.name = 'YOU'
+            try:
+                from shell import SHGetFolderPath
+                from shellcon import CSIDL_APPDATA
+                configdir = join(SHGetFolderPath(0, CSIDL_APPDATA, 0, 0), 'monsterz')
+            except:
+                configdir = join(dirname(argv[0]), 'settings')
         else:
             from pwd import getpwuid
             from os import geteuid
             self.name = getpwuid(geteuid())[0].upper()
-        self._load()
+            configdir = join(expanduser('~'), '.monsterz')
+        # Make sure our directory exists
+        if isdir(configdir):
+            pass
+        elif isfile(configdir):
+            raise configdir + ' already exists'
+        else:
+            mkdir(configdir)
+        # Set our scorefile
+        if scorefile:
+            self.scorefile = scorefile
+        else:
+            self.scorefile = join(configdir, 'scores')
+        self.outfd = outfd
+        self.configfile = join(configdir, 'config')
+        # Load everything
+        self._init_config()
+        self._load_config()
+        self._load_scores()
 
-    def _load(self):
+    config = {}
+    def _init_config(self):
+        self.config['fullscreen'] = 0
+        self.config['music'] = 1
+        self.config['sfx'] = 1
+        self.config['difficulty'] = 5
+        self.config['items'] = 7
+
+    def _load_config(self):
+        from re import compile
+        regex = compile('[ \t]*([A-Za-z]+)[ \t]*=[ \t]*([0-9A-Za-z]+)[ \t]*(#.*|)')
+        try:
+            file = open(self.configfile, 'r')
+        except:
+            return
+        for line in file.readlines():
+            m = regex.match(line.strip())
+            if not m:
+                continue
+            key, value = m.group(1), int(m.group(2))
+            # Sanitise data before using it
+            if key == 'difficulty':
+                if value < 1: value = 1
+                elif value > 10: value = 10
+            elif key == 'items':
+                if value < 4: value = 4
+                elif value > 8: value = 8
+            self.set(key, value)
+        file.close()
+
+    def save(self):
+        try:
+            file = open(self.configfile, 'w')
+        except:
+            return
+        file.write('# Monsterz configuration file - automatically saved\r\n')
+        for key, value in self.config.items():
+            file.write(key + ' = ' + str(int(value)) + '\r\n')
+        file.close()
+
+    def get(self, key):
+        if not self.config.has_key(key):
+            return None
+        return self.config[key]
+
+    def set(self, key, value):
+        if not self.config.has_key(key):
+            return
+        self.config[key] = value
+
+    def _load_scores(self):
         self.scores = {}
         # Load current score file
         try:
@@ -135,27 +202,27 @@ class Hiscores:
             file.close()
             for l in [line.split(':') for line in lines]:
                 if len(l) == 4:
-                    self._addscore(l[0], l[1], int(l[2]), int(l[3]))
+                    self._add_score(l[0], l[1], int(l[2]), int(l[3]))
         except:
             pass
         # Add dummy scores to make sure our score list is full
         for game in ['CLASSIC']:
             if not self.scores.has_key(game):
                 self.scores[game] = []
-            for x in range(20): self._addscore(game, 'NOBODY', 0, 1)
+            for x in range(20): self._add_score(game, 'NOBODY', 0, 1)
 
-    def _addscore(self, game, name, score, level):
+    def _add_score(self, game, name, score, level):
         if not self.scores.has_key(game):
             self.scores[game] = []
         self.scores[game].append((name, score, level))
         self.scores[game].sort(compare_scores)
         self.scores[game] = self.scores[game][0:19]
 
-    def add(self, game, score, level):
+    def new_score(self, game, score, level):
         # Reload scores
-        self._load()
+        self._load_scores()
         # Add our score
-        self._addscore(game, self.name, score, level)
+        self._add_score(game, self.name, score, level)
         # Immediately save
         msg = ''
         for type, list in self.scores.items():
@@ -170,6 +237,7 @@ class Hiscores:
                 file.write(msg)
                 file.close()
             except:
+                raise
                 pass # Cannot save scores, do nothing...
 
 class Data:
@@ -206,7 +274,7 @@ class Data:
             pygame.mixer.music.set_volume(0.9)
             # Play immediately
             pygame.mixer.music.play(-1, 0.0)
-            if not FLAG_MUSIC:
+            if not settings.get('music'):
                 pygame.mixer.music.pause()
         # Initialise tiles stuff
         t = self.tile_size
@@ -253,7 +321,7 @@ class Data:
 
 class System:
     def __init__(self):
-        if FLAG_FULLSCREEN:
+        if settings.get('fullscreen'):
             f = pygame.FULLSCREEN
         else:
             f = 0
@@ -280,28 +348,29 @@ class System:
         pygame.display.flip()
 
     def play(self, sound):
-        if self.have_sound and FLAG_SFX: data.wav[sound].play()
+        if self.have_sound and settings.get('sfx'): data.wav[sound].play()
 
     def toggle_fullscreen(self):
-        global FLAG_FULLSCREEN
         self.play('whip')
-        FLAG_FULLSCREEN = not FLAG_FULLSCREEN
+        settings.set('fullscreen', not settings.get('fullscreen'))
+        settings.save()
         pygame.display.toggle_fullscreen()
 
     def toggle_sfx(self):
-        global FLAG_SFX
         self.play('whip')
-        FLAG_SFX = not FLAG_SFX
+        settings.set('sfx', not settings.get('sfx'))
+        settings.save()
         self.play('whip')
 
     def toggle_music(self):
-        global FLAG_MUSIC
+        flag = settings.get('music')
+        settings.set('music', not flag)
+        settings.save()
         self.play('whip')
-        if FLAG_MUSIC:
+        if flag:
             pygame.mixer.music.pause()
         else:
             pygame.mixer.music.unpause()
-        FLAG_MUSIC = not FLAG_MUSIC
 
 class Fonter:
     def __init__(self, size = 48):
@@ -334,10 +403,10 @@ class Fonter:
 
 class Game:
     # Nothing here yet
-    def __init__(self, type = GAME_CLASSIC, difficulty = 1, items = 7):
+    def __init__(self, type = GAME_CLASSIC):
         self.type = type
-        self.difficulty = difficulty
-        self.items = items
+        self.difficulty = settings.get('difficulty')
+        self.items = settings.get('items')
         self.needed = [0] * (ITEMS + 1)
         self.done = [0] * (ITEMS + 1)
         self.bonus_list = []
@@ -764,9 +833,9 @@ class Game:
                 return # Continue forever
             if self.lost_timer is -1:
                 if self.type == GAME_TRAINING:
-                    hiscores.add('TRAINING', self.score, self.level)
+                    settings.new_score('TRAINING', self.score, self.level)
                 elif self.type == GAME_CLASSIC:
-                    hiscores.add('CLASSIC', self.score, self.level)
+                    settings.new_score('CLASSIC', self.score, self.level)
                 self.lost = True
                 return
             self.lost_timer -= 1
@@ -1048,21 +1117,21 @@ class Monsterz:
         # Print various buttons
         r = (127, 0, 255)
         if system.have_sound:
-            if FLAG_SFX:
+            if settings.get('sfx'):
                 led, color = data.led_on, (255, 255, 255)
             else:
                 led, color = data.led_off, (180, 150, 127)
             c = map(lambda a, b: b - (b - a) * self.gsat[0] / 255, r, color)
             system.blit(led, (440, 378))
             system.blit(fonter.render('SOUND FX', 30, c), (470, 376))
-            if FLAG_MUSIC:
+            if settings.get('music'):
                 led, color = data.led_on, (255, 255, 255)
             else:
                 led, color = data.led_off, (180, 150, 127)
             c = map(lambda a, b: b - (b - a) * self.gsat[1] / 255, r, color)
             system.blit(led, (440, 408))
             system.blit(fonter.render('MUSIC', 30, c), (470, 406))
-        if FLAG_FULLSCREEN:
+        if settings.get('fullscreen'):
             led, color = data.led_on, (255, 255, 255)
         else:
             led, color = data.led_off, (180, 150, 127)
@@ -1171,9 +1240,9 @@ class Monsterz:
 
     nsat = [0] * 8
     narea = None
-    wanted_level = 5
-    wanted_items = 7
     def iterate_new(self):
+        items = settings.get('items')
+        difficulty = settings.get('difficulty')
         self.generic_draw()
         self.copyright_draw()
         messages = ['CLASSIC', 'QUEST', 'PUZZLE', 'TRAINING', '-', '+', '-', '+']
@@ -1231,9 +1300,9 @@ class Monsterz:
             if self.nsat[i]:
                 self.nsat[i] = self.nsat[i] * 8 / 10
         # Print wanted monsterz
-        for i in range(self.wanted_items):
-            system.blit(data.normal[i], (24 + 96 + 48 * 3 * i / (self.wanted_items - 1), 24 + 48 * 6))
-        text = fonter.render('DIFFICULTY ' + str(self.wanted_level), 36)
+        for i in range(items):
+            system.blit(data.normal[i], (24 + 96 + 48 * 3 * i / (items - 1), 24 + 48 * 6))
+        text = fonter.render('DIFFICULTY ' + str(difficulty), 36)
         w, h = text.get_rect().size
         system.blit(text, (24 + 192 - w / 2, 24 + 48 * 7 + 24 - h / 2))
         # Handle events
@@ -1247,17 +1316,21 @@ class Monsterz:
             elif event.type == MOUSEBUTTONDOWN and narea >= 10:
                 system.play('whip')
                 if narea == GAME_MOREMONSTERZ:
-                    if self.wanted_items < 8: self.wanted_items += 1
+                    if items < 8:
+                        settings.set('items', items + 1)
                 elif narea == GAME_LESSMONSTERZ:
-                    if self.wanted_items > 4: self.wanted_items -= 1
+                    if items > 4:
+                        settings.set('items', items - 1)
                 if narea == GAME_MORELEVEL:
-                    if self.wanted_level < 10: self.wanted_level += 1
+                    if difficulty < 10:
+                        settings.set('difficulty', difficulty + 1)
                 elif narea == GAME_LESSLEVEL:
-                    if self.wanted_level > 1: self.wanted_level -= 1
+                    if difficulty > 1:
+                        settings.set('difficulty', difficulty - 1)
                 return
             elif event.type == MOUSEBUTTONDOWN and narea is not None:
                 system.play('whip')
-                self.game = Game(type = narea, difficulty = self.wanted_level, items = self.wanted_items)
+                self.game = Game(type = narea)
                 self.status = STATUS_GAME
                 return
 
@@ -1499,7 +1572,7 @@ class Monsterz:
         scores = [['UNIMPLEMENTED', 100 - x * 10, 1] for x in range(10)]
         # Print our list
         for x in range(10):
-            name, score, level = hiscores.scores['CLASSIC'][x]
+            name, score, level = settings.scores['CLASSIC'][x]
             text = fonter.render(str(x + 1) + '. ' + name, 32)
             w, h = text.get_rect().size
             system.blit(text, (24 + 24, 24 + 72 + 32 * x - h / 2))
@@ -1552,10 +1625,10 @@ def usage():
 
 def main():
     from getopt import getopt, GetoptError
-    global system, data, hiscores, fonter, monsterz
-    global FLAG_FULLSCREEN, FLAG_MUSIC, FLAG_SFX
+    global system, data, settings, fonter, monsterz
+    override = {}
+    scorefile = None
     sharedir = dirname(argv[0])
-    scorefile = join(sharedir, 'scores')
     outfd = None
     try:
         long = ['help', 'version', 'music', 'sound', 'fullscreen',
@@ -1572,11 +1645,11 @@ def main():
             version()
             exit()
         elif opt in ('-m', '--nomusic'):
-            FLAG_MUSIC = False
+            override['music'] = 0
         elif opt in ('-s', '--nosfx'):
-            FLAG_SFX = False
+            override['sfx'] = 0
         elif opt in ('-f', '--fullscreen'):
-            FLAG_FULLSCREEN = True
+            override['fullscreen'] = 0
         elif opt in ('--outfd'):
             try:
                 outfd = int(arg)
@@ -1588,16 +1661,19 @@ def main():
         elif opt in ('--score'):
             scorefile = arg
     # Init everything and launch the game
+    settings = Settings(scorefile, outfd)
+    for key, value in override.items():
+        settings.set(key, value)
     system = System()
     try:
         data = Data(sharedir)
     except:
         print argv[0] + ': could not open data from `' + sharedir + "'."
         raise
-    hiscores = Hiscores(scorefile, outfd)
     fonter = Fonter()
     monsterz = Monsterz()
     monsterz.go()
+    settings.save()
     exit()
 
 if __name__ == '__main__':
