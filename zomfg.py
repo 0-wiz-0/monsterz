@@ -48,7 +48,7 @@ class Theme:
         self.normal = {}
         self.blink = {}
         self.tiny = {}
-        self.gray = {}
+        self.shaded = {}
         self.surprise = {}
         self.angry = {}
         self.exploded = {}
@@ -78,27 +78,32 @@ class Theme:
         scale = self._scale
         crop = self.tiles.subsurface
         # Create sprites
-        for x in range(8):
-            self.normal[x] = scale(crop((0, (x+1) * s, s, s)), (t, t))
-            self.tiny[x] = scale(self.normal[x], (t * 3 / 4, t * 3 / 4))
-            self.gray[x] = scale(self.normal[x], (t * 3 / 4, t * 3 / 4))
-            pixels = pygame.surfarray.pixels3d(self.gray[x])
-            for line in pixels:
-                for p in line:
+        for i in range(8):
+            self.normal[i] = scale(crop((0, (i + 1) * s, s, s)), (t, t))
+            self.tiny[i] = scale(self.normal[i], (t * 3 / 4, t * 3 / 4))
+            self.shaded[i] = scale(self.normal[i], (t * 3 / 4, t * 3 / 4))
+            pixels = pygame.surfarray.pixels3d(self.shaded[i])
+            alpha = pygame.surfarray.pixels_alpha(self.shaded[i])
+            for y, line in enumerate(pixels):
+                for x, p in enumerate(line):
                     r, g, b = p
-                    val = (r + g + b + 2 * max(r, g, b)) / 5
-                    p[:] = val, val, val
+                    M = max(r, g, b)
+                    m = min(r, g, b)
+                    val = (r + g + b + 2 * M) / 5
+                    p[:] = (val + r) / 2, (val + g) / 2, (val + b) / 2
+                    if alpha[y][x] >= 250: alpha[y][x] = 255 - (M - m) * 3 / 4
             del pixels
-            self.blink[x] = scale(crop((s, (x+1) * s, s, s)), (t, t))
-            self.surprise[x] = scale(crop((s * 2, (x+1) * s, s, s)), (t, t))
-            self.angry[x] = scale(crop((s * 3, (x+1) * s, s, s)), (t, t))
-            self.exploded[x] = scale(crop((s * 4, (x+1) * s, s, s)), (t, t))
+            del alpha
+            self.blink[i] = scale(crop((s, (i + 1) * s, s, s)), (t, t))
+            self.surprise[i] = scale(crop((s * 2, (i + 1) * s, s, s)), (t, t))
+            self.angry[i] = scale(crop((s * 3, (i + 1) * s, s, s)), (t, t))
+            self.exploded[i] = scale(crop((s * 4, (i + 1) * s, s, s)), (t, t))
             #tmp = crop((s, 0, s, s)).copy() # marche pas !
             special = scale(crop((s, 0, s, s)), (t, t)) # marche...
-            mini = crop((0, (x+1) * s, s, s))
+            mini = crop((0, (i + 1) * s, s, s))
             mini = scale(mini, (t * 7 / 8 - 1, t * 7 / 8 - 1))
             special.blit(mini, (s / 16, s / 16))
-            self.special[x] = scale(special, (t, t))
+            self.special[i] = scale(special, (t, t))
         # Create selector sprite
         self.selector = scale(crop((0, 0, s, s)), (t, t))
 
@@ -440,7 +445,7 @@ class Game:
             if self.done[i + 1] >= self.needed[i + 1]:
                 surf = theme.tiny[i]
             else:
-                surf = theme.gray[i]
+                surf = theme.shaded[i]
             bg.blit(surf, (444, 100 + i * 38))
             text = self.render_text(str(self.done[i + 1]), 36)
             bg.blit(text, (488, 102 + i * 38))
