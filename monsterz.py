@@ -45,7 +45,7 @@ STATUS_QUIT = -1
 GAME_CLASSIC = 0
 GAME_QUEST = 1
 GAME_PUZZLE = 2
-GAME_SURVIVAL = 3
+GAME_TRAINING = 3
 GAME_MOREMONSTERZ = 10
 GAME_LESSMONSTERZ = 11
 GAME_MORELEVEL = 12
@@ -443,7 +443,7 @@ class Game:
 
     def new_level(self):
         # Compute level data
-        if self.type == GAME_SURVIVAL:
+        if self.type == GAME_TRAINING:
             self.population = self.items
             for i in range(self.population):
                 self.done[i + 1] = 0
@@ -703,8 +703,8 @@ class Game:
                 if self.psat[x]:
                     self.psat[x] = self.psat[x] * 8 / 10
         # Print level
-        if self.type == GAME_SURVIVAL:
-            msg = 'SURVIVAL'
+        if self.type == GAME_TRAINING:
+            msg = 'TRAINING'
         elif self.type == GAME_CLASSIC:
             msg = 'LEVEL ' + str(self.level)
             if self.needed[1]: msg += ': ' + str(self.needed[1]) + 'x'
@@ -743,8 +743,8 @@ class Game:
             if self.lost:
                 return # Continue forever
             if self.lost_timer is -1:
-                if self.type == GAME_SURVIVAL:
-                    hiscores.add('SURVIVAL', self.score, self.level)
+                if self.type == GAME_TRAINING:
+                    hiscores.add('TRAINING', self.score, self.level)
                 elif self.type == GAME_CLASSIC:
                     hiscores.add('CLASSIC', self.score, self.level)
                 self.lost = True
@@ -864,7 +864,7 @@ class Game:
             system.play('warning')
             self.warning_timer = WARNING_DELAY
         # Update time
-        if self.type in [GAME_SURVIVAL, GAME_CLASSIC]:
+        if self.type in [GAME_TRAINING, GAME_CLASSIC]:
             self.time -= delta
             if self.time <= 0:
                 system.play('laugh')
@@ -1090,16 +1090,16 @@ class Monsterz:
         shapes = [2, 3, 4, 0]
         messages = ['NEW GAME', 'HELP', 'SCORES', 'QUIT']
         x, y = data.screen2board(pygame.mouse.get_pos())
-        if y == 4 and 1 <= x <= 6:
+        if y == 4 and 2 <= x <= 5:
             marea = STATUS_NEW
             self.msat[0] = 255
-        elif y == 5 and 1 <= x <= 4:
+        elif y == 5 and 2 <= x <= 5:
             marea = STATUS_HELP
             self.msat[1] = 255
-        elif y == 6 and 1 <= x <= 5:
+        elif y == 6 and 2 <= x <= 5:
             marea = STATUS_SCORES
             self.msat[2] = 255
-        elif y == 7 and 1 <= x <= 4:
+        elif y == 7 and 2 <= x <= 5:
             marea = STATUS_QUIT
             self.msat[3] = 255
         else:
@@ -1151,12 +1151,12 @@ class Monsterz:
 
     nsat = [0] * 8
     narea = None
-    wanted_level = 1
+    wanted_level = 5
     wanted_items = 7
     def iterate_new(self):
         self.generic_draw()
         self.copyright_draw()
-        messages = ['CLASSIC', 'QUEST', 'PUZZLE', 'SURVIVAL', '-', '+', '-', '+']
+        messages = ['CLASSIC', 'QUEST', 'PUZZLE', 'TRAINING', '-', '+', '-', '+']
         x, y = data.screen2board(pygame.mouse.get_pos())
         if y == 2 and 1 <= x <= 6:
             narea = GAME_CLASSIC
@@ -1168,7 +1168,7 @@ class Monsterz:
         #    narea = GAME_CLASSIC
         #    self.nsat[2] = 255
         elif y == 5 and 1 <= x <= 4:
-            narea = GAME_SURVIVAL
+            narea = GAME_TRAINING
             self.nsat[3] = 255
         elif (x, y) == (1, 6):
             narea = GAME_LESSMONSTERZ
@@ -1195,7 +1195,7 @@ class Monsterz:
             c = map(lambda a: 255 - (255 - a) * self.nsat[i] / 255, [255, 127, 127])
             text = fonter.render(messages[i], 48, c)
             w, h = text.get_rect().size
-            system.blit(text, (24 + 102, 24 + 120 + 48 * i - h / 2))
+            system.blit(text, (24 + 48 * 4 - w / 2, 24 + 120 + 48 * i - h / 2))
             if self.nsat[i]:
                 self.nsat[i] = self.nsat[i] * 8 / 10
         for i in range(4, 8):
@@ -1233,7 +1233,7 @@ class Monsterz:
                 if narea == GAME_MORELEVEL:
                     if self.wanted_level < 10: self.wanted_level += 1
                 elif narea == GAME_LESSLEVEL:
-                    if self.wanted_level > 0: self.wanted_level -= 1
+                    if self.wanted_level > 1: self.wanted_level -= 1
                 return
             elif event.type == MOUSEBUTTONDOWN and narea is not None:
                 system.play('whip')
