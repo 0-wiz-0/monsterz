@@ -46,9 +46,9 @@ SWITCH_DELAY = 4
 WARNING_DELAY = 12
 
 class Data:
-    can_sound = False
     have_sound = False
-    have_music = False
+    do_sfx = False
+    do_music = False
     def __init__(self, dir = dirname(argv[0])):
         # Load stuff
         tiles = pygame.image.load(join(dir, 'tiles.png')).convert_alpha()
@@ -72,20 +72,20 @@ class Data:
         self.selector = None
         # Initialise sound stuff
         try:
-            self.can_sound = pygame.mixer.get_init()
+            self.have_sound = pygame.mixer.get_init()
         except:
-            self.can_sound = False
-        if self.can_sound:
+            self.have_sound = False
+        if self.have_sound:
             self.wav = {}
             for s in ['click', 'grunt', 'ding', 'whip', 'pop', 'duh', \
                       'boing', 'applause', 'laugh', 'warning']:
                 self.wav[s] = pygame.mixer.Sound(join(dir, s + '.wav'))
-            self.have_sound = True
+            self.do_sfx = True
             try:
                 pygame.mixer.music.load(join(dir, 'music.s3m'))
                 pygame.mixer.music.set_volume(0.9)
                 pygame.mixer.music.play(-1, 0.0)
-                self.have_music = True
+                self.do_music = True
             except:
                 pass
         # Initialise tiles stuff
@@ -96,8 +96,8 @@ class Data:
         # Create sprites
         for i in range(8):
             self.normal[i] = scale(tile_at(0, i + 1), (t, t))
-            self.tiny[i] = scale(self.normal[i], (t * 3 / 4, t * 3 / 4))
-            self.shaded[i] = scale(self.normal[i], (t * 3 / 4, t * 3 / 4))
+            self.tiny[i] = scale(tile_at(0, i + 1), (t * 3 / 4, t * 3 / 4))
+            self.shaded[i] = scale(tile_at(3, i + 1), (t * 3 / 4, t * 3 / 4))
             try:
                 pixels = pygame.surfarray.pixels3d(self.shaded[i])
                 alpha = pygame.surfarray.pixels_alpha(self.shaded[i])
@@ -135,7 +135,7 @@ class Data:
         return pygame.transform.rotozoom(surf, 0.0, 1.0 * size[0] / w)
 
     def play_sound(self, sound):
-        if self.have_sound: self.wav[sound].play()
+        if self.do_sfx: self.wav[sound].play()
 
     def board2screen(self, coord):
         x, y = coord
@@ -478,6 +478,16 @@ class Game:
             bg.blit(surf, (x, y))
             text = fonter.render(str(self.done[i + 1]), 36)
             bg.blit(text, (x + 44, y + 2))
+        # Print pause and abort buttons
+        if self.paused:
+            led, color = data.led_on, (255, 255, 255)
+        else:
+            led, color = data.led_off, (180, 150, 127)
+        bg.blit(led, (440, 288))
+        bg.blit(fonter.render('PAUSE', 30, color), (470, 286))
+        led, color = data.led_off, (180, 150, 127)
+        bg.blit(led, (440, 328))
+        bg.blit(fonter.render('ABORT', 30, color), (470, 326))
         # Print level
         msg = 'LEVEL ' + str(self.level)
         if self.needed[1]: msg += ' - ' + str(self.needed[1])
@@ -731,17 +741,6 @@ class Monsterz:
         pygame.display.flip()
         self.clock.tick(2)
 
-    def generic_draw(self):
-        bg.blit(data.board, (0, 0))
-        # Print various buttons
-        if data.can_sound:
-            bg.blit(data.led_off, (440, 378))
-            bg.blit(fonter.render('SOUND FX', 30, (150, 127, 127)), (470, 376))
-            bg.blit(data.led_on, (440, 408))
-            bg.blit(fonter.render('MUSIC', 30, (150, 127, 127)), (470, 406))
-        bg.blit(data.led_on, (440, 438))
-        bg.blit(fonter.render('FULLSCREEN', 30, (150, 127, 127)), (470, 436))
-
     def copyright_draw(self):
         scroll = pygame.Surface((406, 40)).convert_alpha()
         scroll.fill((0, 0, 0, 0))
@@ -762,13 +761,68 @@ class Monsterz:
             pass
         bg.blit(scroll, (13, 437))
 
+    def generic_draw(self):
+        bg.blit(data.board, (0, 0))
+        # Print various buttons
+        if data.have_sound:
+            if data.do_sfx:
+                led, color = data.led_on, (255, 255, 255)
+            else:
+                led, color = data.led_off, (180, 150, 127)
+            bg.blit(led, (440, 378))
+            bg.blit(fonter.render('SOUND FX', 30, color), (470, 376))
+            if data.do_music:
+                led, color = data.led_on, (255, 255, 255)
+            else:
+                led, color = data.led_off, (180, 150, 127)
+            bg.blit(led, (440, 408))
+            bg.blit(fonter.render('MUSIC', 30, color), (470, 406))
+        if self.fullscreen:
+            led, color = data.led_on, (255, 255, 255)
+        else:
+            led, color = data.led_off, (180, 150, 127)
+        bg.blit(led, (440, 438))
+        bg.blit(fonter.render('FULLSCREEN', 30, color), (470, 436))
+
+    fullscreen = False
     def generic_event(self, event):
         if event.type == QUIT:
             self.status = STATUS_QUIT
             return True
         elif event.type == KEYDOWN and event.key == K_f:
+            self.fullscreen = not self.fullscreen
             pygame.display.toggle_fullscreen()
             return True
+        elif event.type == KEYDOWN and event.key == K_s:
+            data.do_sfx = not data.do_sfx
+            return True
+        elif event.type == KEYDOWN and event.key == K_m:
+            if data.do_music:
+                pygame.mixer.music.pause()
+            else:
+                pygame.mixer.music.unpause()
+            data.do_music = not data.do_music
+            return True
+        elif event.type == MOUSEBUTTONDOWN:
+            x, y = pygame.mouse.get_pos()
+            if x > 440 and y > 378 and x < 440 + 180 and y < 378 + 24:
+                data.play_sound('whip')
+                data.do_sfx = not data.do_sfx
+                data.play_sound('whip')
+                return True
+            elif x > 440 and y > 408 and x < 440 + 180 and y < 408 + 24:
+                data.play_sound('whip')
+                if data.do_music:
+                    pygame.mixer.music.pause()
+                else:
+                    pygame.mixer.music.unpause()
+                data.do_music = not data.do_music
+                return True
+            elif x > 440 and y > 438 and x < 440 + 180 and y < 438 + 24:
+                data.play_sound('whip')
+                self.fullscreen = not self.fullscreen
+                pygame.display.toggle_fullscreen()
+                return True
         return False
 
     sat = [0] * 4
@@ -849,6 +903,15 @@ class Monsterz:
             elif event.type == KEYDOWN and (event.key == K_p or event.key == K_SPACE):
                 game.pause()
             elif event.type == MOUSEBUTTONDOWN:
+                x, y = pygame.mouse.get_pos()
+                if x > 440 and y > 288 and x < 440 + 180 and y < 288 + 24:
+                    data.play_sound('whip')
+                    game.pause()
+                    return
+                elif x > 440 and y > 328 and x < 440 + 180 and y < 328 + 24:
+                    data.play_sound('whip')
+                    self.status = STATUS_MENU
+                    return
                 if game.lost_timer < 0:
                     self.status = STATUS_MENU
                     return
@@ -942,10 +1005,12 @@ class Monsterz:
     def iterate_scores(self):
         self.generic_draw()
         self.copyright_draw()
-        text = fonter.render('SCORES', 60)
+        text = fonter.render('HIGH SCORES', 60)
         w, h = text.get_rect().size
         bg.blit(text, (24 + 192 - w / 2, 24 + 24 - h / 2))
+        # Dummy scores list
         scores = [['UNIMPLEMENTED', 100 - x * 10, 1] for x in range(10)]
+        # Print our list
         for x, p in enumerate(scores):
             text = fonter.render(str(x + 1) + '. ' + p[0], 32)
             w, h = text.get_rect().size
