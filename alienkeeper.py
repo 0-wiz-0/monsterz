@@ -27,20 +27,20 @@ SCREEN_HEIGHT = 480
 EXIT_QUIT = -1
 EXIT_REPLAY = -2
 
-LOST_DELAY = 50
-SCROLL_DELAY = 50
-WIN_DELAY = 12
-SWITCH_DELAY = 5
+LOST_DELAY = 40
+SCROLL_DELAY = 40
+WIN_DELAY = 10
+SWITCH_DELAY = 4
 
 class Theme:
     def __init__(self, dir = dirname(argv[0])):
         # Load stuff
-        tiles = pygame.image.load(join(dir, 'tiles.png'))
+        tiles = pygame.image.load(join(dir, 'tiles.png')).convert_alpha()
         (w, h) = tiles.get_rect().size
         if w * 9 != h * 5:
             raise 'error: ' + file + ' has wrong image size'
-        self.board = pygame.image.load(join(dir, 'board.png'))
-        self.tiles = tiles.convert_alpha()
+        self.tiles = tiles
+        self.board = pygame.image.load(join(dir, 'board.png')).convert()
         self.orig_size = w / 5
         self.tile_size = None
         self.normal = {}
@@ -57,6 +57,9 @@ class Theme:
             pygame.mixer.music.play(-1, 0.0)
             self.click = pygame.mixer.Sound('click.wav')
             self.grunt = pygame.mixer.Sound('grunt.wav')
+        self.font = {}
+        for x in [36, 48, 60, 120]:
+            self.font[x] = pygame.font.Font(None, x)
 
     def make_sprites(self, t):
         self.tile_size = t
@@ -126,7 +129,7 @@ class Game:
     def go(self):
         while not self.exit:
             self.iterate()
-            self.clock.tick(15)
+            self.clock.tick(12)
 
     def get_random(self, no_special = False):
         if not no_special and randint(0, 500) == 0:
@@ -261,9 +264,11 @@ class Game:
         if timer > SCROLL_DELAY / 2:
             xoff = 0
             yoff = (SCROLL_DELAY - timer) * (SCROLL_DELAY - timer)
+            yoff = yoff * 50 * 50 / SCROLL_DELAY / SCROLL_DELAY
         elif timer > 0:
             xoff = 0
             yoff = - timer * timer
+            yoff = yoff * 50 * 50 / SCROLL_DELAY / SCROLL_DELAY
         else:
             xoff = 0
             yoff = 0
@@ -368,26 +373,23 @@ class Game:
         # Draw pieces
         if self.pause:
             background.blit(self.pause_bitmap, (24 + theme.tile_size, 24))
-            font = pygame.font.Font(None, SCREEN_HEIGHT / 4)
-            delta = 1 + SCREEN_HEIGHT / 100
+            delta = 5
             for x in range(2):
-                text = font.render('PAUSED', 2, (x * 255, x * 255, x * 255))
+                text = theme.font[120].render('PAUSED', 2, (x * 255, x * 255, x * 255))
                 (w, h) = text.get_rect().size
                 background.blit(text, (theme.tile_size * self.board_width / 2 - w / 2 + 24 - delta * x, theme.tile_size * self.board_height * 7 / 8 - h / 2 + 24 - delta * x))
         elif self.lost_timer >= 0:
             self.draw_board()
         # Print score
-        font = pygame.font.Font(None, SCREEN_HEIGHT / 8)
-        delta = 1 + SCREEN_HEIGHT / 200
+        delta = 3
         for x in range(2):
-            text = font.render(str(self.score), 2, (x * 255, x * 255, x * 255))
+            text = theme.font[60].render(str(self.score), 2, (x * 255, x * 255, x * 255))
             background.blit(text, (theme.tile_size * self.board_width + theme.tile_size * 3 / 2 - delta * x, 10 - delta * x))
         # Print play again message
         if self.lost_timer < 0:
-            font = pygame.font.Font(None, SCREEN_HEIGHT / 10)
-            delta = 1 + SCREEN_HEIGHT / 300
+            delta = 2
             for x in range(2):
-                text = font.render('CLICK TO PLAY AGAIN', 2, (x * 255, x * 255, x * 255))
+                text = theme.font[48].render('CLICK TO PLAY AGAIN', 2, (x * 255, x * 255, x * 255))
                 (w, h) = text.get_rect().size
                 background.blit(text, (theme.tile_size * self.board_width / 2 - w / 2 + 24 - delta * x, theme.tile_size * self.board_height / 2 - h / 2 + 24 - delta * x))
         # Print new level stuff
@@ -396,35 +398,32 @@ class Game:
                 msg = 'LEVEL UP'
             else:
                 msg = 'LEVEL ' + str(self.level)
-            font = pygame.font.Font(None, SCREEN_HEIGHT / 4)
-            delta = 1 + SCREEN_HEIGHT / 100
+            delta = 5
             for x in range(2):
-                text = font.render(msg, 2, (x * 255, x * 255, x * 255))
+                text = theme.font[120].render(msg, 2, (x * 255, x * 255, x * 255))
                 (w, h) = text.get_rect().size
                 background.blit(text, (theme.tile_size * self.board_width / 2 - w / 2 + 24 - delta * x, theme.tile_size * self.board_height / 2 - h / 2 + 24 - delta * x))
         # Print 'no more moves' stuff
         if self.board_timer > SCROLL_DELAY / 2:
-            font = pygame.font.Font(None, SCREEN_HEIGHT / 8)
-            delta = 1 + SCREEN_HEIGHT / 300
+            delta = 2
             for x in range(2):
-                text = font.render('NO MORE MOVES!', 2, (x * 255, x * 255, x * 255))
+                text = theme.font[60].render('NO MORE MOVES!', 2, (x * 255, x * 255, x * 255))
                 (w, h) = text.get_rect().size
                 background.blit(text, (theme.tile_size * self.board_width / 2 - w / 2 + 24 - delta * x, theme.tile_size * self.board_height / 2 - h / 2 + 24 - delta * x))
         # Print bonus
-        font = pygame.font.Font(None, theme.tile_size * 3 / 4)
         for b in self.bonus_list:
             for d in range(2):
-                text = font.render(str(b[1]), 2, (d * 255, d * 255, d * 255))
+                text = theme.font[36].render(str(b[1]), 2, (d * 255, d * 255, d * 255))
                 (x, y) = self.board2screen(b[0])
                 background.blit(text, (x + theme.tile_size / 4 - delta * d, y + theme.tile_size / 4 - delta * d))
         # Print done/needed
-        delta = 1 + SCREEN_HEIGHT / 300
+        delta = 2
         x = theme.tile_size * self.board_width + theme.tile_size * 3 / 2
         y = theme.tile_size / 2 + SCREEN_HEIGHT / 8
         for i in range(self.population):
             background.blit(theme.tiny[i], (x, y))
             for d in range(2):
-                text = font.render(str(self.done[i + 1]) + '/' + str(self.needed[i + 1]), 2, (d * 255, d * 255, d * 255))
+                text = theme.font[36].render(str(self.done[i + 1]) + '/' + str(self.needed[i + 1]), 2, (d * 255, d * 255, d * 255))
                 background.blit(text, (x + theme.tile_size * 3 / 4 - delta * d, y - delta * d))
             y += SCREEN_HEIGHT / 16
         window.blit(background, (0, 0))
@@ -513,7 +512,7 @@ class Game:
             return
         if self.win_timer:
             self.win_timer -= 1
-            if self.win_timer is WIN_DELAY * 5 / 6:
+            if self.win_timer is WIN_DELAY - 1:
                 for w in self.wins:
                     for (x, y) in w:
                         self.surprised_list.append((x, y))
