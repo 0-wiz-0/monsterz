@@ -18,8 +18,13 @@ from random import randint
 from sys import argv
 from os.path import join, dirname
 
-# constants
-HAVE_SOUND = True
+# String constants
+COPYRIGHT = 'MONSTERZ -- COPYRIGHT 2005 SAM HOCEVAR -- MONSTERZ IS ' \
+            'FREE SOFTWARE, YOU CAN REDISTRIBUTE IT AND/OR MODIFY IT ' \
+            'UNDER THE TERMS OF THE DO WHAT THE FUCK YOU WANT TO ' \
+            'PUBLIC LICENSE, VERSION 2 -- '
+
+# Constants
 HAVE_AI = False # broken
 
 SCREEN_WIDTH = 640
@@ -41,6 +46,9 @@ SWITCH_DELAY = 4
 WARNING_DELAY = 12
 
 class Data:
+    can_sound = False
+    have_sound = False
+    have_music = False
     def __init__(self, dir = dirname(argv[0])):
         # Load stuff
         tiles = pygame.image.load(join(dir, 'tiles.png')).convert_alpha()
@@ -62,25 +70,25 @@ class Data:
         self.exploded = {}
         self.special = {}
         self.selector = None
-        self.wav = {}
-        if HAVE_SOUND:
-            pygame.mixer.music.load(join(dir, 'music.s3m'))
-            pygame.mixer.music.set_volume(0.9)
-            pygame.mixer.music.play(-1, 0.0)
+        # Initialise sound stuff
+        try:
+            self.can_sound = pygame.mixer.get_init()
+        except:
+            self.can_sound = False
+        if self.can_sound:
+            self.wav = {}
             for s in ['click', 'grunt', 'ding', 'whip', 'pop', 'duh', \
                       'boing', 'applause', 'laugh', 'warning']:
                 self.wav[s] = pygame.mixer.Sound(join(dir, s + '.wav'))
-
-    def _scale(self, surf, size):
-        w, h = surf.get_size()
-        if (w, h) == size:
-            return pygame.transform.scale(surf, size)
-        return pygame.transform.rotozoom(surf, 0.0, 1.0 * size[0] / w)
-
-    def play_sound(self, sound):
-        if HAVE_SOUND: self.wav[sound].play()
-
-    def make_sprites(self):
+            self.have_sound = True
+            try:
+                pygame.mixer.music.load(join(dir, 'music.s3m'))
+                pygame.mixer.music.set_volume(0.9)
+                pygame.mixer.music.play(-1, 0.0)
+                self.have_music = True
+            except:
+                pass
+        # Initialise tiles stuff
         t = self.tile_size
         s = self.orig_size
         scale = self._scale
@@ -116,7 +124,18 @@ class Data:
             mini = scale(mini, (t * 7 / 8 - 1, t * 7 / 8 - 1))
             special.blit(mini, (s / 16, s / 16))
             self.special[i] = scale(special, (t, t))
+        self.led_off = scale(self.tiles.subsurface((3 * s, 0, s / 2, s / 2)), (t / 2, t / 2))
+        self.led_on = scale(self.tiles.subsurface((3 * s + s / 2, 0, s / 2, s / 2)), (t / 2, t / 2))
         self.selector = scale(tile_at(0, 0), (t, t))
+
+    def _scale(self, surf, size):
+        w, h = surf.get_size()
+        if (w, h) == size:
+            return pygame.transform.scale(surf, size)
+        return pygame.transform.rotozoom(surf, 0.0, 1.0 * size[0] / w)
+
+    def play_sound(self, sound):
+        if self.have_sound: self.wav[sound].play()
 
     def board2screen(self, coord):
         x, y = coord
@@ -158,8 +177,8 @@ class Fonter:
 class Game:
     # Nothing here yet
     def __init__(self):
-        self.needed = {}
-        self.done = {}
+        self.needed = [0] * 9
+        self.done = [0] * 9
         self.bonus_list = []
         self.blink_list = {}
         self.disappear_list = []
@@ -446,12 +465,6 @@ class Game:
         text = fonter.render(str(self.score), 60)
         w, h = text.get_rect().size
         bg.blit(text, (624 - w, 10))
-        # Print level
-        msg = 'LEVEL ' + str(self.level)
-        if self.needed[1]: msg += ' - ' + str(self.needed[1])
-        text = fonter.render(msg, 36)
-        w, h = text.get_rect().size
-        bg.blit(text, (624 - w, 58))
         # Print done/needed
         for i in range(self.population):
             if not self.needed[i + 1]:
@@ -460,9 +473,16 @@ class Game:
                 surf = data.tiny[i]
             else:
                 surf = data.shaded[i]
-            bg.blit(surf, (444, 100 + i * 38))
+            x = 440 + i / 4 * 90
+            y = 64 + (i % 4) * 38
+            bg.blit(surf, (x, y))
             text = fonter.render(str(self.done[i + 1]), 36)
-            bg.blit(text, (488, 102 + i * 38))
+            bg.blit(text, (x + 44, y + 2))
+        # Print level
+        msg = 'LEVEL ' + str(self.level)
+        if self.needed[1]: msg += ' - ' + str(self.needed[1])
+        text = fonter.render(msg, 36)
+        bg.blit(text, (444, 216))
 
     def pause(self):
         # TODO: prevent cheating by not allowing less than 1 second
@@ -680,8 +700,6 @@ class Game:
 
 class Monsterz:
     def __init__(self):
-        # Compute stuff
-        data.make_sprites()
         # Init values
         self.status = STATUS_MENU
         self.clock = pygame.time.Clock()
@@ -700,21 +718,34 @@ class Monsterz:
             elif self.status == STATUS_SCORES:
                 iterator = self.iterate_scores
             elif self.status == STATUS_QUIT:
-                return
+                break
             self.status = None
             iterator()
             win.blit(bg, (0, 0))
             pygame.display.flip()
             self.timer += 1
             self.clock.tick(12)
+        # Leave enough time to hear the final sound
+        bg.fill((0,0,0))
+        win.blit(bg, (0, 0))
+        pygame.display.flip()
+        self.clock.tick(2)
 
     def generic_draw(self):
         bg.blit(data.board, (0, 0))
+        # Print various buttons
+        if data.can_sound:
+            bg.blit(data.led_off, (440, 378))
+            bg.blit(fonter.render('SOUND FX', 30, (150, 127, 127)), (470, 376))
+            bg.blit(data.led_on, (440, 408))
+            bg.blit(fonter.render('MUSIC', 30, (150, 127, 127)), (470, 406))
+        bg.blit(data.led_on, (440, 438))
+        bg.blit(fonter.render('FULLSCREEN', 30, (150, 127, 127)), (470, 436))
 
     def copyright_draw(self):
         scroll = pygame.Surface((406, 40)).convert_alpha()
         scroll.fill((0, 0, 0, 0))
-        text = fonter.render('MONSTERZ - COPYRIGHT 2005 SAM HOCEVAR - ', 30)
+        text = fonter.render(COPYRIGHT, 30)
         w, h = text.get_size()
         d = (self.timer * 2) % w
         scroll.blit(text, (0 - d, 0))
@@ -791,6 +822,7 @@ class Monsterz:
                 self.status = STATUS_QUIT
                 return
             elif event.type == MOUSEBUTTONDOWN and area:
+                data.play_sound('whip')
                 self.status = area
                 return
 
@@ -903,6 +935,7 @@ class Monsterz:
                 self.status = STATUS_MENU
                 return
             elif event.type == MOUSEBUTTONDOWN:
+                data.play_sound('whip')
                 self.status = STATUS_MENU
                 return
 
@@ -931,17 +964,12 @@ class Monsterz:
                 self.status = STATUS_MENU
                 return
             elif event.type == MOUSEBUTTONDOWN:
+                data.play_sound('whip')
                 self.status = STATUS_MENU
                 return
 
 # Pygame init
 pygame.init()
-# Sound init
-if HAVE_SOUND:
-    try:
-        HAVE_SOUND = pygame.mixer.get_init()
-    except:
-        HAVE_SOUND = False
 # Display init
 win = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 bg = pygame.Surface(win.get_size())
