@@ -97,9 +97,12 @@ def compare_scores(x, y):
 
 def semi_grayscale(surf):
     try:
-        # Convert to semi-grayscale
         pixels = pygame.surfarray.pixels3d(surf)
         alpha = pygame.surfarray.pixels_alpha(surf)
+    except:
+        pass
+    else:
+        # Convert to semi-grayscale
         for y, line in enumerate(pixels):
             for x, p in enumerate(line):
                 r, g, b = p
@@ -111,14 +114,17 @@ def semi_grayscale(surf):
                     alpha[y][x] = 255 - (M - m) * 3 / 4
         del pixels
         del alpha
-    except:
-        return
+        surf.unlock()
 
 def semi_transp(surf):
     try:
         # Convert to semi-transparency
         pixels = pygame.surfarray.pixels3d(surf)
         alpha = pygame.surfarray.pixels_alpha(surf)
+    except:
+        # If it did not work, make it empty
+        surf.fill((0, 0, 0, 0))
+    else:
         for y, line in enumerate(pixels):
             for x, p in enumerate(line):
                 r, g, b = p
@@ -129,10 +135,7 @@ def semi_transp(surf):
                     alpha[y][x] = 255 - M * 2 / 3
         del pixels
         del alpha
-    except:
-        # If it did not work, make it empty
-        surf.fill((0, 0, 0, 0))
-        return
+        surf.unlock()
 
 def username():
     if platform == 'win32':
@@ -812,6 +815,9 @@ class Game:
             pygame.draw.rect(timebar, c, (0, 0, w, 32))
         try:
             alpha = pygame.surfarray.pixels_alpha(timebar)
+        except:
+            pass
+        else:
             for x in range(4):
                 for y, p in enumerate(alpha[x]):
                     alpha[x][y] = p * x / 4
@@ -824,8 +830,7 @@ class Game:
                     col[l - y - 1] = col[l - y - 1] * y / 4
                 del col
             del alpha
-        except:
-            pass
+            timebar.unlock()
         system.blit(timebar, (13, 436))
         if self.lost_timer == -1:
             # Print play again message
@@ -1268,14 +1273,16 @@ class Monsterz:
         scroll.blit(text, (w - d, 0))
         try:
             alpha = pygame.surfarray.pixels_alpha(scroll)
+        except:
+            pass
+        else:
             for x in range(10):
                 for y, p in enumerate(alpha[x]):
                     alpha[x][y] = p * x / 12
                 for y, p in enumerate(alpha[406 - x - 1]):
                     alpha[406 - x - 1][y] = p * x / 12
             del alpha
-        except:
-            pass
+            scroll.unlock()
         system.blit(scroll, (13, 437))
 
     gsat = [0] * 3
