@@ -106,9 +106,9 @@ def semi_grayscale(surf):
         for y, line in enumerate(pixels):
             for x, p in enumerate(line):
                 r, g, b = p
-                M = max(r, g, b)
-                m = min(r, g, b)
-                val = (r + g + b + 2 * M) / 5
+                M = int(max(r, g, b))
+                m = int(min(r, g, b))
+                val = (2 * M + r + g + b) / 5
                 p[:] = (val + r) / 2, (val + g) / 2, (val + b) / 2
                 if alpha[y][x] >= 250:
                     alpha[y][x] = 255 - (M - m) * 3 / 4
@@ -128,8 +128,8 @@ def semi_transp(surf):
         for y, line in enumerate(pixels):
             for x, p in enumerate(line):
                 r, g, b = p
-                M = max(r, g, b)
-                m = min(r, g, b)
+                M = int(max(r, g, b))
+                m = int(min(r, g, b))
                 p[:] = (m + r) / 2, (m + g) / 2, (m + b) / 2
                 if alpha[y][x] >= 250:
                     alpha[y][x] = 255 - M * 2 / 3
