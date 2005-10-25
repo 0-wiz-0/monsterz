@@ -20,7 +20,7 @@ from os.path import join, isdir, isfile, dirname, expanduser
 from os import write, mkdir
 
 # String constants
-VERSION = '0.6.0'
+VERSION = '0.6.1'
 COPYRIGHT = 'MONSTERZ - COPYRIGHT 2005 SAM HOCEVAR - MONSTERZ IS ' \
             'FREE SOFTWARE, YOU CAN REDISTRIBUTE IT AND/OR MODIFY IT ' \
             'UNDER THE TERMS OF THE DO WHAT THE FUCK YOU WANT TO ' \
@@ -1435,17 +1435,17 @@ class Monsterz:
         difficulty = settings.get('difficulty')
         self.generic_draw()
         self.copyright_draw()
-        messages = ['CLASSIC', '', 'PUZZLE', 'TRAINING']
+        messages = ['CLASSIC', 'PUZZLE', '', 'TRAINING']
         x, y = data.screen2board(pygame.mouse.get_pos())
         if y == 2 and 1 <= x <= 6:
             narea = GAME_CLASSIC
             self.nsat[0] = 255
-        #elif y == 3 and 1 <= x <= 4:
-        #    narea = GAME_CLASSIC
-        #    self.nsat[1] = 255
-        elif y == 4 and 1 <= x <= 5:
+        elif y == 3 and 1 <= x <= 5:
             narea = GAME_PUZZLE
-            self.nsat[2] = 255
+            self.nsat[1] = 255
+        #elif y == 4 and 1 <= x <= 4:
+        #    narea = GAME_QUEST
+        #    self.nsat[2] = 255
         elif y == 5 and 1 <= x <= 4:
             narea = GAME_TRAINING
             self.nsat[3] = 255
