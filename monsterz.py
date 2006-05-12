@@ -1896,9 +1896,9 @@ def version():
     print 'monsterz ' + VERSION
     print 'Written by Sam Hocevar, music by MenTaLguY, sound effects by Sun Microsystems,'
     print 'Inc., Michael Speck, David White and the Battle for Wesnoth project, Mike'
-    print 'Kershaw.'
+    print 'Kershaw and Sam Hocevar.'
     print
-    print 'Copyright (C) 2005 Sam Hocevar <sam@zoy.org>'
+    print 'Copyright (C) 2005, 2006 Sam Hocevar <sam@zoy.org>'
     print '          (C) 1998 MenTaLguY <mental@rydia.net>'
     print '          (C) 2002, 2005 Sun Microsystems, Inc.'
     print '          (C) Michael Speck <kulkanie@gmx.net>'
