@@ -5,7 +5,7 @@
  Monsterz: cute puzzle game
  $Id$
 
- Copyright: (c) 2005 Sam Hocevar <sam@zoy.org>
+ Copyright: (c) 2005, 2006 Sam Hocevar <sam@zoy.org>
    This program is free software; you can redistribute it and/or
    modify it under the terms of the Do What The Fuck You Want To
    Public License, Version 2, as published by Sam Hocevar. See
@@ -20,8 +20,8 @@ from os.path import join, isdir, isfile, dirname, expanduser
 from os import write, mkdir
 
 # String constants
-VERSION = '0.6.1'
-COPYRIGHT = 'MONSTERZ - COPYRIGHT 2005 SAM HOCEVAR - MONSTERZ IS ' \
+VERSION = '0.7.0'
+COPYRIGHT = 'MONSTERZ - COPYRIGHT 2005, 2006 SAM HOCEVAR - MONSTERZ IS ' \
             'FREE SOFTWARE, YOU CAN REDISTRIBUTE IT AND/OR MODIFY IT ' \
             'UNDER THE TERMS OF THE DO WHAT THE FUCK YOU WANT TO ' \
             'PUBLIC LICENSE, VERSION 2 - '
@@ -1894,16 +1894,23 @@ class Monsterz:
 
 def version():
     print 'monsterz ' + VERSION
-    print 'Written by Sam Hocevar, music by MenTaLguY, sound effects by Castle Music'
-    print 'Productions, Koumis Productions and Sam Hocevar.'
+    print 'Written by Sam Hocevar, music by MenTaLguY, sound effects by Sun Microsystems,'
+    print 'Inc., Michael Speck, David White and the Battle for Wesnoth project, Mike'
+    print 'Kershaw.'
     print
     print 'Copyright (C) 2005 Sam Hocevar <sam@zoy.org>'
-    print '          (C) 2004 Koumis Productions <info@koumis.com>'
-    print '          (C) 2002 Castles Music Productions <info@castlesmusic.co.nz>'
     print '          (C) 1998 MenTaLguY <mental@rydia.net>'
-    print 'This is free software; you can redistribute it and/or modify it under the terms'
-    print 'of the Do What The Fuck You Want To Public License, Version 2, as published'
-    print 'by Sam Hocevar. See http://sam.zoy.org/projects/COPYING.WTFPL for more details.'
+    print '          (C) 2002, 2005 Sun Microsystems, Inc.'
+    print '          (C) Michael Speck <kulkanie@gmx.net>'
+    print '          (C) 2003 by David White <davidnwhite@optusnet.com.au> and the'
+    print '              Battle for Wesnoth project'
+    print '          (C) Mike Kershaw <dragorn@kismetwireless.net>'
+
+    print 'This program is free software; you can redistribute it and/or modify it under'
+    print 'the terms of the Do What The Fuck You Want To Public License, Version 2, as'
+    print 'published by Sam Hocevar. See http://sam.zoy.org/wtfpl/ for more details.'
+    print 'The sound effects are released under their own licences: applause.wav and'
+    print 'pop.wav are covered by the LGPL, the others are covered by the GPL.'
 
 def usage():
     print 'Usage: monsterz [OPTION]...'

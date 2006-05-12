@@ -6,7 +6,7 @@ pkgdatadir = $(datadir)/games/monsterz
 scoredir = /var/games
 scorefile = $(scoredir)/monsterz
 
-VERSION = 0.6.1
+VERSION = 0.7.0
 DIRECTORY = monsterz-$(VERSION)
 
 BITMAP = graphics/tiles.png graphics/bigtiles.png graphics/background.png \
@@ -17,23 +17,25 @@ SOUND = sound/grunt.wav sound/click.wav sound/pop.wav sound/boing.wav sound/whip
 MUSIC = sound/music.s3m
 TEXT = README TODO COPYING AUTHORS INSTALL
 
+INKSCAPE = inkscape -z
+
 all: monsterz $(BITMAP)
 
 monsterz: monsterz.c
 	$(CC) -Wall monsterz.c -DDATADIR=\"$(pkgdatadir)\" -DSCOREFILE=\"$(scorefile)\" -o monsterz
 
 graphics/icon.png: graphics/graphics.svg
-	inkscape graphics/graphics.svg -z -a 800:480:860:540 -w64 -h64 -e graphics/icon.png
+	$(INKSCAPE) graphics/graphics.svg -a 800:480:860:540 -w64 -h64 -e graphics/icon.png
 graphics/tiles.png: graphics/graphics.svg
-	inkscape graphics/graphics.svg -z -a 800:0:1100:840 -d 72 -e graphics/tiles.png
+	$(INKSCAPE) graphics/graphics.svg -a 800:0:1100:840 -d 72 -e graphics/tiles.png
 graphics/bigtiles.png: graphics/graphics.svg
-	inkscape graphics/graphics.svg -z -a 800:0:860:540 -d 432 -e graphics/bigtiles.png
+	$(INKSCAPE) graphics/graphics.svg -a 800:0:860:540 -d 432 -e graphics/bigtiles.png
 graphics/background.png: graphics/graphics.svg graphics/pattern.png
-	inkscape graphics/graphics.svg -z -a 0:0:800:600 -d 72 -e graphics/background.png
+	$(INKSCAPE) graphics/graphics.svg -a 0:0:800:600 -d 72 -e graphics/background.png
 graphics/board.png: graphics/graphics.svg graphics/pattern.png
-	inkscape graphics/graphics.svg -z -a 30:690:510:1170 -d 72 -e graphics/board.png
+	$(INKSCAPE) graphics/graphics.svg -a 30:690:510:1170 -d 72 -e graphics/board.png
 graphics/logo.png: graphics/graphics.svg
-	inkscape graphics/graphics.svg -z -a 810:858:1220:1075 -w380 -h180 -e graphics/logo.png
+	$(INKSCAPE) graphics/graphics.svg -a 810:858:1220:1075 -w380 -h180 -e graphics/logo.png
 
 install: all
 	mkdir -p $(DESTDIR)$(gamesdir)
