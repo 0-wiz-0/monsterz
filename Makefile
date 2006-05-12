@@ -19,10 +19,12 @@ TEXT = README TODO COPYING AUTHORS INSTALL
 
 INKSCAPE = inkscape -z
 
-all: monsterz $(BITMAP)
+all: monsterz
 
 monsterz: monsterz.c
 	$(CC) -Wall monsterz.c -DDATADIR=\"$(pkgdatadir)\" -DSCOREFILE=\"$(scorefile)\" -o monsterz
+
+bitmap: $(BITMAP)
 
 graphics/icon.png: graphics/graphics.svg
 	$(INKSCAPE) graphics/graphics.svg -a 800:480:860:540 -w64 -h64 -e graphics/icon.png
@@ -58,25 +60,12 @@ uninstall:
 	#rm -f $(DESTDIR)$(scorefile)
 
 dist:
-	rm -Rf $(DIRECTORY)-src
-	mkdir $(DIRECTORY)-src
-	mkdir $(DIRECTORY)-src/graphics
-	mkdir $(DIRECTORY)-src/sound
-	# Copy everything we need
-	cp monsterz.py monsterz.c Makefile $(DIRECTORY)-src/
-	cp $(TEXT) $(DIRECTORY)-src/
-	cp graphics/pattern.png graphics/graphics.svg $(DIRECTORY)-src/graphics
-	cp $(SOUND) $(MUSIC) $(DIRECTORY)-src/sound
-	# Build archive
-	tar cvzf $(DIRECTORY)-src.tar.gz $(DIRECTORY)-src/
-	rm -Rf $(DIRECTORY)-src
-
-binary: all
 	rm -Rf $(DIRECTORY)
 	mkdir $(DIRECTORY)
 	mkdir $(DIRECTORY)/graphics
 	mkdir $(DIRECTORY)/sound
-	cp monsterz.py $(TEXT) $(DIRECTORY)/
+	cp monsterz.py monsterz.c Makefile $(TEXT) $(DIRECTORY)/
+	cp graphics/pattern.png graphics/graphics.svg $(DIRECTORY)/graphics
 	cp $(BITMAP) $(DIRECTORY)/graphics
 	cp $(SOUND) $(MUSIC) $(DIRECTORY)/sound
 	tar cvzf $(DIRECTORY).tar.gz $(DIRECTORY)/
@@ -85,5 +74,5 @@ binary: all
 
 distclean: clean
 clean:
-	rm -f monsterz $(BITMAP)
+	rm -f monsterz
 
