@@ -5,7 +5,7 @@
  Monsterz: cute puzzle game
  $Id$
 
- Copyright: (c) 2005, 2006 Sam Hocevar <sam@zoy.org>
+ Copyright: (c) 2005 - 2007 Sam Hocevar <sam@zoy.org>
    This program is free software; you can redistribute it and/or
    modify it under the terms of the Do What The Fuck You Want To
    Public License, Version 2, as published by Sam Hocevar. See
@@ -20,11 +20,10 @@ from os.path import join, isdir, isfile, dirname, expanduser
 from os import write, mkdir
 
 # String constants
-VERSION = '0.7.0'
+VERSION = '0.7.1'
 COPYRIGHT = 'MONSTERZ - COPYRIGHT 2005, 2006 SAM HOCEVAR - MONSTERZ IS ' \
             'FREE SOFTWARE, YOU CAN REDISTRIBUTE IT AND/OR MODIFY IT ' \
-            'UNDER THE TERMS OF THE DO WHAT THE FUCK YOU WANT TO ' \
-            'PUBLIC LICENSE, VERSION 2 - '
+            'UNDER THE TERMS OF THE WTFPL LICENSE, VERSION 2 - '
 
 # Constants
 HAVE_AI = False # broken
@@ -369,6 +368,17 @@ class Data:
     def screen2board(self, coord):
         x, y = coord
         return ((x - 24) / ITEM_SIZE, (y - 24) / ITEM_SIZE)
+
+class Sprite:
+    def __init__(self, surf, coord):
+        self.surf = surf
+        self.coord = coord
+
+    def set_surf(self, surf):
+        return
+
+    def set_coord(self, coord):
+        return
 
 class System:
     def __init__(self):
