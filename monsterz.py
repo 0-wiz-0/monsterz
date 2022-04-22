@@ -217,17 +217,17 @@ class Settings:
         except:
             return
         file.write('# Monsterz configuration file - automatically saved\r\n')
-        for key, value in self.config.items():
+        for key, value in list(self.config.items()):
             file.write(key + ' = ' + str(int(value)) + '\r\n')
         file.close()
 
     def get(self, key):
-        if not self.config.has_key(key):
+        if key not in self.config:
             return None
         return self.config[key]
 
     def set(self, key, value):
-        if not self.config.has_key(key):
+        if key not in self.config:
             return
         self.config[key] = value
 
@@ -245,12 +245,12 @@ class Settings:
             pass
         # Add dummy scores to make sure our score list is full
         for game in ['CLASSIC']:
-            if not self.scores.has_key(game):
+            if game not in self.scores:
                 self.scores[game] = []
             for x in range(20): self._add_score(game, 'NOBODY', 0, 1)
 
     def _add_score(self, game, name, score, level):
-        if not self.scores.has_key(game):
+        if game not in self.scores:
             self.scores[game] = []
         self.scores[game].append((name, score, level))
         self.scores[game].sort(compare_scores)
@@ -263,7 +263,7 @@ class Settings:
         self._add_score(game, self.name, score, level)
         # Immediately save
         msg = ''
-        for type, list in self.scores.items():
+        for type, list in list(self.scores.items()):
             for name, score, level in list:
                 msg += type + ':' + name + ':' + str(score) + ':' + str(level)
                 msg += '\n'
@@ -402,7 +402,8 @@ class System:
     def blit(self, surf, coords):
         self.background.blit(surf, coords)
 
-    def blit_board(self, (x1, y1, x2, y2)):
+    def blit_board(self, xxx_todo_changeme):
+        (x1, y1, x2, y2) = xxx_todo_changeme
         x1, y1 = x1 * ITEM_SIZE, y1 * ITEM_SIZE
         x2, y2 = x2 * ITEM_SIZE - x1, y2 * ITEM_SIZE - y1
         surf = data.board.subsurface((x1, y1, x2, y2))
@@ -531,11 +532,11 @@ class Game:
         #self.board[randint(3, 4)][0] = ITEM_METAL
 
     def fill_board(self):
-        for y in xrange(BOARD_HEIGHT - 1, -1, -1):
-            for x in xrange(BOARD_WIDTH - 1, -1, -1):
+        for y in range(BOARD_HEIGHT - 1, -1, -1):
+            for x in range(BOARD_WIDTH - 1, -1, -1):
                 if self.board[x][y] != ITEM_NONE:
                     continue
-                for y2 in xrange(y - 1, -1, -1):
+                for y2 in range(y - 1, -1, -1):
                     if self.board[x][y2] != ITEM_NONE:
                         self.board[x][y] = self.board[x][y2]
                         self.extra_offset[x][y] = (0, ITEM_SIZE * (y2 - y))
@@ -687,7 +688,7 @@ class Game:
         system.blit(data.board, (24, 24))
         # Have a random piece blink
         c = randint(0, BOARD_WIDTH - 1), randint(0, BOARD_HEIGHT - 1)
-        if randint(0, 5) is 0 and not self.blink_list.has_key(c):
+        if randint(0, 5) is 0 and c not in self.blink_list:
             self.blink_list[c] = 5
         # Handle special scrolling cases
         if self.level_timer:
@@ -758,7 +759,7 @@ class Game:
                 shape = data.exploded[n]
             elif n == self.angry_items:
                 shape = data.angry[n]
-            elif self.blink_list.has_key((i, j)):
+            elif (i, j) in self.blink_list:
                 shape = data.blink[n]
                 self.blink_list[i, j] -= 1
                 if self.blink_list[i, j] is 0: del self.blink_list[i, j]
@@ -775,7 +776,8 @@ class Game:
         if self.select:
             system.blit(data.selector, select_coord)
 
-    def piece_draw(self, sprite, (x, y)):
+    def piece_draw(self, sprite, xxx_todo_changeme1):
+        (x, y) = xxx_todo_changeme1
         width = ITEM_SIZE
         crop = sprite.subsurface
         # Constrain X
@@ -958,11 +960,11 @@ class Game:
                 led, color = data.led_on, (255, 255, 255)
             else:
                 led, color = data.led_off, (180, 150, 127)
-            c = map(lambda a, b: b - (b - a) * self.psat[0] / 255, r, color)
+            c = list(map(lambda a, b: b - (b - a) * self.psat[0] / 255, r, color))
             system.blit(led, (440, 298))
             system.blit(fonter.render('PAUSE', 30, c), (470, 296))
             color = (180, 150, 127)
-            c = map(lambda a, b: b - (b - a) * self.psat[1] / 255, r, color)
+            c = list(map(lambda a, b: b - (b - a) * self.psat[1] / 255, r, color))
             system.blit(fonter.render('ABORT', 30, c), (470, 326))
             for x in range(2):
                 if self.psat[x]:
@@ -1325,21 +1327,21 @@ class Monsterz:
                 led, color = data.led_on, (255, 255, 255)
             else:
                 led, color = data.led_off, (180, 150, 127)
-            c = map(lambda a, b: b - (b - a) * self.gsat[0] / 255, r, color)
+            c = list(map(lambda a, b: b - (b - a) * self.gsat[0] / 255, r, color))
             system.blit(led, (440, 378))
             system.blit(fonter.render('SOUND FX', 30, c), (470, 376))
             if settings.get('music'):
                 led, color = data.led_on, (255, 255, 255)
             else:
                 led, color = data.led_off, (180, 150, 127)
-            c = map(lambda a, b: b - (b - a) * self.gsat[1] / 255, r, color)
+            c = list(map(lambda a, b: b - (b - a) * self.gsat[1] / 255, r, color))
             system.blit(led, (440, 408))
             system.blit(fonter.render('MUSIC', 30, c), (470, 406))
         if settings.get('fullscreen'):
             led, color = data.led_on, (255, 255, 255)
         else:
             led, color = data.led_off, (180, 150, 127)
-        c = map(lambda a, b: b - (b - a) * self.gsat[2] / 255, r, color)
+        c = list(map(lambda a, b: b - (b - a) * self.gsat[2] / 255, r, color))
         system.blit(led, (440, 438))
         system.blit(fonter.render('FULLSCREEN', 30, c), (470, 436))
         for x in range(3):
@@ -1411,7 +1413,7 @@ class Monsterz:
             else:
                 monster = data.blink[shapes[x]]
             system.blit(monster, data.board2screen((1, 4 + x)))
-            c = map(lambda a: 255 - (255 - a) * self.msat[x] / 255, colors[x])
+            c = [255 - (255 - a) * self.msat[x] / 255 for a in colors[x]]
             text = fonter.render(messages[x], 48, c)
             w, h = text.get_rect().size
             system.blit(text, (24 + 102, 24 + 216 + ITEM_SIZE * x - h / 2))
@@ -1485,14 +1487,14 @@ class Monsterz:
         w, h = text.get_rect().size
         system.blit(text, (24 + 192 - w / 2, 24 + 24 - h / 2))
         for i in range(4):
-            c = map(lambda a: 255 - (255 - a) * self.nsat[i] / 255, [127, 0, 255])
+            c = [255 - (255 - a) * self.nsat[i] / 255 for a in [127, 0, 255]]
             text = fonter.render(messages[i], 48, c)
             w, h = text.get_rect().size
             system.blit(text, (24 + ITEM_SIZE * 4 - w / 2, 24 + 120 + ITEM_SIZE * i - h / 2))
             if self.nsat[i]:
                 self.nsat[i] = self.nsat[i] * 8 / 10
         for i in range(4, 8):
-            c = map(lambda a: 255 - (255 - a) * self.nsat[i] / 255, [127, 0, 255])
+            c = [255 - (255 - a) * self.nsat[i] / 255 for a in [127, 0, 255]]
             if i % 2:
                 img = data.led_more
                 x = 320
@@ -1907,39 +1909,39 @@ class Monsterz:
                 return
 
 def version():
-    print 'monsterz ' + VERSION
-    print 'Written by Sam Hocevar, music by MenTaLguY, sound effects by Sun Microsystems,'
-    print 'Inc., Michael Speck, David White and the Battle for Wesnoth project, Mike'
-    print 'Kershaw and Sam Hocevar.'
-    print
-    print 'Copyright (C) 2005, 2006 Sam Hocevar <sam@zoy.org>'
-    print '          (C) 1998 MenTaLguY <mental@rydia.net>'
-    print '          (C) 2002, 2005 Sun Microsystems, Inc.'
-    print '          (C) Michael Speck <kulkanie@gmx.net>'
-    print '          (C) 2003 by David White <davidnwhite@optusnet.com.au> and the'
-    print '              Battle for Wesnoth project'
-    print '          (C) Mike Kershaw <dragorn@kismetwireless.net>'
+    print('monsterz ' + VERSION)
+    print('Written by Sam Hocevar, music by MenTaLguY, sound effects by Sun Microsystems,')
+    print('Inc., Michael Speck, David White and the Battle for Wesnoth project, Mike')
+    print('Kershaw and Sam Hocevar.')
+    print()
+    print('Copyright (C) 2005, 2006 Sam Hocevar <sam@zoy.org>')
+    print('          (C) 1998 MenTaLguY <mental@rydia.net>')
+    print('          (C) 2002, 2005 Sun Microsystems, Inc.')
+    print('          (C) Michael Speck <kulkanie@gmx.net>')
+    print('          (C) 2003 by David White <davidnwhite@optusnet.com.au> and the')
+    print('              Battle for Wesnoth project')
+    print('          (C) Mike Kershaw <dragorn@kismetwireless.net>')
 
-    print 'This program is free software; you can redistribute it and/or modify it under'
-    print 'the terms of the Do What The Fuck You Want To Public License, Version 2, as'
-    print 'published by Sam Hocevar. See http://sam.zoy.org/wtfpl/ for more details.'
-    print 'The sound effects are released under their own licences: applause.wav and'
-    print 'pop.wav are covered by the LGPL, the others are covered by the GPL.'
+    print('This program is free software; you can redistribute it and/or modify it under')
+    print('the terms of the Do What The Fuck You Want To Public License, Version 2, as')
+    print('published by Sam Hocevar. See http://sam.zoy.org/wtfpl/ for more details.')
+    print('The sound effects are released under their own licences: applause.wav and')
+    print('pop.wav are covered by the LGPL, the others are covered by the GPL.')
 
 def usage():
-    print 'Usage: monsterz [OPTION]...'
-    print
-    print 'Options'
-    print ' -h, --help         display this help and exit'
-    print ' -v, --version      display version information and exit'
-    print ' -f, --fullscreen   start in full screen mode'
-    print ' -m, --nomusic      disable music'
-    print ' -s, --nosfx        disable sound effects'
-    print '     --outfd <fd>   output scores to file descriptor <fd>'
-    print '     --data <dir>   set alternate data directory to <dir>'
-    print '     --score <file> set score file to <file>'
-    print
-    print 'Report bugs or suggestions to <sam@zoy.org>.'
+    print('Usage: monsterz [OPTION]...')
+    print()
+    print('Options')
+    print(' -h, --help         display this help and exit')
+    print(' -v, --version      display version information and exit')
+    print(' -f, --fullscreen   start in full screen mode')
+    print(' -m, --nomusic      disable music')
+    print(' -s, --nosfx        disable sound effects')
+    print('     --outfd <fd>   output scores to file descriptor <fd>')
+    print('     --data <dir>   set alternate data directory to <dir>')
+    print('     --score <file> set score file to <file>')
+    print()
+    print('Report bugs or suggestions to <sam@zoy.org>.')
 
 def main():
     from getopt import getopt, GetoptError
@@ -1951,7 +1953,7 @@ def main():
     try:
         long = ['help', 'version', 'music', 'sound', 'fullscreen',
                 'outfd=', 'data=', 'score=']
-        opts = getopt(argv[1:], 'hvmsf', long)[0]
+        opts = getopt(argv[1:], 'hvmsf', int)[0]
     except GetoptError:
         usage()
         exit(2)
@@ -1980,13 +1982,13 @@ def main():
             scorefile = arg
     # Init everything and launch the game
     settings = Settings(scorefile, outfd)
-    for key, value in override.items():
+    for key, value in list(override.items()):
         settings.set(key, value)
     system = System()
     try:
         data = Data(sharedir)
     except:
-        print argv[0] + ': could not open data from `' + sharedir + "'."
+        print(argv[0] + ': could not open data from `' + sharedir + "'.")
         raise
     fonter = Fonter()
     monsterz = Monsterz()
