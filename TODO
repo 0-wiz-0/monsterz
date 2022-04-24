@@ -6,3 +6,6 @@ Future plans:
 
 Conversion to Python 3:
 * Fix 'bitmap' Makefile target
+* Player not added to high score at end of game
+* Music not played correctly
+

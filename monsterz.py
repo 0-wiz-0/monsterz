@@ -264,7 +264,7 @@ class Settings:
         self._add_score(game, self.name, score, level)
         # Immediately save
         msg = ''
-        for type, list in list(self.scores.items()):
+        for type, list in self.scores.items():
             for name, score, level in list:
                 msg += type + ':' + name + ':' + str(score) + ':' + str(level)
                 msg += '\n'
