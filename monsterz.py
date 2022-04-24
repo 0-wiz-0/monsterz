@@ -1945,9 +1945,9 @@ def main():
     sharedir = dirname(argv[0])
     outfd = None
     try:
-        long = ['help', 'version', 'music', 'sound', 'fullscreen',
+        longopts = ['help', 'version', 'music', 'sound', 'fullscreen',
                 'outfd=', 'data=', 'score=']
-        opts = getopt(argv[1:], 'hvmsf', int)[0]
+        opts = getopt(argv[1:], 'hvmsf', longopts)[0]
     except GetoptError:
         usage()
         exit(2)
