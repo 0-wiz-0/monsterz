@@ -25,7 +25,7 @@ COPYRIGHT = 'MONSTERZ - COPYRIGHT 2005 - 2007 SAM HOCEVAR - MONSTERZ IS ' \
             'UNDER THE TERMS OF THE WTFPL LICENSE, VERSION 2 - '
 
 # Constants
-HAVE_AI = False # broken
+HAVE_AI = False  # broken
 
 SCREEN_WIDTH = 640
 SCREEN_HEIGHT = 480
@@ -109,6 +109,7 @@ def semi_grayscale(surf):
         del alpha
         surf.unlock()
 
+
 def semi_transp(surf):
     try:
         # Convert to semi-transparency
@@ -132,6 +133,7 @@ def semi_transp(surf):
         del alpha
         surf.unlock()
 
+
 def username():
     if platform == 'win32':
         from os import environ
@@ -139,6 +141,7 @@ def username():
     from pwd import getpwuid
     from os import geteuid
     return getpwuid(geteuid())[0]
+
 
 class Settings:
     def __init__(self, scorefile, outfd):
@@ -174,6 +177,7 @@ class Settings:
         self._load_scores()
 
     config = {}
+
     def _init_config(self):
         self.config['fullscreen'] = 0
         self.config['music'] = 1
@@ -195,11 +199,15 @@ class Settings:
             key, value = m.group(1), int(m.group(2))
             # Sanitise data before using it
             if key == 'difficulty':
-                if value < 1: value = 1
-                elif value > 10: value = 10
+                if value < 1:
+                    value = 1
+                elif value > 10:
+                    value = 10
             elif key == 'items':
-                if value < 4: value = 4
-                elif value > 8: value = 8
+                if value < 4:
+                    value = 4
+                elif value > 8:
+                    value = 8
             self.set(key, value)
         file.close()
 
@@ -269,7 +277,8 @@ class Settings:
                 file.close()
             except:
                 raise
-                pass # Cannot save scores, do nothing...
+                pass  # Cannot save scores, do nothing...
+
 
 class Data:
     def __init__(self, dir):
@@ -320,8 +329,8 @@ class Data:
             self.surprise[i] = scale(tile_at(2, i + 5), (t, t))
             self.angry[i] = scale(tile_at(3, i + 5), (t, t))
             self.exploded[i] = scale(tile_at(4, i + 5), (t, t))
-            #tmp = tile_at(1, 0).copy() # marche pas !
-            tmp = scale(tile_at(1, 0), (t, t)) # marche...
+            # tmp = tile_at(1, 0).copy() # marche pas !
+            tmp = scale(tile_at(1, 0), (t, t))  # marche...
             mini = tile_at(0, i + 5)
             mini = scale(mini, (t * 7 // 8 - 1, t * 7 // 8 - 1))
             tmp.blit(mini, (s // 16, s // 16))
@@ -366,6 +375,7 @@ class Data:
         x, y = coord
         return ((x - 24) // ITEM_SIZE, (y - 24) // ITEM_SIZE)
 
+
 class Sprite:
     def __init__(self, surf, coord):
         self.surf = surf
@@ -376,6 +386,7 @@ class Sprite:
 
     def set_coord(self, coord):
         return
+
 
 class System:
     def __init__(self):
@@ -408,7 +419,8 @@ class System:
         pygame.display.flip()
 
     def play(self, sound):
-        if self.have_sound and settings.get('sfx'): data.wav[sound].play()
+        if self.have_sound and settings.get('sfx'):
+            data.wav[sound].play()
 
     def toggle_fullscreen(self):
         self.play('whip')
@@ -440,13 +452,14 @@ class System:
         else:
             pygame.mixer.music.unpause()
 
+
 class Fonter:
-    def __init__(self, size = 50):
+    def __init__(self, size=50):
         # Keep 50 items in our cache, we need 31 for the high scores
         self.cache = []
         self.size = size
 
-    def render(self, msg, size, color = (255, 255, 255)):
+    def render(self, msg, size, color=(255, 255, 255)):
         for i, (m, s, c, t) in enumerate(self.cache):
             if s == size and m == msg and c == color:
                 del self.cache[i]
@@ -469,9 +482,10 @@ class Fonter:
             self.cache.pop(0)
         return text
 
+
 class Game:
     # Nothing here yet
-    def __init__(self, type = GAME_CLASSIC):
+    def __init__(self, type=GAME_CLASSIC):
         self.type = type
         self.difficulty = settings.get('difficulty')
         self.items = settings.get('items')
@@ -508,7 +522,7 @@ class Game:
         self.new_level()
         self.oldticks = pygame.time.get_ticks()
 
-    def get_random(self, no_special = False):
+    def get_random(self, no_special=False):
         if not no_special and randint(0, SPECIAL_FREQ) == 0:
             return ITEM_SPECIAL
         return randint(0, self.population - 1)
@@ -519,11 +533,12 @@ class Game:
             while True:
                 for x in range(BOARD_WIDTH):
                     self.board[x][y] = self.get_random()
-                if not self.get_wins(): break
+                if not self.get_wins():
+                    break
         if self.type == GAME_PUZZLE:
             for t, (x, y) in enumerate(puzzlevels[self.level - 1][3]):
                 self.board[x][y] = ITEM_PUZZLE + t
-        #self.board[randint(3, 4)][0] = ITEM_METAL
+        # self.board[randint(3, 4)][0] = ITEM_METAL
 
     def fill_board(self):
         for y in range(BOARD_HEIGHT - 1, -1, -1):
@@ -538,7 +553,7 @@ class Game:
                         break
                 else:
                     self.board[x][y] = self.get_random()
-                    #self.board[(x, y)] = ITEM_METAL
+                    # self.board[(x, y)] = ITEM_METAL
                     self.extra_offset[x][y] = ((0, ITEM_SIZE * (-2 - y)))
 
     def get_wins(self):
@@ -547,14 +562,18 @@ class Game:
         for y in range(BOARD_HEIGHT):
             for x in range(BOARD_WIDTH - 2):
                 a = self.board[x][y]
-                if a == ITEM_NONE or a >= ITEMS: continue
+                if a == ITEM_NONE or a >= ITEMS:
+                    continue
                 b = self.board[x - 1][y]
-                if a == b: continue
+                if a == b:
+                    continue
                 len = 1
                 for t in range(1, BOARD_WIDTH - x):
-                    if a!= self.board[x + t][y]: break
+                    if a != self.board[x + t][y]:
+                        break
                     len += 1
-                if len < 3: continue
+                if len < 3:
+                    continue
                 win = []
                 for t in range(len):
                     win.append((x + t, y))
@@ -563,14 +582,18 @@ class Game:
         for x in range(BOARD_WIDTH):
             for y in range(BOARD_HEIGHT - 2):
                 a = self.board[x][y]
-                if a == ITEM_NONE or a >= ITEMS: continue
+                if a == ITEM_NONE or a >= ITEMS:
+                    continue
                 b = self.board[x][y - 1]
-                if a == b: continue
+                if a == b:
+                    continue
                 len = 1
                 for t in range(1, BOARD_HEIGHT - y):
-                    if a != self.board[x][y + t]: break
+                    if a != self.board[x][y + t]:
+                        break
                     len += 1
-                if len < 3: continue
+                if len < 3:
+                    continue
                 win = []
                 for t in range(len):
                     win.append((x, y + t))
@@ -587,7 +610,7 @@ class Game:
             for x in range(BOARD_WIDTH):
                 a = self.board[x][y]
                 if a >= ITEMS:
-                   continue # We don’t want no special piece
+                   continue  # We don’t want no special piece
                 for [(a1, b1), (a2, b2)] in checkme:
                     for dx, dy in delta:
                         if a == self.board[x + dx * a1 + dy * b1][y + dx * b1 + dy * a1] and \
@@ -614,8 +637,8 @@ class Game:
                 if self.level < 10:
                     self.needed[i] = self.level + 2
                 else:
-                    self.needed[i] = 0 # level 10 is the highest
-            self.lucky = self.get_random(no_special = True)
+                    self.needed[i] = 0  # level 10 is the highest
+            self.lucky = self.get_random(no_special=True)
             self.time = 1000000
             self.speed = self.level
         elif self.type == GAME_PUZZLE:
@@ -625,7 +648,7 @@ class Game:
                 self.needed[i] = 0
             self.lucky = -1
             self.time = 1000000
-            self.speed = puzzlevels[self.level -1][1]
+            self.speed = puzzlevels[self.level - 1][1]
         self.angry_items = -1
         self.new_board()
 
@@ -643,7 +666,7 @@ class Game:
                 return -1
         elif p == '3x1':
             if c[0][0] + 1 == c[1][0] and c[0][0] + 2 == c[2][0] \
-                and c[0][1] == c[1][1] == c[2][1]:
+               and c[0][1] == c[1][1] == c[2][1]:
                 return 1
             if c[0][1] == c[1][1] == BOARD_HEIGHT - 1 and c[0][0] > c[1][0]:
                 return -1
@@ -666,8 +689,8 @@ class Game:
                 return -1
         elif p == '2x2':
             if c[0][0] + 1 == c[1][0] and c[0][1] == c[1][1] \
-                and c[0][0] == c[2][0] and c[0][1] + 1 == c[2][1] \
-                and c[1][0] == c[3][0] and c[1][1] + 1 == c[3][1]:
+               and c[0][0] == c[2][0] and c[0][1] + 1 == c[2][1] \
+               and c[1][0] == c[3][0] and c[1][1] + 1 == c[3][1]:
                 return 1
             if c[0][1] == BOARD_HEIGHT - 1 or c[1][1] == BOARD_HEIGHT - 1:
                 return -1
@@ -746,8 +769,8 @@ class Game:
             elif self.level_timer and self.level_timer < SCROLL_DELAY // 2:
                 shape = data.blink[n]
             elif (i, j) in self.surprised_list \
-              or self.board_timer > SCROLL_DELAY // 2 \
-              or self.level_timer > SCROLL_DELAY // 2:
+               or self.board_timer > SCROLL_DELAY // 2 \
+               or self.level_timer > SCROLL_DELAY // 2:
                 shape = data.surprise[n]
             elif (i, j) in self.disappear_list:
                 shape = data.exploded[n]
@@ -762,9 +785,9 @@ class Game:
                 shape = data.normal[n]
             # Remember the selector coordinates
             if (i, j) == self.select and not self.missed \
-            or (i, j) == self.switch and self.missed:
+               or (i, j) == self.switch and self.missed:
                 select_coord = (x, y)
-                shape = data.blink[n] # Not sure if it looks nice
+                shape = data.blink[n]  # Not sure if it looks nice
             # Print the shit
             self.piece_draw(shape, (x + xoff, y + yoff))
         # Draw selector if necessary
@@ -803,6 +826,7 @@ class Game:
 
     psat = [0] * 2
     parea = None
+
     def game_draw(self):
         # Draw timebar
         timebar = pygame.Surface((406, 32)).convert_alpha()
@@ -922,7 +946,7 @@ class Game:
                     x = -32 + (x1 * delta + x2 * (32 - delta)) // 32
                     y = 32 + (y1 * delta + y2 * (32 - delta)) // 32
                     system.blit(data.arrow, (x, y))
-                    break # Only show one move
+                    break  # Only show one move
         # Print score
         text = fonter.render(str(self.score), 60)
         w, h = text.get_rect().size
@@ -972,8 +996,8 @@ class Game:
         system.play('whip')
         if self.paused:
             i = self.get_random(no_special = True)
-            #self.pause_bitmap = pygame.transform.scale(data.normal[i], (6 * ITEM_SIZE, 6 * ITEM_SIZE))
-            #self.pause_bitmap = pygame.transform.rotozoom(data.normal[i], 0.0, 6.0)
+            # self.pause_bitmap = pygame.transform.scale(data.normal[i], (6 * ITEM_SIZE, 6 * ITEM_SIZE))
+            # self.pause_bitmap = pygame.transform.rotozoom(data.normal[i], 0.0, 6.0)
             self.pause_bitmap = data.bigtiles.subsurface((0, i * 288, 288, 288))
         else:
             del self.pause_bitmap
@@ -995,11 +1019,11 @@ class Game:
                 self.new_board()
             elif self.board_timer == 0:
                 system.play('boing')
-                self.check_moves = True # Need to check again
+                self.check_moves = True  # Need to check again
             return
-        if self.lost_timer: # FIXME: this is quite a mess...
+        if self.lost_timer:  # FIXME: this is quite a mess...
             if self.lost:
-                return # Continue forever
+                return  # Continue forever
             if self.lost_timer == -1:
                 if self.type == GAME_TRAINING:
                     settings.new_score('TRAINING', self.score, self.level)
@@ -1102,7 +1126,7 @@ class Game:
                     self.time = 2000000
                 # Get a new eye each 10000 points, but no more than 3
                 if (self.score % 10000) + self.scorebonus >= 10000 \
-                  and self.eyes < 3:
+                   and self.eyes < 3:
                     self.eyes += 1
                 self.score += self.scorebonus
                 self.fill_board()
@@ -1241,6 +1265,7 @@ class Game:
                 self.select = i, j
         return
 
+
 class Monsterz:
     def __init__(self):
         # Init values
@@ -1298,6 +1323,7 @@ class Monsterz:
 
     gsat = [0] * 3
     garea = None
+
     def generic_draw(self):
         x, y = pygame.mouse.get_pos()
         garea = None
@@ -1373,6 +1399,7 @@ class Monsterz:
 
     msat = [0] * 4
     marea = None
+
     def iterate_menu(self):
         self.generic_draw()
         self.copyright_draw()
@@ -1441,6 +1468,7 @@ class Monsterz:
 
     nsat = [0] * 8
     narea = None
+
     def iterate_new(self):
         items = settings.get('items')
         difficulty = settings.get('difficulty')
@@ -1454,9 +1482,9 @@ class Monsterz:
         elif y == 3 and 1 <= x <= 5:
             narea = GAME_PUZZLE
             self.nsat[1] = 255
-        #elif y == 4 and 1 <= x <= 4:
-        #    narea = GAME_QUEST
-        #    self.nsat[2] = 255
+        # elif y == 4 and 1 <= x <= 4:
+        #     narea = GAME_QUEST
+        #     self.nsat[2] = 255
         elif y == 5 and 1 <= x <= 4:
             narea = GAME_TRAINING
             self.nsat[3] = 255
@@ -1531,7 +1559,7 @@ class Monsterz:
                 return
             elif event.type == pygame.MOUSEBUTTONDOWN and narea is not None:
                 system.play('whip')
-                self.game = Game(type = narea)
+                self.game = Game(type=narea)
                 self.status = STATUS_GAME
                 return
 
@@ -1938,6 +1966,7 @@ def usage():
     print()
     print('Report bugs or suggestions to <sam@zoy.org>.')
 
+
 def main():
     from getopt import getopt, GetoptError
     global system, data, settings, fonter, monsterz
@@ -1947,7 +1976,7 @@ def main():
     outfd = None
     try:
         longopts = ['help', 'version', 'music', 'sound', 'fullscreen',
-                'outfd=', 'data=', 'score=']
+                    'outfd=', 'data=', 'score=']
         opts = getopt(argv[1:], 'hvmsf', longopts)[0]
     except GetoptError:
         usage()
