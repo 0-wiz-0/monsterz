@@ -313,8 +313,8 @@ class Data:
         # Create sprites
         for i in range(ITEMS):
             self.normal[i] = scale(tile_at(0, i + 5), (t, t))
-            self.tiny[i] = scale(tile_at(0, i + 5), (t * 3 / 4, t * 3 / 4))
-            self.shaded[i] = scale(tile_at(3, i + 5), (t * 3 / 4, t * 3 / 4))
+            self.tiny[i] = scale(tile_at(0, i + 5), (t * 3 // 4, t * 3 // 4))
+            self.shaded[i] = scale(tile_at(3, i + 5), (t * 3 // 4, t * 3 // 4))
             semi_grayscale(self.shaded[i])
             self.blink[i] = scale(tile_at(1, i + 5), (t, t))
             self.surprise[i] = scale(tile_at(2, i + 5), (t, t))
@@ -323,15 +323,15 @@ class Data:
             #tmp = tile_at(1, 0).copy() # marche pas !
             tmp = scale(tile_at(1, 0), (t, t)) # marche...
             mini = tile_at(0, i + 5)
-            mini = scale(mini, (t * 7 / 8 - 1, t * 7 / 8 - 1))
-            tmp.blit(mini, (s / 16, s / 16))
+            mini = scale(mini, (t * 7 // 8 - 1, t * 7 // 8 - 1))
+            tmp.blit(mini, (s // 16, s // 16))
             self.special[i] = scale(tmp, (t, t))
-        self.led_off = scale(self.tiles.subsurface((3 * s, 0, s / 2, s / 2)), (t / 2, t / 2))
-        self.led_on = scale(self.tiles.subsurface((3 * s + s / 2, 0, s / 2, s / 2)), (t / 2, t / 2))
-        self.led_more = scale(self.tiles.subsurface((3 * s, s / 2, s / 2, s / 2)), (t / 2, t / 2))
-        self.led_less = scale(self.tiles.subsurface((3 * s + s / 2, s / 2, s / 2, s / 2)), (t / 2, t / 2))
-        self.eye = scale(tile_at(2, 0), (t * 3 / 4, t * 3 / 4))
-        self.shadeye = scale(tile_at(2, 0), (t * 3 / 4, t * 3 / 4))
+        self.led_off = scale(self.tiles.subsurface((3 * s, 0, s // 2, s // 2)), (t // 2, t // 2))
+        self.led_on = scale(self.tiles.subsurface((3 * s + s // 2, 0, s // 2, s // 2)), (t // 2, t // 2))
+        self.led_more = scale(self.tiles.subsurface((3 * s, s // 2, s // 2, s // 2)), (t // 2, t // 2))
+        self.led_less = scale(self.tiles.subsurface((3 * s + s // 2, s // 2, s // 2, s // 2)), (t // 2, t // 2))
+        self.eye = scale(tile_at(2, 0), (t * 3 // 4, t * 3 // 4))
+        self.shadeye = scale(tile_at(2, 0), (t * 3 // 4, t * 3 // 4))
         semi_transp(self.shadeye)
         self.arrow = tile_at(4, 0)
         self.selector = scale(tile_at(0, 0), (t, t))
@@ -810,7 +810,7 @@ class Game:
         if w > 0:
             if self.warning_timer:
                 ratio = 1.0 * abs(2 * self.warning_timer - WARNING_DELAY) \
-                            / WARNING_DELAY
+                            // WARNING_DELAY
                 c = (200 * ratio, 0, 0, 155)
             elif self.time <= 350000:
                 c = (200, 0, 0, 155)
