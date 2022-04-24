@@ -254,7 +254,7 @@ class Settings:
         if game not in self.scores:
             self.scores[game] = []
         self.scores[game].append((name, score, level))
-        self.scores[game].sort(key=lambda b: b[1] * 100 + b[2])
+        self.scores[game].sort(key=lambda b: b[1] * 100 + b[2], reverse=True)
         self.scores[game] = self.scores[game][0:19]
 
     def new_score(self, game, score, level):
