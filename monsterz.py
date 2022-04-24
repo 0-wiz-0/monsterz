@@ -85,13 +85,6 @@ puzzlevels = [
   (7, 5, '2x2', [(3, 0), (5, 0), (2, 7), (4, 7)]),
 ]
 
-def compare_scores(x, y):
-    if y[1] > x[1]:
-        return 1
-    elif y[1] < x[1]:
-        return -1
-    else:
-        return y[2] - x[2]
 
 def semi_grayscale(surf):
     try:
@@ -252,7 +245,7 @@ class Settings:
         if game not in self.scores:
             self.scores[game] = []
         self.scores[game].append((name, score, level))
-        self.scores[game].sort(compare_scores)
+        self.scores[game].sort(key=lambda b: b[1] * 100 + b[2])
         self.scores[game] = self.scores[game][0:19]
 
     def new_score(self, game, score, level):
