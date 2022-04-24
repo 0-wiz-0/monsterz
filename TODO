@@ -6,4 +6,4 @@ Future plans:
 
 Conversion to Python 3:
 * Fix 'bitmap' Makefile target
-* Music not played correctly
+* make fullscreen mode fill screen
