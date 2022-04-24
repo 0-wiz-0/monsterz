@@ -239,7 +239,8 @@ class Settings:
         for game in ['CLASSIC']:
             if game not in self.scores:
                 self.scores[game] = []
-            for x in range(20): self._add_score(game, 'NOBODY', 0, 1)
+            for x in range(20):
+                self._add_score(game, 'NOBODY', 0, 1)
 
     def _add_score(self, game, name, score, level):
         if game not in self.scores:
