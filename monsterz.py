@@ -365,7 +365,7 @@ class Data:
         w, h = surf.get_size()
         if (w, h) == size:
             return pygame.transform.scale(surf, size)
-        return pygame.transform.rotozoom(surf, 0.0, 1.0 * size[0] // w)
+        return pygame.transform.rotozoom(surf, 0.0, 1.0 * size[0] / w)
 
     def board2screen(self, coord):
         x, y = coord
@@ -610,7 +610,7 @@ class Game:
             for x in range(BOARD_WIDTH):
                 a = self.board[x][y]
                 if a >= ITEMS:
-                   continue  # We don’t want no special piece
+                    continue  # We don’t want no special piece
                 for [(a1, b1), (a2, b2)] in checkme:
                     for dx, dy in delta:
                         if a == self.board[x + dx * a1 + dy * b1][y + dx * b1 + dy * a1] and \
@@ -728,7 +728,7 @@ class Game:
         if self.switch_timer:
             x1, y1 = data.board2screen(self.select)
             x2, y2 = data.board2screen(self.switch)
-            t = self.switch_timer * 1.0 // SWITCH_DELAY
+            t = self.switch_timer * 1.0 / SWITCH_DELAY
         for i, j in [(x, y) for x in range(BOARD_WIDTH) for y in range(BOARD_HEIGHT)]:
             # Don’t print pieces for last frame
             if self.lost_timer == 1:
@@ -840,10 +840,10 @@ class Game:
             elif self.time <= 350000:
                 c = (200, 0, 0, 155)
             elif self.time <= 700000:
-                ratio = 1.0 * (self.time - 350000) // 350000
+                ratio = 1.0 * (self.time - 350000) / 350000
                 c = (200, 180 * ratio, 0, 155)
             elif self.time <= 1000000:
-                ratio = 1.0 * (1000000 - self.time) // 300000
+                ratio = 1.0 * (1000000 - self.time) / 300000
                 c = (200 * ratio, 200 - 20 * ratio, 0, 155)
             else:
                 c = (0, 200, 0, 155)
@@ -968,7 +968,7 @@ class Game:
         # Print eyes
         for i in range(3):
             x, y = 440 + 36 * i, 252
-            if(i < self.eyes):
+            if (i < self.eyes):
                 system.blit(data.eye, (x, y))
             else:
                 system.blit(data.shadeye, (x, y))
@@ -995,7 +995,7 @@ class Game:
         self.paused = not self.paused
         system.play('whip')
         if self.paused:
-            i = self.get_random(no_special = True)
+            i = self.get_random(no_special=True)
             # self.pause_bitmap = pygame.transform.scale(data.normal[i], (6 * ITEM_SIZE, 6 * ITEM_SIZE))
             # self.pause_bitmap = pygame.transform.rotozoom(data.normal[i], 0.0, 6.0)
             self.pause_bitmap = data.bigtiles.subsurface((0, i * 288, 288, 288))
@@ -1633,6 +1633,7 @@ class Monsterz:
         self.game.update()
 
     page = 1
+
     def iterate_help(self):
         self.generic_draw()
         self.copyright_draw()
