@@ -1345,17 +1345,17 @@ class Monsterz:
         if event.type == QUIT:
             self.status = STATUS_QUIT
             return True
-        elif event.type == KEYDOWN and event.key == K_f:
+        elif event.type == pygame.KEYDOWN and event.key == K_f:
             system.toggle_fullscreen()
             return True
         if system.have_sound:
-            if event.type == KEYDOWN and event.key == K_s:
+            if event.type == pygame.KEYDOWN and event.key == K_s:
                 system.toggle_sfx()
                 return True
-            elif event.type == KEYDOWN and event.key == K_m:
+            elif event.type == pygame.KEYDOWN and event.key == K_m:
                 system.toggle_music()
                 return True
-        if event.type == MOUSEBUTTONDOWN:
+        if event.type == pygame.MOUSEBUTTONDOWN:
             x, y = pygame.mouse.get_pos()
             if system.have_sound:
                 if 440 < x < 440 + 180 and 378 < y < 378 + 24:
@@ -1416,23 +1416,23 @@ class Monsterz:
         for event in pygame.event.get():
             if self.generic_event(event):
                 return
-            elif event.type == KEYDOWN and event.key == K_ESCAPE:
+            elif event.type == pygame.KEYDOWN and event.key == K_ESCAPE:
                 system.play('whip')
                 self.status = STATUS_QUIT
                 return
-            elif event.type == KEYDOWN and event.key == K_n:
+            elif event.type == pygame.KEYDOWN and event.key == K_n:
                 system.play('whip')
                 self.status = STATUS_NEW
                 return
-            elif event.type == KEYDOWN and event.key == K_h:
+            elif event.type == pygame.KEYDOWN and event.key == K_h:
                 system.play('whip')
                 self.status = STATUS_HELP
                 return
-            elif event.type == KEYDOWN and event.key == K_q:
+            elif event.type == pygame.KEYDOWN and event.key == K_q:
                 system.play('whip')
                 self.status = STATUS_QUIT
                 return
-            elif event.type == MOUSEBUTTONDOWN and marea is not None:
+            elif event.type == pygame.MOUSEBUTTONDOWN and marea is not None:
                 system.play('whip')
                 self.status = marea
                 return
@@ -1508,11 +1508,11 @@ class Monsterz:
         for event in pygame.event.get():
             if self.generic_event(event):
                 return
-            elif event.type == KEYDOWN and event.key == K_ESCAPE:
+            elif event.type == pygame.KEYDOWN and event.key == K_ESCAPE:
                 system.play('whip')
                 self.status = STATUS_MENU
                 return
-            elif event.type == MOUSEBUTTONDOWN and narea >= 10:
+            elif event.type == pygame.MOUSEBUTTONDOWN and narea >= 10:
                 system.play('whip')
                 if narea == ACTION_MOREMONSTERZ:
                     if items < 8:
@@ -1527,7 +1527,7 @@ class Monsterz:
                     if difficulty > 1:
                         settings.set('difficulty', difficulty - 1)
                 return
-            elif event.type == MOUSEBUTTONDOWN and narea is not None:
+            elif event.type == pygame.MOUSEBUTTONDOWN and narea is not None:
                 system.play('whip')
                 self.game = Game(type = narea)
                 self.status = STATUS_GAME
@@ -1564,16 +1564,16 @@ class Monsterz:
         for event in pygame.event.get():
             if self.generic_event(event):
                 return
-            elif event.type == KEYDOWN and event.key == K_ESCAPE:
+            elif event.type == pygame.KEYDOWN and event.key == K_ESCAPE:
                 system.play('whip')
                 if self.game.lost:
                     self.status = STATUS_MENU
                     return
                 self.game.lost_timer = -1
                 return
-            elif event.type == KEYDOWN and (event.key == K_p or event.key == K_SPACE) and self.game.lost_timer >= 0:
+            elif event.type == pygame.KEYDOWN and (event.key == K_p or event.key == K_SPACE) and self.game.lost_timer >= 0:
                 self.game.pause()
-            elif event.type == MOUSEBUTTONDOWN:
+            elif event.type == pygame.MOUSEBUTTONDOWN:
                 x, y = pygame.mouse.get_pos()
                 if self.game.lost_timer >= 0:
                     if 440 < x < 440 + 180 and 298 < y < 298 + 24:
@@ -1859,11 +1859,11 @@ class Monsterz:
         for event in pygame.event.get():
             if self.generic_event(event):
                 return
-            elif event.type == KEYDOWN and event.key == K_ESCAPE:
+            elif event.type == pygame.KEYDOWN and event.key == K_ESCAPE:
                 system.play('whip')
                 self.status = STATUS_MENU
                 return
-            elif event.type == MOUSEBUTTONDOWN:
+            elif event.type == pygame.MOUSEBUTTONDOWN:
                 system.play('whip')
                 self.page += 1
                 if self.page > 5:
@@ -1892,11 +1892,11 @@ class Monsterz:
         for event in pygame.event.get():
             if self.generic_event(event):
                 return
-            elif event.type == KEYDOWN and event.key == K_ESCAPE:
+            elif event.type == pygame.KEYDOWN and event.key == K_ESCAPE:
                 system.play('whip')
                 self.status = STATUS_MENU
                 return
-            elif event.type == MOUSEBUTTONDOWN:
+            elif event.type == pygame.MOUSEBUTTONDOWN:
                 system.play('whip')
                 self.status = STATUS_MENU
                 return
