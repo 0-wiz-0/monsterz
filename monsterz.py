@@ -393,7 +393,8 @@ class System:
         pygame.display.set_caption('Monsterz')
 
     def blit(self, surf, coords):
-        self.background.blit(surf, coords)
+        (x, y) = coords
+        self.background.blit(surf, (int(x), int(y)))
 
     def blit_board(self, xxx_todo_changeme):
         (x1, y1, x2, y2) = xxx_todo_changeme
