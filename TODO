@@ -3,3 +3,6 @@ To make the game more complete:
 
 Future plans:
  * quest mode
+
+Conversion to Python 3:
+* Fix 'bitmap' Makefile target
