@@ -687,7 +687,7 @@ class Game:
         system.blit(data.board, (24, 24))
         # Have a random piece blink
         c = randint(0, BOARD_WIDTH - 1), randint(0, BOARD_HEIGHT - 1)
-        if randint(0, 5) is 0 and c not in self.blink_list:
+        if randint(0, 5) == 0 and c not in self.blink_list:
             self.blink_list[c] = 5
         # Handle special scrolling cases
         if self.level_timer:
@@ -761,7 +761,8 @@ class Game:
             elif (i, j) in self.blink_list:
                 shape = data.blink[n]
                 self.blink_list[i, j] -= 1
-                if self.blink_list[i, j] is 0: del self.blink_list[i, j]
+                if self.blink_list[i, j] == 0:
+                    del self.blink_list[i, j]
             else:
                 shape = data.normal[n]
             # Remember the selector coordinates
@@ -997,14 +998,14 @@ class Game:
             self.board_timer -= 1
             if self.board_timer is SCROLL_DELAY // 2:
                 self.new_board()
-            elif self.board_timer is 0:
+            elif self.board_timer == 0:
                 system.play('boing')
                 self.check_moves = True # Need to check again
             return
         if self.lost_timer: # FIXME: this is quite a mess...
             if self.lost:
                 return # Continue forever
-            if self.lost_timer is -1:
+            if self.lost_timer == -1:
                 if self.type == GAME_TRAINING:
                     settings.new_score('TRAINING', self.score, self.level)
                 elif self.type == GAME_CLASSIC:
@@ -1014,12 +1015,12 @@ class Game:
                 self.lost = True
                 return
             self.lost_timer -= 1
-            if self.lost_timer is 0:
+            if self.lost_timer == 0:
                 self.lost_timer = -1
             return
         if self.switch_timer:
             self.switch_timer -= 1
-            if self.switch_timer is 0:
+            if self.switch_timer == 0:
                 x1, y1 = self.select
                 x2, y2 = self.switch
                 self.board[x1][y1], self.board[x2][y2] = self.board[x2][y2], self.board[x1][y1]
@@ -1048,14 +1049,14 @@ class Game:
                         return
                 self.new_level()
                 self.splash = True
-            elif self.level_timer is 0:
+            elif self.level_timer == 0:
                 system.play('boing')
                 self.blink_list = {}
                 self.check_moves = True
             return
         if self.win_timer:
             self.win_timer -= 1
-            if self.win_timer is WIN_DELAY - 1:
+            if self.win_timer == WIN_DELAY - 1:
                 system.play('duh')
                 for w in self.wins:
                     for x, y in w:
@@ -1110,7 +1111,7 @@ class Game:
                     self.eyes += 1
                 self.score += self.scorebonus
                 self.fill_board()
-            elif self.win_timer is 0:
+            elif self.win_timer == 0:
                 system.play('boing')
                 self.wins = self.get_wins()
                 if self.wins:
@@ -1199,7 +1200,7 @@ class Game:
                 self.ai_timer = 15 - self.level
             if self.ai_timer == (15 - self.level) // 2:
                 self.clicks.append(self.will_play[0])
-            elif self.ai_timer is 0:
+            elif self.ai_timer == 0:
                 self.clicks.append(self.will_play[1])
                 self.will_play = None
             self.ai_timer -= 1
