@@ -1,20 +1,17 @@
 Monsterz is a clone of the popular Zookeper/Bejeweled games. Swap
 two adjacent aliens to create horizontal or vertical lines. Enjoy!
 
-Music and sound creators:
+## Music and sound creators:
 - music.s3m: MenTaLgrOOvE by MenTaLguY, public domain
   http://moonbase.rydia.net/mental/music/
 - wav files: taken from the free software projects Barrage, OpenOffice.org,
   kismet and Battle for Wesnoth.
 
-Zookeper/Bejeweled vendor sites:
-- Bejeweled Deluxe: http://www.bejeweled.info/
-- Bejeweled 2: http://www.popcap.com/gamepopup.php?theGame=bejeweled2
-- Diamond Mine: http://games.yahoo.com/games/downloads/dm.html
-- Zookeeper: http://kiteretsu.robot.co.jp/index2.html
+## Zookeper/Bejeweled vendor sites
+- Bejeweled by popcap2: https://www.ea.com/ea-studios/popcap/bejeweled
 - Zooo: http://www.success-corp.co.jp/software/sl2000/zooo/index.html
 
-Zookeeper winning techniques:
+## Zookeeper winning techniques
 - 攻略 Q&A: http://knoa.jp/kikaku/ken/zookeeper/kouryaku/
 - ZOO KEEPER必勝法:
   http://www.hx.sakura.ne.jp/~die-sque/dice-k/text/game/zookeeper.htm
