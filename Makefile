@@ -17,7 +17,7 @@ SOUND = sound/grunt.wav sound/click.wav sound/pop.wav sound/boing.wav sound/whip
 MUSIC = sound/music.s3m
 TEXT = README.md TODO COPYING AUTHORS INSTALL
 
-INKSCAPE = inkscape -z
+INKSCAPE = inkscape
 
 all: monsterz
 
