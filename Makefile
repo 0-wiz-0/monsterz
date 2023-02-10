@@ -15,7 +15,7 @@ SOUND = sound/grunt.wav sound/click.wav sound/pop.wav sound/boing.wav sound/whip
         sound/applause.wav sound/laugh.wav sound/warning.wav sound/duh.wav \
         sound/ding.wav
 MUSIC = sound/music.s3m
-TEXT = README TODO COPYING AUTHORS INSTALL
+TEXT = README.md TODO COPYING AUTHORS INSTALL
 
 INKSCAPE = inkscape -z
 
