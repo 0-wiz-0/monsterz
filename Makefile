@@ -27,17 +27,17 @@ monsterz: monsterz.c
 bitmap: $(BITMAP)
 
 graphics/icon.png: graphics/graphics.svg
-	$(INKSCAPE) graphics/graphics.svg -a 800:480:860:540 -w64 -h64 -e graphics/icon.png
+	$(INKSCAPE) -a 800:480:860:540 -w64 -h64 -o graphics/icon.png graphics/graphics.svg
 graphics/tiles.png: graphics/graphics.svg
-	$(INKSCAPE) graphics/graphics.svg -a 800:0:1100:840 -d 72 -e graphics/tiles.png
+	$(INKSCAPE) -a 800:0:1100:840 -d 72 -o graphics/tiles.png graphics/graphics.svg
 graphics/bigtiles.png: graphics/graphics.svg
-	$(INKSCAPE) graphics/graphics.svg -a 800:0:860:540 -d 432 -e graphics/bigtiles.png
+	$(INKSCAPE) -a 800:0:860:540 -d 432 -o graphics/bigtiles.png graphics/graphics.svg
 graphics/background.png: graphics/graphics.svg graphics/pattern.png
-	$(INKSCAPE) graphics/graphics.svg -a 0:0:800:600 -d 72 -e graphics/background.png
+	$(INKSCAPE) -a 0:0:800:600 -d 72 -o graphics/background.png graphics/graphics.svg
 graphics/board.png: graphics/graphics.svg graphics/pattern.png
-	$(INKSCAPE) graphics/graphics.svg -a 30:690:510:1170 -d 72 -e graphics/board.png
+	$(INKSCAPE) -a 30:690:510:1170 -d 72 -o graphics/board.png graphics/graphics.svg
 graphics/logo.png: graphics/graphics.svg
-	$(INKSCAPE) graphics/graphics.svg -a 810:858:1220:1075 -w380 -h180 -e graphics/logo.png
+	$(INKSCAPE) -a 810:858:1220:1075 -w380 -h180 -o graphics/logo.png graphics/graphics.svg
 
 install: all
 	mkdir -p $(DESTDIR)$(gamesdir)
