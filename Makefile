@@ -69,7 +69,6 @@ dist:
 	cp $(BITMAP) $(DIRECTORY)/graphics
 	cp $(SOUND) $(MUSIC) $(DIRECTORY)/sound
 	tar cvzf $(DIRECTORY).tar.gz $(DIRECTORY)/
-	zip -r $(DIRECTORY).zip $(DIRECTORY)
 	rm -Rf $(DIRECTORY)
 
 distclean: clean
