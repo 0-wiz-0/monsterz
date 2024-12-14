@@ -5,7 +5,7 @@
    sodipodi:docname="graphics.svg"
    height="900pt"
    width="914.66418pt"
-   inkscape:version="1.2.2 (b0a8486541, 2022-12-01)"
+   inkscape:version="1.4 (e7c3feb100, 2024-10-09)"
    sodipodi:version="0.32"
    id="svg3056"
    inkscape:export-filename="/home/sam/monsterz/monsterz/svgtiles.png"
@@ -1278,10 +1278,10 @@
      gridtolerance="0.40000000pt"
      inkscape:grid-points="true"
      showgrid="true"
-     inkscape:zoom="0.76333333"
-     inkscape:cx="609.17031"
-     inkscape:cy="600"
-     inkscape:window-height="1161"
+     inkscape:zoom="2.86"
+     inkscape:cx="933.91608"
+     inkscape:cy="866.78322"
+     inkscape:window-height="1143"
      inkscape:window-width="1916"
      inkscape:pageshadow="2"
      inkscape:pageopacity="0.0000000"
@@ -1293,7 +1293,7 @@
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="pt"
-     inkscape:window-maximized="0">
+     inkscape:window-maximized="1">
     <inkscape:grid
        id="GridFromPre046Settings"
        type="xygrid"
@@ -1305,7 +1305,8 @@
        empcolor="#3f3fff"
        opacity="0.34117647"
        empopacity="0.51372549"
-       empspacing="8" />
+       empspacing="8"
+       units="pt" />
   </sodipodi:namedview>
   <use
      x="0"
@@ -3668,23 +3669,6 @@
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/monsterz/monsterz/tiles.png"
-     transform="matrix(1.000015,0,0,-0.04088866,678.7519,814.0873)"
-     id="g8323">
-    <path
-       sodipodi:nodetypes="cc"
-       id="path8325"
-       d="M 150.47232,132.96909 150,134.86218"
-       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:12.3633;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1" />
-    <path
-       sodipodi:nodetypes="cc"
-       id="path8327"
-       d="m 153.75,132.96909 0.47232,1.89309"
-       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:12.3633;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1" />
-  </g>
-  <g
-     inkscape:export-ydpi="72.000000"
-     inkscape:export-xdpi="72.000000"
-     inkscape:export-filename="/home/sam/monsterz/monsterz/tiles.png"
      transform="matrix(1.000014,0,0,1,632.3978,750.8475)"
      id="g8329">
     <path
@@ -3813,40 +3797,6 @@
      cy="885.80554"
      rx="12.313474"
      ry="8.5995646" />
-  <g
-     inkscape:export-ydpi="72.000000"
-     inkscape:export-xdpi="72.000000"
-     inkscape:export-filename="/home/sam/monsterz/monsterz/tiles.png"
-     transform="matrix(0.994186,-0.107816,-0.00440851,-0.04065031,800.2425,831.6282)"
-     id="g8375">
-    <path
-       sodipodi:nodetypes="cc"
-       id="path8377"
-       d="M 150.47232,132.96909 150,134.86218"
-       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:12.3633;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1" />
-    <path
-       sodipodi:nodetypes="cc"
-       id="path8379"
-       d="m 153.75,132.96909 0.47232,1.89309"
-       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:12.3633;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1" />
-  </g>
-  <g
-     inkscape:export-ydpi="72.000000"
-     inkscape:export-xdpi="72.000000"
-     inkscape:export-filename="/home/sam/monsterz/monsterz/tiles.png"
-     transform="matrix(1.000015,0,0,-0.04088866,858.2885,814.1866)"
-     id="g8381">
-    <path
-       sodipodi:nodetypes="cc"
-       id="path8383"
-       d="M 150.47232,132.96909 150,134.86218"
-       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:12.3633;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1" />
-    <path
-       sodipodi:nodetypes="cc"
-       id="path8385"
-       d="m 153.75,132.96909 0.47232,1.89309"
-       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:12.3633;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1" />
-  </g>
   <path
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
@@ -4798,6 +4748,23 @@
        style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:2.49998;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1" />
   </g>
   <g
+     id="g1">
+    <path
+       sodipodi:nodetypes="cc"
+       id="path9138-4"
+       d="m 833.10816,808.53476 0.28262,1.18601"
+       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:1.83978;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1"
+       inkscape:transform-center-x="5.5305347"
+       inkscape:transform-center-y="-0.21549874" />
+    <path
+       sodipodi:nodetypes="cc"
+       id="path9138-4-1"
+       d="m 827.83002,808.22758 -0.28262,1.18601"
+       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:1.83978;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1"
+       inkscape:transform-center-x="-5.5305353"
+       inkscape:transform-center-y="-0.21549874" />
+  </g>
+  <g
      inkscape:export-ydpi="72.000000"
      inkscape:export-xdpi="72.000000"
      inkscape:export-filename="/home/sam/monsterz/monsterz/tiles.png"
@@ -5501,23 +5468,6 @@
        id="path2825"
        d="m 153.75,132.96909 0.47232,1.89309"
        style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:2.49998;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1" />
-  </g>
-  <g
-     inkscape:export-ydpi="72.000000"
-     inkscape:export-xdpi="72.000000"
-     inkscape:export-filename="/home/sam/monsterz/monsterz/tiles.png"
-     transform="matrix(1.000015,0,0,-0.04088866,738.6774,814.0873)"
-     id="g2827">
-    <path
-       sodipodi:nodetypes="cc"
-       id="path2829"
-       d="M 150.47232,132.96909 150,134.86218"
-       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:12.3633;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1" />
-    <path
-       sodipodi:nodetypes="cc"
-       id="path2831"
-       d="m 153.75,132.96909 0.47232,1.89309"
-       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:12.3633;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1" />
   </g>
   <g
      inkscape:export-ydpi="72.000000"
@@ -9569,5 +9519,59 @@
        transform="matrix(0.254761,0.967007,-0.967052,0.254749,1168.744,-506.9483)"
        width="1280"
        height="960" />
+  </g>
+  <g
+     id="g2"
+     transform="translate(59.470392,-0.54545224)">
+    <path
+       sodipodi:nodetypes="cc"
+       id="path9138-4-6"
+       d="m 833.10816,808.53476 0.28262,1.18601"
+       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:1.83978;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1"
+       inkscape:transform-center-x="5.5305347"
+       inkscape:transform-center-y="-0.21549874" />
+    <path
+       sodipodi:nodetypes="cc"
+       id="path9138-4-1-7"
+       d="m 827.83002,808.22758 -0.28262,1.18601"
+       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:1.83978;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1"
+       inkscape:transform-center-x="-5.5305353"
+       inkscape:transform-center-y="-0.21549874" />
+  </g>
+  <g
+     id="g2-1"
+     transform="translate(119.98088,0.65734297)">
+    <path
+       sodipodi:nodetypes="cc"
+       id="path9138-4-6-6"
+       d="m 833.10816,808.53476 0.28262,1.18601"
+       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:1.83978;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1"
+       inkscape:transform-center-x="5.5305347"
+       inkscape:transform-center-y="-0.21549874" />
+    <path
+       sodipodi:nodetypes="cc"
+       id="path9138-4-1-7-1"
+       d="m 827.83002,808.22758 -0.28262,1.18601"
+       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:1.83978;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1"
+       inkscape:transform-center-x="-5.5305353"
+       inkscape:transform-center-y="-0.21549874" />
+  </g>
+  <g
+     id="g2-16"
+     transform="translate(179.89697,1.9300702)">
+    <path
+       sodipodi:nodetypes="cc"
+       id="path9138-4-6-9"
+       d="m 833.10816,808.53476 0.28262,1.18601"
+       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:1.83978;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1"
+       inkscape:transform-center-x="5.5305347"
+       inkscape:transform-center-y="-0.21549874" />
+    <path
+       sodipodi:nodetypes="cc"
+       id="path9138-4-1-7-2"
+       d="m 827.83002,808.22758 -0.28262,1.18601"
+       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:1.83978;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1"
+       inkscape:transform-center-x="-5.5305353"
+       inkscape:transform-center-y="-0.21549874" />
   </g>
 </svg>
