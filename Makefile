@@ -27,19 +27,17 @@ monsterz: monsterz.c
 bitmap: $(BITMAP)
 
 graphics/icon.png: graphics/graphics.svg
-	$(INKSCAPE) --actions="export-area:800:660:860:720;export-width:64;export-height:64;export-filename:graphics/icon2.png;export-do;" graphics/graphics.svg
-# TODO: nose green monster differs (some eyes & mouths too, but not important)
+	$(INKSCAPE) --actions="export-area:800:660:860:720;export-width:64;export-height:64;export-filename:graphics/icon.png;export-do;" graphics/graphics.svg
 graphics/tiles.png: graphics/graphics.svg
-	$(INKSCAPE) -d 72 --actions="export-area:800:360:1100:1200;export-width:240;export-height:672;export-filename:graphics/tiles2.png;export-do;" graphics/graphics.svg
-# TODO: nose green monster and nose orange monster differ
+	$(INKSCAPE) -d 72 --actions="export-area:800:360:1100:1200;export-width:240;export-height:672;export-filename:graphics/tiles.png;export-do;" graphics/graphics.svg
 graphics/bigtiles.png: graphics/graphics.svg
-	$(INKSCAPE) -d 432 --actions="export-area:800:660:860:1200;export-width:288;export-height:2592;export-filename:graphics/bigtiles2.png;export-do;" graphics/graphics.svg
+	$(INKSCAPE) -d 432 --actions="export-area:800:660:860:1200;export-width:288;export-height:2592;export-filename:graphics/bigtiles.png;export-do;" graphics/graphics.svg
 graphics/background.png: graphics/graphics.svg graphics/pattern.png
-	$(INKSCAPE) -d 72 --actions="export-area:0:600:800:1200;export-width:640;export-height:480;export-filename:graphics/background2.png;export-do;" graphics/graphics.svg
+	$(INKSCAPE) -d 72 --actions="export-area:0:600:800:1200;export-width:640;export-height:480;export-filename:graphics/background.png;export-do;" graphics/graphics.svg
 graphics/board.png: graphics/graphics.svg graphics/pattern.png
-	$(INKSCAPE) -d 72 --actions="export-area:30:30:510:510;export-width:384;export-height:384;export-filename:graphics/board2.png;export-do;" graphics/graphics.svg
+	$(INKSCAPE) -d 72 --actions="export-area:30:30:510:510;export-width:384;export-height:384;export-filename:graphics/board.png;export-do;" graphics/graphics.svg
 graphics/logo.png: graphics/graphics.svg
-	$(INKSCAPE) --actions="export-area:810:125:1220:342;export-width:380;export-height:180;export-filename:graphics/logo2.png;export-do;" graphics/graphics.svg
+	$(INKSCAPE) --actions="export-area:810:125:1220:342;export-width:380;export-height:180;export-filename:graphics/logo.png;export-do;" graphics/graphics.svg
 
 install: all
 	mkdir -p $(DESTDIR)$(gamesdir)
