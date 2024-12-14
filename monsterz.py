@@ -99,8 +99,12 @@ def semi_grayscale(surf):
         for y, line in enumerate(pixels):
             for x, p in enumerate(line):
                 r, g, b = p
-                M = int(max(r, g, b))
-                m = int(min(r, g, b))
+                # convert from numpy.int8 to int
+                r = r.item()
+                g = g.item()
+                b = b.item()
+                M = max(r, g, b)
+                m = min(r, g, b)
                 val = (2 * M + r + g + b) // 5
                 p[0] = (val + r) // 2
                 p[1] = (val + g) // 2
@@ -124,8 +128,12 @@ def semi_transp(surf):
         for y, line in enumerate(pixels):
             for x, p in enumerate(line):
                 r, g, b = p
-                M = int(max(r, g, b))
-                m = int(min(r, g, b))
+                # convert from numpy.int8 to int
+                r = r.item()
+                g = g.item()
+                b = b.item()
+                M = max(r, g, b)
+                m = min(r, g, b)
                 p[0] = (m + r) // 2
                 p[1] = (m + g) // 2
                 p[2] = (m + b) // 2
