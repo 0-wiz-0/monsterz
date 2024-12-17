@@ -5,5 +5,4 @@ Future plans:
  * quest mode
 
 Conversion to Python 3:
-* Fix 'bitmap' Makefile target
 * make fullscreen mode fill screen
