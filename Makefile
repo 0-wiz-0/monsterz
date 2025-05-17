@@ -20,6 +20,7 @@ TEXT = AUTHORS COPYRIGHT INSTALL LICENSE README.md TODO monsterz.desktop.in mons
 
 INSTALL_DATA =		install -c -m 644
 INSTALL_PROGRAM =	install -c -m 755
+INSTALL_SCRIPT =	install -c -m 755
 INSTALL_DIR = 		install -d
 
 INKSCAPE = inkscape
@@ -56,7 +57,7 @@ install: all
 	chmod g+s $(DESTDIR)$(gamesdir)/monsterz
 	$(INSTALL_DIR) $(DESTDIR)$(pkgdatadir)/graphics
 	$(INSTALL_DIR) $(DESTDIR)$(pkgdatadir)/sound
-	$(INSTALL_DATA) monsterz.py $(DESTDIR)$(pkgdatadir)/
+	$(INSTALL_SCRIPT) monsterz.py $(DESTDIR)$(pkgdatadir)/
 	$(INSTALL_DATA) $(BITMAP) $(DESTDIR)$(pkgdatadir)/graphics/
 	$(INSTALL_DATA) $(SOUND) $(MUSIC) $(DESTDIR)$(pkgdatadir)/sound/
 	$(INSTALL_DATA) monsterz.desktop $(DESTDIR)$(applicationsdir)
