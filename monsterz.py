@@ -1474,6 +1474,31 @@ class Monsterz:
                 return True
         return False
 
+    wander_monster = randint(0, ITEMS-1)
+    wander_x = None
+    wander_y = 0
+
+    def wanderer_draw(self):
+        if self.wander_x == None:
+            if randint(0, 30) == 1:
+                self.wander_monster = (self.wander_monster+1) % ITEMS
+                self.wander_y = randint(20, SCREEN_HEIGHT-ITEM_SIZE-20)
+                self.wander_x = -ITEM_SIZE
+            return
+        if randint(0, 10) == 1:
+            monster = data.blink[self.wander_monster]
+        else:
+            monster = data.normal[self.wander_monster]
+        system.blit(monster, (self.wander_x, self.wander_y))
+        if self.wander_x < SCREEN_WIDTH/3 or self.wander_x > (SCREEN_WIDTH/3)*2:
+            self.wander_x += randint(4, 8)
+            self.wander_y += randint(-2, 2)
+        else:
+            self.wander_x += 3
+            self.wander_y += randint(-1, 1)
+        if self.wander_x > SCREEN_WIDTH:
+            self.wander_x = None
+
     msat = [0] * 4
     marea = None
 
@@ -1504,6 +1529,7 @@ class Monsterz:
         # Print logo and menu
         w, h = data.logo.get_size()
         system.blit(data.logo, (24 + 192 - w // 2, 24 + 96 - h // 2))
+        self.wanderer_draw()
         for x in range(4):
             if self.msat[x] > 180:
                 monster = data.surprise[shapes[x]]
