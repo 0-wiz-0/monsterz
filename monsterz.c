@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <errno.h>
+#include <string.h>
 
 /*
  * monsterz.c: setgid wrapper for monsterz.py
@@ -55,7 +57,7 @@ int main(int argc, char **argv)
             newargv[argc] = NULL;
             /* run our script */
             execv(script, newargv);
-            fprintf(stderr, "%s: could not find `%s'.\n", argv[0], script);
+            fprintf(stderr, "%s: could not start `%s': %s\n", argv[0], script, strerror(errno));
             return -1;
     }
 
