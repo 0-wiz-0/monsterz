@@ -7,7 +7,7 @@ applicationsdir = $(datadir)/applications
 scoredir = /var/games
 scorefile = $(scoredir)/monsterz
 
-VERSION = 0.8
+VERSION = 0.9
 DIRECTORY = monsterz-$(VERSION)
 
 BITMAP = graphics/tiles.png graphics/bigtiles.png graphics/background.png \
