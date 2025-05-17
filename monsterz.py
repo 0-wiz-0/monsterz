@@ -2076,16 +2076,16 @@ def usage():
     print("Usage: monsterz [OPTION]...")
     print()
     print("Options")
+    print("     --data <dir>   set alternate data directory to <dir>")
     print(" -f, --fullscreen   start in full screen mode")
     print(" -h, --help         display this help and exit")
     print(" -m, --nomusic      disable music")
-    print(" -s, --nosfx        disable sound effects")
     print("     --outfd <fd>   output scores to file descriptor <fd>")
-    print("     --data <dir>   set alternate data directory to <dir>")
+    print(" -s, --nosfx        disable sound effects")
     print("     --score <file> set score file to <file>")
     print(" -v, --version      display version information and exit")
     print()
-    print("Report bugs or suggestions to <sam@zoy.org>.")
+    print("Report bugs or suggestions at https://github.com/0-wiz-0/monsterz/issues")
 
 
 def main():
