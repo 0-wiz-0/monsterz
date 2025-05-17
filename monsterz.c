@@ -27,7 +27,10 @@ int main(int argc, char **argv)
 
     egid = getegid();
     gid = getgid();
-    pipe(fd);
+    if (pipe(fd) < 0) {
+      fprintf(stderr, "pipe() failed: %s\n", strerror(errno));
+      return 1;
+    }
 
     /* Spawn a child, drop privileges and run our script in the father */
     switch(fork())
@@ -36,14 +39,17 @@ int main(int argc, char **argv)
             close(fd[1]);
             break;
         case -1: /* error */
-            return -1;
+            return 1;
         default: /* father */
             close(fd[0]);
-            dup2(fd[1], atoi(outfd));
+            if (dup2(fd[1], atoi(outfd)) < 0) {
+              fprintf(stderr, "dup2 failed: %s\n", strerror(errno));
+              return 1;
+	    }
             /* drop privileges */
             if(egid != gid)
                 setegid(gid);
-            /* build a new argv */
+            /* build a new argument vector */
             newargv = malloc((argc + 7) * sizeof(char *));
             for(pos = 1; pos < argc; pos++)
                 newargv[pos] = argv[pos];
@@ -58,7 +64,7 @@ int main(int argc, char **argv)
             /* run our script */
             execv(script, newargv);
             fprintf(stderr, "%s: could not start `%s': %s\n", argv[0], script, strerror(errno));
-            return -1;
+            return 1;
     }
 
     /* Handle our child’s messages */
@@ -82,7 +88,7 @@ int main(int argc, char **argv)
                         argv[0], score);
         }
         else if(pos++ >= BUFSIZ - 8)
-            return -1; /* The script is doing nasty stuff... quit */
+            return 1; /* The script is doing nasty stuff... quit */
     }
 
     return 0;
