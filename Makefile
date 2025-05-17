@@ -1,6 +1,7 @@
 prefix = /usr/local
 gamesdir = $(prefix)/games
 datadir = $(prefix)/share
+mandir = $(prefix)/share/man
 pkgdatadir = $(datadir)/games/monsterz
 applicationsdir = $(datadir)/applications
 scoredir = /var/games
@@ -45,6 +46,7 @@ graphics/logo.png: graphics/graphics.svg
 install: all
 	mkdir -p $(DESTDIR)$(gamesdir)
 	mkdir -p $(DESTDIR)$(applicationsdir)
+	mkdir -p $(DESTDIR)$(mandir)/man6
 	cp monsterz $(DESTDIR)$(gamesdir)/
 	chown root:games $(DESTDIR)$(gamesdir)/monsterz
 	chmod g+s $(DESTDIR)$(gamesdir)/monsterz
@@ -54,6 +56,7 @@ install: all
 	cp $(BITMAP) $(DESTDIR)$(pkgdatadir)/graphics/
 	cp $(SOUND) $(MUSIC) $(DESTDIR)$(pkgdatadir)/sound/
 	cp monsterz.desktop $(DESTDIR)$(applicationsdir)
+	cp monsterz.6 $(DESTDIR)$(mandir)/man6
 	mkdir -p $(DESTDIR)$(scoredir)
 	test -f $(DESTDIR)$(scorefile) || echo "" > $(DESTDIR)$(scorefile)
 	chown root:games $(DESTDIR)$(scorefile)
