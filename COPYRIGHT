@@ -13,8 +13,8 @@ License: GPL-2+
 
 Files: sound/music.s3m
 Copyright: © 1998 MenTaLguY <http://moonbase.rydia.net/>
-License: public-domain
- music.s3m was put in the public domain by MenTaLguY.
+License: cc-by-nc-sa-1.0
+ music.s3m was made available under the Creative Commons CC-BY-SA 1.0 license
 
 Files: sound/applause.wav
        sound/pop.wav
