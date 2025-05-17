@@ -1624,7 +1624,7 @@ class Monsterz:
                 system.play("whip")
                 self.status = STATUS_MENU
                 return
-            elif event.type == pygame.MOUSEBUTTONDOWN and narea >= 10:
+            elif event.type == pygame.MOUSEBUTTONDOWN and narea is not None and narea >= 10:
                 system.play("whip")
                 if narea == ACTION_MOREMONSTERZ:
                     if items < 8:
