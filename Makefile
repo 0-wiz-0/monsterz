@@ -16,7 +16,11 @@ SOUND = sound/grunt.wav sound/click.wav sound/pop.wav sound/boing.wav sound/whip
         sound/applause.wav sound/laugh.wav sound/warning.wav sound/duh.wav \
         sound/ding.wav
 MUSIC = sound/music.s3m
-TEXT = README.md TODO COPYING AUTHORS INSTALL
+TEXT = AUTHORS COPYRIGHT INSTALL LICENSE README.md TODO monsterz.desktop monsterz.6
+
+INSTALL_DATA =		install -c -m 644
+INSTALL_PROGRAM =	install -c -m 755
+INSTALL_DIR = 		install -d
 
 INKSCAPE = inkscape
 
@@ -44,20 +48,20 @@ graphics/logo.png: graphics/graphics.svg
 	$(INKSCAPE) --actions="export-area:810:125:1220:342;export-width:380;export-height:180;export-filename:graphics/logo.png;export-do;" graphics/graphics.svg
 
 install: all
-	mkdir -p $(DESTDIR)$(gamesdir)
-	mkdir -p $(DESTDIR)$(applicationsdir)
-	mkdir -p $(DESTDIR)$(mandir)/man6
-	cp monsterz $(DESTDIR)$(gamesdir)/
+	$(INSTALL_DIR) $(DESTDIR)$(gamesdir)
+	$(INSTALL_DIR) $(DESTDIR)$(applicationsdir)
+	$(INSTALL_DIR) $(DESTDIR)$(mandir)/man6
+	$(INSTALL_PROGRAM) monsterz $(DESTDIR)$(gamesdir)/
 	chown root:games $(DESTDIR)$(gamesdir)/monsterz
 	chmod g+s $(DESTDIR)$(gamesdir)/monsterz
-	mkdir -p $(DESTDIR)$(pkgdatadir)/graphics
-	mkdir -p $(DESTDIR)$(pkgdatadir)/sound
-	cp monsterz.py $(DESTDIR)$(pkgdatadir)/
-	cp $(BITMAP) $(DESTDIR)$(pkgdatadir)/graphics/
-	cp $(SOUND) $(MUSIC) $(DESTDIR)$(pkgdatadir)/sound/
-	cp monsterz.desktop $(DESTDIR)$(applicationsdir)
-	cp monsterz.6 $(DESTDIR)$(mandir)/man6
-	mkdir -p $(DESTDIR)$(scoredir)
+	$(INSTALL_DIR) $(DESTDIR)$(pkgdatadir)/graphics
+	$(INSTALL_DIR) $(DESTDIR)$(pkgdatadir)/sound
+	$(INSTALL_DATA) monsterz.py $(DESTDIR)$(pkgdatadir)/
+	$(INSTALL_DATA) $(BITMAP) $(DESTDIR)$(pkgdatadir)/graphics/
+	$(INSTALL_DATA) $(SOUND) $(MUSIC) $(DESTDIR)$(pkgdatadir)/sound/
+	$(INSTALL_DATA) monsterz.desktop $(DESTDIR)$(applicationsdir)
+	$(INSTALL_DATA) monsterz.6 $(DESTDIR)$(mandir)/man6
+	$(INSTALL_DIR) $(DESTDIR)$(scoredir)
 	test -f $(DESTDIR)$(scorefile) || echo "" > $(DESTDIR)$(scorefile)
 	chown root:games $(DESTDIR)$(scorefile)
 	chmod g+w $(DESTDIR)$(scorefile)
@@ -66,6 +70,9 @@ uninstall:
 	rm -f $(DESTDIR)$(gamesdir)/monsterz
 	rm -f $(DESTDIR)$(applicationsdir)/monsterz.desktop
 	rm -f $(DESTDIR)$(mandir)/man6/monsterz.6
+	rmdir -p $(DESTDIR)$(gamesdir) 2> /dev/null || true
+	rmdir -p $(DESTDIR)$(applicationsdir) 2> /dev/null || true
+	rmdir -p $(DESTDIR)$(mandir)/man6 2> /dev/null || true
 	rm -Rf $(DESTDIR)$(pkgdatadir)/
 #	rm -f $(DESTDIR)$(scorefile)
 
