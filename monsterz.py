@@ -283,7 +283,7 @@ class Settings:
                 msg += type + ":" + name + ":" + str(score) + ":" + str(level)
                 msg += "\n"
         if self.outfd is not None:
-            write(self.outfd, msg + "\n")
+            write(self.outfd, (msg + "\n").encode())
         else:
             try:
                 file = open(self.scorefile, "w")
@@ -2127,7 +2127,7 @@ def main():
         elif opt in ("--outfd"):
             try:
                 outfd = int(arg)
-                write(outfd, "\n")
+                write(outfd, b"\n")
             except:
                 outfd = None
         elif opt in ("--data"):
