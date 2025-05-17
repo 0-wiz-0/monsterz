@@ -1,3 +1,9 @@
+# 0.9
+
+- Merge Debian changes
+- Add man page
+- Add desktop file
+
 # 0.8
 
 - New maintainer since old upstream seems gone
