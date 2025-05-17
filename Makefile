@@ -64,6 +64,8 @@ install: all
 
 uninstall:
 	rm -f $(DESTDIR)$(gamesdir)/monsterz
+	rm -f $(DESTDIR)$(applicationsdir)/monsterz.desktop
+	rm -f $(DESTDIR)$(mandir)/man6/monsterz.6
 	rm -Rf $(DESTDIR)$(pkgdatadir)/
 #	rm -f $(DESTDIR)$(scorefile)
 
