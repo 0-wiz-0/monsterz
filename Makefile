@@ -1,8 +1,8 @@
-
 prefix = /usr/local
-gamesdir = ${prefix}/games
-datadir = ${prefix}/share
+gamesdir = $(prefix)/games
+datadir = $(prefix)/share
 pkgdatadir = $(datadir)/games/monsterz
+applicationsdir = $(datadir)/applications
 scoredir = /var/games
 scorefile = $(scoredir)/monsterz
 
@@ -19,10 +19,13 @@ TEXT = README.md TODO COPYING AUTHORS INSTALL
 
 INKSCAPE = inkscape
 
-all: monsterz
+all: monsterz monsterz.desktop
 
 monsterz: monsterz.c
 	$(CC) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) -Wall monsterz.c -DDATADIR=\"$(pkgdatadir)\" -DSCOREFILE=\"$(scorefile)\" -o monsterz
+
+monsterz.desktop: monsterz.desktop.in
+	sed "s!@DATADIR@!$(pkgdatadir)!" monsterz.desktop.in > monsterz.desktop
 
 bitmap: $(BITMAP)
 
@@ -41,6 +44,7 @@ graphics/logo.png: graphics/graphics.svg
 
 install: all
 	mkdir -p $(DESTDIR)$(gamesdir)
+	mkdir -p $(DESTDIR)$(applicationsdir)
 	cp monsterz $(DESTDIR)$(gamesdir)/
 	chown root:games $(DESTDIR)$(gamesdir)/monsterz
 	chmod g+s $(DESTDIR)$(gamesdir)/monsterz
@@ -49,6 +53,7 @@ install: all
 	cp monsterz.py $(DESTDIR)$(pkgdatadir)/
 	cp $(BITMAP) $(DESTDIR)$(pkgdatadir)/graphics/
 	cp $(SOUND) $(MUSIC) $(DESTDIR)$(pkgdatadir)/sound/
+	cp monsterz.desktop $(DESTDIR)$(applicationsdir)
 	mkdir -p $(DESTDIR)$(scoredir)
 	test -f $(DESTDIR)$(scorefile) || echo "" > $(DESTDIR)$(scorefile)
 	chown root:games $(DESTDIR)$(scorefile)
@@ -73,5 +78,4 @@ dist:
 
 distclean: clean
 clean:
-	rm -f monsterz
-
+	rm -f monsterz monsterz.desktop
