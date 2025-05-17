@@ -22,7 +22,7 @@ INKSCAPE = inkscape
 all: monsterz
 
 monsterz: monsterz.c
-	$(CC) $(CFLAGS) $(LDLFAGS) -Wall monsterz.c -DDATADIR=\"$(pkgdatadir)\" -DSCOREFILE=\"$(scorefile)\" -o monsterz
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) -Wall monsterz.c -DDATADIR=\"$(pkgdatadir)\" -DSCOREFILE=\"$(scorefile)\" -o monsterz
 
 bitmap: $(BITMAP)
 
