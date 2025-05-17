@@ -454,8 +454,8 @@ class System:
         (x, y) = coords
         self.background.blit(surf, (int(x), int(y)))
 
-    def blit_board(self, xxx_todo_changeme):
-        (x1, y1, x2, y2) = xxx_todo_changeme
+    def blit_board(self, coords):
+        (x1, y1, x2, y2) = coords
         x1, y1 = x1 * ITEM_SIZE, y1 * ITEM_SIZE
         x2, y2 = x2 * ITEM_SIZE - x1, y2 * ITEM_SIZE - y1
         surf = data.board.subsurface((x1, y1, x2, y2))
@@ -863,8 +863,8 @@ class Game:
         if self.select:
             system.blit(data.selector, select_coord)
 
-    def piece_draw(self, sprite, xxx_todo_changeme1):
-        (x, y) = xxx_todo_changeme1
+    def piece_draw(self, sprite, pos):
+        (x, y) = pos
         width = ITEM_SIZE
         crop = sprite.subsurface
         # Constrain X
