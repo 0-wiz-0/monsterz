@@ -925,14 +925,14 @@ class Game:
         else:
             for x in range(4):
                 for y, p in enumerate(alpha[x]):
-                    alpha[x][y] = p * x // 4
+                    alpha[x][y] = int(p) * int(x) // 4
                 for y, p in enumerate(alpha[406 - x - 1]):
-                    alpha[406 - x - 1][y] = p * x // 4
+                    alpha[406 - x - 1][y] = int(p) * int(x) // 4
             for col in alpha:
                 l = len(col)
                 for y in range(4):
-                    col[y] = col[y] * y // 4
-                    col[l - y - 1] = col[l - y - 1] * y // 4
+                    col[y] = int(col[y]) * int(y) // 4
+                    col[l - y - 1] = int(col[l - y - 1]) * int(y) // 4
                 del col
             del alpha
             timebar.unlock()
@@ -1391,9 +1391,9 @@ class Monsterz:
         else:
             for x in range(10):
                 for y, p in enumerate(alpha[x]):
-                    alpha[x][y] = p * x // 12
+                    alpha[x][y] = int(int(p) * int(x)) // 12
                 for y, p in enumerate(alpha[406 - x - 1]):
-                    alpha[406 - x - 1][y] = p * x // 12
+                    alpha[406 - x - 1][y] = int(int(p) * int(x)) // 12
             del alpha
             scroll.unlock()
         system.blit(scroll, (13, 437))
