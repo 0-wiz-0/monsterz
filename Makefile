@@ -11,17 +11,17 @@ VERSION = 0.9
 DIRECTORY = monsterz-$(VERSION)
 
 BITMAP = graphics/tiles.png graphics/bigtiles.png graphics/background.png \
-         graphics/board.png graphics/logo.png graphics/icon.png
+  graphics/board.png graphics/logo.png graphics/icon.png
 SOUND = sound/grunt.wav sound/click.wav sound/pop.wav sound/boing.wav sound/whip.wav \
-        sound/applause.wav sound/laugh.wav sound/warning.wav sound/duh.wav \
-        sound/ding.wav
+  sound/applause.wav sound/laugh.wav sound/warning.wav sound/duh.wav \
+  sound/ding.wav
 MUSIC = sound/music.s3m
 TEXT = AUTHORS COPYRIGHT INSTALL LICENSE NEWS.md README.md TODO monsterz.desktop.in monsterz.6
 
-INSTALL_DATA =		install -c -m 644
-INSTALL_PROGRAM =	install -c -m 755
-INSTALL_SCRIPT =	install -c -m 755
-INSTALL_DIR = 		install -d
+INSTALL_DATA = install -c -m 644
+INSTALL_PROGRAM = install -c -m 755
+INSTALL_SCRIPT = install -c -m 755
+INSTALL_DIR = install -d
 
 INKSCAPE = inkscape
 
